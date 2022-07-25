@@ -11,8 +11,8 @@ from sklearn.preprocessing import StandardScaler
 class CustomDataset(Dataset):
     def __init__(self, root):
         
-        path = os.path.join(root, 'expresion_matrix.csv')
-        X = pd.read_csv(path, header = 0, index_col=0, sep = ',' )
+        path = os.path.join(root, 'expresion_matrix_highVar.csv')
+        X = pd.read_csv(path, header = None, index_col=0, sep = ',' )
         
         path = os.path.join(root, 'sensitivity_matrix.csv')
         Y = pd.read_csv(path, header= None, sep = ',')

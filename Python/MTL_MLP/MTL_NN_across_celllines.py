@@ -94,18 +94,17 @@ def train(X,Y):
     Y_hat = model(X)
     
     # Compute loss
-    loss_each_drug = loss_function(Y,Y_hat)
-    loss_all_drug = nanmean(loss_each_drug)
+    loss = loss_function(Y,Y_hat)
     
     # Zero the gradients
     optimizer.zero_grad()
     
     # Perform backward pass
-    loss_all_drug.backward()
+    loss.backward()
     
     # Perform optimization
     optimizer.step()    
-    return loss_all_drug
+    return loss
 
     
 
@@ -118,21 +117,21 @@ def evaluation(x,y):
     
     #Y_Na_zero  = y.clone().detach()          
     #Y_Na_zero = torch.where(torch.isnan(Y_Na_zero),torch.tensor(0.),y)
-    Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
+    #Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
+    
     y = y.detach().numpy()
     Y_hat = Y_hat.detach().numpy()
     Y_mask = (~np.isnan(y))
     
-    Y_hat  = Y_hat[:,0:100]
     #Y_Na_zero  = Y_Na_zero.detach().numpy()
     
             
     cor = []
     mse = []
     for i in range(x.shape[0]):
-        cor.append(np.corrcoef(y[i,Y_mask[i,:]],Y_hat[i,Y_mask[i,:]])[0,1])
+        cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_hat[Y_mask[:,i],i])[0,1])
         #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_hat[i,:])[0,1])
-        mse.append(np.mean((y[i,Y_mask[i,:]]-Y_hat[i,Y_mask[i,:]])**2))
+        mse.append(np.mean((y[Y_mask[:,i],i]-Y_hat[Y_mask[:,i],i])**2))
     Cor = np.mean(cor)
     MSE = np.mean(mse)
     return float(Cor), float(MSE)
@@ -140,7 +139,7 @@ def evaluation(x,y):
 
 # Read data and seperate to Train and Test
 Data = CustomDataset(root= "Raw_data")
-print(Data)
+
 input_size = Data.X.shape[1]
 hidden_size = [500,100]
 output_size = Data.Y.shape[1]
@@ -172,16 +171,16 @@ for j in (range(0,1)):
     train_dataset = torch.utils.data.Subset(Data, train_indices)
     test_dataset = torch.utils.data.Subset(Data, test_indices)
     
-    Norm_X = Input_Normalization(train_dataset.dataset.X[train_dataset.indices])
-    X_tr_norm = Norm_X.normalization_train()
-    train_dataset.dataset.X[train_dataset.indices] = X_tr_norm
+    # Norm_X = Input_Normalization(train_dataset.dataset.X[train_dataset.indices])
+    # X_tr_norm = Norm_X.normalization_train()
+    # train_dataset.dataset.X[train_dataset.indices] = X_tr_norm
     
-    X_te_norm = Norm_X.normalization_test(test_dataset.dataset.X[test_dataset.indices])
-    test_dataset.dataset.X[test_dataset.indices] = X_te_norm
+    # X_te_norm = Norm_X.normalization_test(test_dataset.dataset.X[test_dataset.indices])
+    # test_dataset.dataset.X[test_dataset.indices] = X_te_norm
     
-    Norm_Y = Output_Normalization(train_dataset.dataset.Y[train_dataset.indices])
-    Y_tr_norm = Norm_Y.normalization_train()
-    train_dataset.dataset.Y[train_dataset.indices] = Y_tr_norm
+    # Norm_Y = Output_Normalization(train_dataset.dataset.Y[train_dataset.indices])
+    # Y_tr_norm = Norm_Y.normalization_train()
+    # train_dataset.dataset.Y[train_dataset.indices] = Y_tr_norm
     
     
     # Norm_Y = Normalization(train_dataset.dataset.Y[train_dataset.indices])
@@ -235,12 +234,12 @@ for j in (range(0,1)):
             Y = data["Output"]
             X, Y = X.float(), Y.float()
             
-            loss_all_drug = train(X,Y)
+            loss = train(X,Y)
         
-        Y_tr_denorm = torch.add(torch.mul(Y_tr_norm, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
+        #Y_tr_denorm = torch.add(torch.mul(Y_tr_norm, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
 
-        cor_train, mse_train = evaluation(X_tr_norm,Y_tr_denorm[:,0:100])
-        cor_test, mse_test = evaluation(X_te_norm,test_dataset.dataset.Y[test_dataset.indices][:,0:100])
+        cor_train, mse_train = evaluation(train_dataset.dataset.X[train_dataset.indices],train_dataset.dataset.Y[train_dataset.indices])
+        cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[test_dataset.indices])
         
         # cor_train, mse_train = evaluation(X_tr_norm,train_dataset.dataset.Y[train_dataset.indices])
         # cor_test, mse_test = evaluation(X_te_norm,test_dataset.dataset.Y[test_dataset.indices])

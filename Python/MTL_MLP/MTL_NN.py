@@ -94,8 +94,7 @@ def train(X,Y):
     Y_hat = model(X)
     
     # Compute loss
-    loss_each_drug = loss_function(Y,Y_hat)
-    loss_all_drug = nanmean(loss_each_drug)
+    loss = loss_function(Y,Y_hat)
     
     # Zero the gradients
     optimizer.zero_grad()
@@ -105,7 +104,7 @@ def train(X,Y):
     
     # Perform optimization
     optimizer.step()    
-    return loss_all_drug
+    return loss
 
     
 
@@ -232,7 +231,7 @@ for j in (range(0,1)):
             Y = data["Output"]
             X, Y = X.float(), Y.float()
             
-            loss_all_drug = train(X,Y)
+            loss = train(X,Y)
         
         Y_tr_denorm = torch.add(torch.mul(Y_tr_norm, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
 
