@@ -11,8 +11,8 @@ from sklearn.preprocessing import StandardScaler
 class CustomDataset(Dataset):
     def __init__(self, root):
         
-        path = os.path.join(root, 'expresion_matrix_highVar.csv')
-        X = pd.read_csv(path, header = None, index_col=0, sep = ',' )
+        path = os.path.join(root, 'expresion_matrix.csv')
+        X = pd.read_csv(path, header = 0, index_col=0, sep = ',' )
         
         path = os.path.join(root, 'sensitivity_matrix.csv')
         Y = pd.read_csv(path, header= None, sep = ',')
@@ -22,9 +22,26 @@ class CustomDataset(Dataset):
         X = np.array(X)
         Y = np.array(Y)
         
-        #ss = StandardScaler()
-        #X = ss.fit_transform(X)
-        #Y = ss.fit_transform(Y)
+        cor_features  =   [] 
+        for i in range(X.shape[1]):
+            cor_features.append(np.corrcoef(np.transpose(X[:,i]),np.transpose(Y))[0,1])
+            
+        cor_features = np.abs(cor_features)
+        sorted_indices = np.argsort(cor_features)
+        reverse_sorted_indices = sorted_indices[::-1]
+        X = X[:,reverse_sorted_indices[0:500]]
+
+        # Normalization
+        ss = StandardScaler()
+        X = ss.fit_transform(X)
+        Y = ss.fit_transform(Y)
+        
+        
+        
+        
+        ss = StandardScaler()
+        X = ss.fit_transform(X)
+        Y = ss.fit_transform(Y)
 
 
 
