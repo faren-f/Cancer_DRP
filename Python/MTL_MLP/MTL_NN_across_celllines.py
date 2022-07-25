@@ -1,5 +1,5 @@
 import os
-#os.chdir("Desktop/Codes/Cancer_DRP/Python/MTL_NN")
+#os.chdir("Desktop/Cancer_DRP/Python/MTL_NN")
 
 import numpy as np
 
