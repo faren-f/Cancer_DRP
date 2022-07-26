@@ -21,7 +21,7 @@ class CustomDataset(Dataset):
         
         GE = np.array(GE)
         sen = np.array(sen)
-        sen = sen[:,9]
+        sen = sen[:,324]
         Y = sen[np.where(~np.isnan(sen))].copy()
         X = GE[np.where(~np.isnan(sen))[0],:].copy()
         Y = np.expand_dims(Y, axis = 1)
@@ -39,7 +39,7 @@ class CustomDataset(Dataset):
     
         ss = StandardScaler()
         X = ss.fit_transform(X)
-        Y = ss.fit_transform(Y)
+        # Y = ss.fit_transform(Y)
         
         
         #Min-Max normalization    
