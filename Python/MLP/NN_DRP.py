@@ -65,7 +65,7 @@ Data = CustomDataset(root= "Raw_data")
 input_size = Data.X.shape[1]
 hidden_size = [100,10]
 output_size = 1
-batch_size = 10
+batch_size = 5
 test_split = .2
 learning_rate = 1e-4
 shuffle_dataset = True
@@ -93,7 +93,7 @@ for j in (range(0,1)):
     train_loader = DataLoader(train_dataset, batch_size=batch_size)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)                                               
     
-    num_epochs = 10
+    num_epochs = 20
     for epoch in range(num_epochs):
         print(f'Starting epoch {epoch+1}')
         trainLoss = 0
@@ -120,6 +120,23 @@ for j in (range(0,1)):
         
         cor_train, mse_train = evaluation(train_dataset.dataset.X[train_dataset.indices],train_dataset.dataset.Y[train_dataset.indices])
         cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[test_dataset.indices])
+    
+        print(f'Epoch: {epoch:03d}, cor_train: {cor_train:.2f}, mse_train: {mse_train:.2f}, ' 
+              f'cor_test: {cor_test:.2f}, mse_test: {mse_test:.2f}')
+                      
+
+      
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
         # print(f'Epoch: {epoch:03d}, cor_train: {cor_train:.2f}, mse_train: {mse_train:.2f}, ' 

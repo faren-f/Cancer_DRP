@@ -12,18 +12,18 @@ class CustomDataset(Dataset):
     def __init__(self, root):
         
         path = os.path.join(root, 'expresion_matrix.csv')
-        X = pd.read_csv(path, header = 0, index_col=0, sep = ',' )
+        GE = pd.read_csv(path, header = 0, index_col=0, sep = ',' )
         
         path = os.path.join(root, 'sensitivity_matrix.csv')
-        Y = pd.read_csv(path, header= None, sep = ',')
+        sen = pd.read_csv(path, header= None, sep = ',')
         
-        self.X_samples = X.index  
+        self.GE_samples = GE.index  
         
-        X = np.array(X)
-        Y = np.array(Y)
-        Y = Y[:,324]
-        Y = Y[np.where(~np.isnan(Y))].copy()
-        X = X[np.where(~np.isnan(Y))[0],:].copy()
+        GE = np.array(GE)
+        sen = np.array(sen)
+        sen = sen[:,324]
+        Y = sen[np.where(~np.isnan(sen))].copy()
+        X = GE[np.where(~np.isnan(sen))[0],:].copy()
         Y = np.expand_dims(Y, axis = 1)
   
         

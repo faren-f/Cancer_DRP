@@ -43,11 +43,11 @@ Y = np.expand_dims(Y, axis = 1)
 # Normalization
 ss = StandardScaler()
 X = ss.fit_transform(X)
-Y = ss.fit_transform(Y)
+#Y = ss.fit_transform(Y)
 
 train_split = .8
 a = range(0,X.shape[0])
-num_repeat = 10
+num_repeat = 1
 Cor = []
 MSE = []
 for i in range(num_repeat):
