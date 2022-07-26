@@ -5,10 +5,16 @@ library(tensorflow)
 library(corrplot)
 library(ggvis)
 library(caTools)
-setwd("~/Desktop/Codes/Cancer_DRP/R")
+setwd("~/Desktop/Cancer_DRP/R")
 ## Read data
 GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
 sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
+
+
+#a = apply(sen,2,function(x){return(cor(x,sen[,325],use="complete.obs"))})
+#t = sort(a,decreasing = TRUE)
+#s = order(a,decreasing = TRUE)
+
 
 ## Classifier
 i = 325
@@ -22,7 +28,7 @@ sen_each_drug = scale(sen_each_drug)
 
 Final_Cor = rep(0,5)
 MSE = rep(0,5)
-for (j in 1:1){
+for (j in 1:5){
   print(j)
   
   ## Split data into train & test
@@ -69,12 +75,12 @@ for (j in 1:1){
     Xtrain, 
     Ytrain, 
     epochs = 20, 
-    batch_size = 372, 
+    batch_size = 10, 
     validation_split = 0.2)
   
   # Evaluate on test data and labels
   #score <- model %>% evaluate(Xtest, Ytest_cat, batch_size = 10)
-  y_hat <- model %>% predict(Xtrain)
+  y_hat <- model %>% predict(Xtest)
   Final_Cor[j] = cor(Ytest,y_hat)
   MSE[j] = mean((Ytest-y_hat)^2)
   

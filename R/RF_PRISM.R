@@ -2,31 +2,31 @@ rm(list = ls())
 library(randomForest)
 library(caTools)
 
-setwd("~/Desktop/Codes/Cancer_DRP/R")
+setwd("~/Desktop/Cancer_DRP/R")
 ## Read data
-GE1 = readRDS("Data/Processed_Data/expresion_matrix.rds")
-GE =  read.csv("Data/Processed_Data/expresion_matrix.csv")
+GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
 sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
 
 #i=1429
-i = 325
+i = 10
 Y = sen[,i]
 Y = Y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
 
 ## Corr input & output
 Corr = cor(X,Y)
-#hist(abs(Corr))  
-
-
+hist(abs(Corr))
+high_corr = order(Corr,decreasing = TRUE)
+X = X[,high_corr[1:200]]
+X = scale(X)
 
 sample = sample.split(Y, SplitRatio = .8)
 
 ## Classifier
-Final_Cor = rep(0,20)
-MSE = rep(0,20)
+Final_Cor = rep(0,5)
+MSE = rep(0,5)
 
-for (j in 1:20){
+for (j in 1:5){
   print(j)
   
   ## Split data into train & test

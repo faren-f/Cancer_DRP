@@ -44,6 +44,7 @@ class MLP(nn.Module):
         out = self.lin2(out)
         out = self.relu(out)
         out = self.lin3(out)
+
         #out = self.relu(out)
         #out = self.lin4(out)
         # no activation and no softmax at the end
@@ -93,7 +94,7 @@ for j in (range(0,1)):
     train_loader = DataLoader(train_dataset, batch_size=batch_size)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)                                               
     
-    num_epochs = 20
+    num_epochs = 30
     for epoch in range(num_epochs):
         print(f'Starting epoch {epoch+1}')
         trainLoss = 0
