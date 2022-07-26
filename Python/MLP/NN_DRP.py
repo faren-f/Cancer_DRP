@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from Create_Dataset_oneDrug import CustomDataset_oneDrug
+from Create_CustomDataset import CustomDataset
 
 
 class MLP(nn.Module):
@@ -61,7 +61,7 @@ def evaluation(x,y):
     return float(Cor), float(MSE)
 
 
-Data = CustomDataset_oneDrug(root= "Raw_data")
+Data = CustomDataset(root= "Raw_data")
 input_size = Data.X.shape[1]
 hidden_size = [100,10]
 output_size = 1

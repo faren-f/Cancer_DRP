@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 # Need to override __init__, __len__, __getitem__
 # as per datasets requirement
 
-class CustomDataset_oneDrug(Dataset):
+class CustomDataset(Dataset):
     def __init__(self, root):
         
         path = os.path.join(root, 'expresion_matrix.csv')
@@ -31,7 +31,7 @@ class CustomDataset_oneDrug(Dataset):
     
         ss = StandardScaler()
         X = ss.fit_transform(X)
-        Y = ss.fit_transform(Y)
+        #Y = ss.fit_transform(Y)
         
         
         #Min-Max normalization    

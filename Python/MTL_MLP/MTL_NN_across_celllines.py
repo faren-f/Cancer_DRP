@@ -117,7 +117,7 @@ def train(X,Y):
 def evaluation(x,y):
     
     Y_pred = model(x) 
-    
+    Y_pred = Y_pred[:,0]
     #Y_pred = torch.add(torch.mul(Y_pred, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
     y = y.detach().numpy()
     Y_pred = Y_pred.detach().numpy()
@@ -236,7 +236,7 @@ for j in (range(0,1)):
         #Y_tr_denorm = torch.add(torch.mul(Y_tr_norm, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
 
         cor_train, mse_train = evaluation(train_dataset.dataset.X[train_dataset.indices],train_dataset.dataset.Y[train_dataset.indices])
-        cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[test_dataset.indices])
+        cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[:,0][test_dataset.indices])
         
         # cor_train, mse_train = evaluation(X_tr_norm,train_dataset.dataset.Y[train_dataset.indices])
         # cor_test, mse_test = evaluation(X_te_norm,test_dataset.dataset.Y[test_dataset.indices])
