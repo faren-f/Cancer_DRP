@@ -14,6 +14,8 @@ import keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import matplotlib.pyplot as plt
+from keras import regularizers
+from keras.layers.core import Dropout
 
 # load the dataset
 
@@ -47,10 +49,11 @@ X = ss.fit_transform(X)
 
 train_split = .8
 a = range(0,X.shape[0])
-num_repeat = 1
+num_repeat = 10
 Cor = []
 MSE = []
 for i in range(num_repeat):
+    print(i)
     indeces = random.sample(a,len(a))
     Tr_indeces = indeces[0:round(len(a)*train_split)]
     Te_indeces = indeces[round(len(a)*train_split):]
@@ -62,7 +65,7 @@ for i in range(num_repeat):
     
     
     input_size = X.shape[1]
-    hidden_size = [100,10]
+    hidden_size = [100,5]
     output_size = 1
     batch_size = 10
     test_split = .2
@@ -71,8 +74,9 @@ for i in range(num_repeat):
     # define the keras model
     model = Sequential()
     model.add(Dense(hidden_size[0], input_dim=input_size, 
+                    kernel_regularizer=regularizers.L1L2(l1=1e-4, l2=0.4),
                     activation='sigmoid'))
-                    #,kernel_initializer='normal'))
+                    #,kernel_initializer='normal'))                
     model.add(Dense(hidden_size[1], activation='sigmoid'))
     model.add(Dense(output_size, activation='linear'))
     
@@ -98,5 +102,5 @@ for i in range(num_repeat):
 print(f'Cor: {Cor}')
 print(f'MSE: {MSE}')
 
-
+print(f'Mean_Cor: {np.mean(Cor)}')
 

@@ -2,10 +2,8 @@ import os
 #os.chdir("Desktop/Codes/Cancer_DRP/Python/MTL_NN")
 
 import numpy as np
-
 import torch
 from torch import nn
-
 from torch.utils.data import DataLoader
 from Create_CustomDataset import CustomDataset
     
@@ -81,18 +79,26 @@ class MLP(nn.Module):
         # no activation and no softmax at the end
         return out
     
-        
+# loss function for MTL        
 def loss_function(Y,Y_pred):            
     Y_mask = torch.logical_not(torch.isnan(Y))      
     sq_error = torch.pow(torch.subtract(Y[Y_mask],Y_pred[Y_mask]), 2)
     mse_loss = sq_error.mean()
     return mse_loss
 
+# loss function for one drug        
+# def loss_function(Y,Y_pred):            
+#     Y_mask = torch.logical_not(torch.isnan(Y))      
+#     sq_error = torch.pow(torch.subtract(Y[Y_mask],Y_pred[Y_mask]), 2)
+#     mse_loss = sq_error.mean()
+#     return mse_loss
+
         
 def train(X,Y):
     # Perform forward pass
     Y_pred = model(X)
-    
+    #Y_pred = torch.squeeze(Y_pred)    # just for one drug
+
     # Compute loss
     loss = loss_function(Y,Y_pred)
     
@@ -106,7 +112,6 @@ def train(X,Y):
     optimizer.step()    
     return loss
 
-    
 
 # Test the model
 # In test phase, we don't need to compute gradients (for memory efficiency)
@@ -115,6 +120,8 @@ def evaluation(x,y):
     
     Y_pred = model(x) 
     
+    #Y_pred = torch.squeeze(Y_pred)   # just for one drug
+
     Y_pred = torch.add(torch.mul(Y_pred, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
     y = y.detach().numpy()
     Y_pred = Y_pred.detach().numpy()
@@ -124,19 +131,21 @@ def evaluation(x,y):
     mse = []
     for i in range(y.shape[1]):
         cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_pred[Y_mask[:,i],i])[0,1])
-        #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_pred[i,:])[0,1])
         mse.append(np.mean((y[Y_mask[:,i],i]-Y_pred[Y_mask[:,i],i])**2))
+        #cor.append(np.corrcoef(y[Y_mask],Y_pred[Y_mask])[0,1])   #For one drug
+        #mse.append(np.mean((y[Y_mask]-Y_pred[Y_mask])**2))       #For one drug  
     Cor = np.mean(cor)
     MSE = np.mean(mse)
     return float(Cor), float(MSE)
 
-
+    
 # Read data and seperate to Train and Test
 Data = CustomDataset(root= "Raw_data")
 
 input_size = Data.X.shape[1]
 hidden_size = [500,100]
 output_size = Data.Y.shape[1]
+#output_size = 1       #for one drug
 batch_size = 16
 test_split = .2
 learning_rate = 1e-4
@@ -238,6 +247,13 @@ for j in (range(0,1)):
         # cor_train, mse_train = evaluation(X_tr_norm,train_dataset.dataset.Y[train_dataset.indices])
         # cor_test, mse_test = evaluation(X_te_norm,test_dataset.dataset.Y[test_dataset.indices])
         
+        #cor_train, mse_train = evaluation(train_dataset.dataset.X[train_dataset.indices],train_dataset.dataset.Y[train_dataset.indices])
+        #cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[test_dataset.indices])
+
+
+        # For single drug(to chech if MTL works or not)    
+        #cor_test, mse_test = evaluation(test_dataset.dataset.X[test_dataset.indices],test_dataset.dataset.Y[:,0][test_dataset.indices])
+
         
         print(f'Epoch: {epoch:03d}, cor_train: {cor_train:.2f}, mse_train: {mse_train:.2f}, ' 
               f'cor_test: {cor_test:.2f}, mse_test: {mse_test:.2f}')

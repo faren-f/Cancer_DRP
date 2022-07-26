@@ -26,14 +26,14 @@ class CustomDataset(Dataset):
         X = GE[np.where(~np.isnan(sen))[0],:].copy()
         Y = np.expand_dims(Y, axis = 1)
   
-        cor_features  =   [] 
-        for i in range(X.shape[1]):
-            cor_features.append(np.corrcoef(np.transpose(X[:,i]),np.transpose(Y))[0,1])
+        # cor_features  =   [] 
+        # for i in range(X.shape[1]):
+        #     cor_features.append(np.corrcoef(np.transpose(X[:,i]),np.transpose(Y))[0,1])
             
-        cor_features = np.abs(cor_features)
-        sorted_indices = np.argsort(cor_features)
-        reverse_sorted_indices = sorted_indices[::-1]
-        X = X[:,reverse_sorted_indices[0:200]]
+        # cor_features = np.abs(cor_features)
+        # sorted_indices = np.argsort(cor_features)
+        # reverse_sorted_indices = sorted_indices[::-1]
+        # X = X[:,reverse_sorted_indices[0:200]]
 
         # Normalization
     
