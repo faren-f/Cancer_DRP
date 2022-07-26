@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 22 12:45:38 2022
+
+@author: Faren
+"""
 #import os
 #os.chdir("Desktop/Codes/Cancer_DRP/Python/MTL_NN")
 
@@ -65,10 +72,17 @@ class MLP(nn.Module):
         self.output_size = output_size
 
         self.lin1 = nn.Linear(input_size, hidden_size[0])
+        #self.apply(self._init_weights)
         self.relu = nn.ReLU()
         #self.lin2 = nn.Linear(hidden_size[0], hidden_size[1])
         #self.relu = nn.ReLU()
         self.lin2 = nn.Linear(hidden_size[0], output_size)
+        
+    def _init_weights(self, m):
+        if isinstance(m, nn.Linear):
+            nn.init.normal_(m.weight,mean=0.0, std=1.0)
+            m.bias.data.fill_(0)
+
 
     def forward(self, x):
         out = self.lin1(x)
@@ -109,32 +123,41 @@ def train(X,Y):
 
 # Test the model
 # In test phase, we don't need to compute gradients (for memory efficiency)
+# @torch.no_grad()
+# def evaluation(x,y):
+#     y = torch.unsqueeze(y, 1)
+#     Y_hat = model(x) 
+#     #Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
+#     y = y.detach().numpy()
+#     Y_hat = Y_hat.detach().numpy() 
+#     Y_mask = (~np.isnan(y))
+#     Cor  = np.corrcoef(y[Y_mask],Y_hat[Y_mask])[0,1]
+#     MSE = np.mean((y[Y_mask]-Y_hat[Y_mask])**2)
+#     return float(Cor), float(MSE)
+
+    
 @torch.no_grad()
 def evaluation(x,y):
-    y = torch.unsqueeze(y, 1)
     Y_hat = model(x) 
-    #Y_Na_zero  = y.clone().detach()          
-    #Y_Na_zero = torch.where(torch.isnan(Y_Na_zero),torch.tensor(0.),y)
-    #Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
     y = y.detach().numpy()
     Y_hat = Y_hat.detach().numpy()
-    Y_mask = (~np.isnan(y))
-    #Y_Na_zero  = Y_Na_zero.detach().numpy()
-    
-    
-    Cor  = np.corrcoef(y[Y_mask],Y_hat[Y_mask])[0,1]
-    MSE = np.mean((y[Y_mask]-Y_hat[Y_mask])**2)
-    
+    y = np.squeeze(y)
+    Y_hat = np.squeeze(Y_hat)
+    Cor  = np.corrcoef(y,Y_hat)[0,1]
+    MSE = np.mean((y-Y_hat)**2)
     return float(Cor), float(MSE)
+    
+    
+
+
 
 
 # Read data and seperate to Train and Test
 Data = CustomDataset(root= "Raw_data")
-print(Data)
 input_size = Data.X.shape[1]
-hidden_size = [500,100]
+hidden_size = [100,10]
 output_size = 1
-batch_size = 15
+batch_size = 5
 test_split = .2
 learning_rate = 1e-4
 shuffle_dataset = True
@@ -143,7 +166,8 @@ shuffle_dataset = True
 # Initialize the MLP
 model = MLP(input_size, hidden_size, output_size)
   
-# Optimizer
+# loss function and Optimizer
+loss_criterion = nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 
