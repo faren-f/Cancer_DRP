@@ -21,11 +21,15 @@ class CustomDataset(Dataset):
         
         X = np.array(X)
         Y = np.array(Y)
+        Y = Y[:,[324,171,1444,1336,615,127,1014,1021,170,1431]]
+        #Y = Y[:,324]
+
+
 
         # Normalization
         ss = StandardScaler()
         X = ss.fit_transform(X)
-        Y = ss.fit_transform(Y)
+        #Y = ss.fit_transform(Y)
 
         self.X = torch.tensor(X, dtype=torch.float)
         self.Y = torch.tensor(Y, dtype=torch.float)

@@ -122,7 +122,7 @@ def evaluation(x,y):
             
     cor = []
     mse = []
-    for i in range(x.shape[0]):
+    for i in range(y.shape[1]):
         cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_pred[Y_mask[:,i],i])[0,1])
         #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_pred[i,:])[0,1])
         mse.append(np.mean((y[Y_mask[:,i],i]-Y_pred[Y_mask[:,i],i])**2))

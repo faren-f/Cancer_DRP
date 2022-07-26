@@ -27,19 +27,19 @@ def nanstd(x):
     return(std)
 
  
-class Input_Normalization():
-    def __init__(self,xtr):
-        self.xtr = xtr
-        self.m = nanmean(self.xtr)
-        self.s = nanstd(self.xtr)
+# class Input_Normalization():
+#     def __init__(self,xtr):
+#         self.xtr = xtr
+#         self.m = nanmean(self.xtr)
+#         self.s = nanstd(self.xtr)
 
-    def normalization_train(self):
-        norm = (self.xtr-self.m)/self.s
-        return norm
+#     def normalization_train(self):
+#         norm = (self.xtr-self.m)/self.s
+#         return norm
 
-    def normalization_test(self,xte): 
-        norm = (xte-self.m)/self.s
-        return norm
+#     def normalization_test(self,xte): 
+#         norm = (xte-self.m)/self.s
+#         return norm
 
 # Min-Max normalization(It did not have good performance)    
 # def output_normalization(Ytr):
@@ -50,14 +50,14 @@ class Input_Normalization():
 
 
 
-class Output_Normalization():
-    def __init__ (self,Ytr):
-        self.Ytr = Ytr
-        self.Mean = torch.mean(Ytr[torch.logical_not(torch.isnan(Ytr))])
-        self.STD = torch.std(Ytr[torch.logical_not(torch.isnan(Ytr))])
-    def normalization_train(self):
-        norm = torch.div(torch.sub(self.Ytr,self.Mean),self.STD)
-        return norm
+# class Output_Normalization():
+#     def __init__ (self,Ytr):
+#         self.Ytr = Ytr
+#         self.Mean = torch.mean(Ytr[torch.logical_not(torch.isnan(Ytr))])
+#         self.STD = torch.std(Ytr[torch.logical_not(torch.isnan(Ytr))])
+#     def normalization_train(self):
+#         norm = torch.div(torch.sub(self.Ytr,self.Mean),self.STD)
+#         return norm
 
 
 class MLP(nn.Module):
@@ -67,10 +67,12 @@ class MLP(nn.Module):
         self.output_size = output_size
 
         self.lin1 = nn.Linear(input_size, hidden_size[0])
-        self.relu = nn.ReLU()
+        self.relu = nn.Sigmoid()
         self.lin2 = nn.Linear(hidden_size[0], hidden_size[1])
-        self.relu = nn.ReLU()
+        self.relu = nn.Sigmoid()
         self.lin3 = nn.Linear(hidden_size[1], output_size)
+        
+
 
     def forward(self, x):
         out = self.lin1(x)
@@ -78,6 +80,8 @@ class MLP(nn.Module):
         out = self.lin2(out)
         out = self.relu(out)
         out = self.lin3(out)
+        
+
         # no activation and no softmax at the end
         return out
     
@@ -121,7 +125,7 @@ def evaluation(x,y):
             
     cor = []
     mse = []
-    for i in range(x.shape[0]):
+    for i in range(y.shape[1]):
         cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_pred[Y_mask[:,i],i])[0,1])
         #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_pred[i,:])[0,1])
         mse.append(np.mean((y[Y_mask[:,i],i]-Y_pred[Y_mask[:,i],i])**2))
@@ -210,7 +214,7 @@ for j in (range(0,1)):
     
     
     # Training loop:       
-    num_epochs = 50
+    num_epochs = 20
     for epoch in range(num_epochs):
         # Print epoch
         print(f'Starting epoch {epoch+1}')
@@ -220,7 +224,7 @@ for j in (range(0,1)):
         
         # Iterate over the DataLoader for training data    
         for batch_idx, data in enumerate(train_loader):
-            print(f'batch {batch_idx}, shape {data["Input"].shape}')
+            #print(f'batch {batch_idx}, shape {data["Input"].shape}')
             
             # Get and prepare inputs
             X = data["Input"]
