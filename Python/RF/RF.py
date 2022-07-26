@@ -111,22 +111,22 @@ Cor_train = []
 Cor_test = []
 for max_depth in max_depths:
     model = RandomForestRegressor(max_depth=max_depth, n_jobs=-1)
-    model.fit(x_train, y_train)
-    train_pred = model.predict(x_train)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    train_results.append(roc_auc)
-    y_pred = model.predict(x_test)
-    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
-    roc_auc = auc(false_positive_rate, true_positive_rate)
-    test_results.append(roc_auc)
-from matplotlib.legend_handler import HandlerLine2D
-line1, = plt.plot(max_depths, train_results, ‘b’, label=”Train AUC”)
-line2, = plt.plot(max_depths, test_results, ‘r’, label=”Test AUC”)
-plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel(‘AUC score’)
-plt.xlabel(‘Tree depth’)
+    model.fit(X_train, Y_train)
+    Y_train_pred = model.predict(X_train)
+    Y_train = np.squeeze(Y_train)
+    Cor_train.append(np.corrcoef(Y_train_pred,Y_train)[0,1])
+    Y_pred = model.predict(X_test)
+    Y_test = np.squeeze(Y_test)
+    Cor_test.append(np.corrcoef(Y_pred,Y_test)[0,1])
+
+#from matplotlib.legend_handler import HandlerLine2D    
+line1 = plt.plot(max_depths, Cor_train, 'b', label='Cor_train')
+line2 = plt.plot(max_depths, Cor_test, 'r', label='Cor_test')
+#plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+plt.ylabel('Cor')
+plt.xlabel('Tree depth')
 plt.show()
+    
 
 
 
@@ -135,11 +135,7 @@ from sklearn.tree import export_graphviz
 import pydot
 # Pull out one tree from the forest
 tree = model.estimators_[5]
-# Import tools needed for visualization
-from sklearn.tree import export_graphviz
-import pydot
-# Pull out one tree from the forest
-tree = model.estimators_[5]
+
 # Export the image to a dot file
 export_graphviz(tree, out_file = 'tree.dot', feature_names = feature_list, rounded = True, precision = 1)
 # Use dot file to create a graph
@@ -152,11 +148,12 @@ graph.write_png('tree.png')
 
 # Limit depth of tree to 3 levels
 model_small = RandomForestRegressor(n_estimators=10, max_depth = 3)
-model_small.fit(train_features, train_labels)
+model_small.fit(X_train, Y_train)
 # Extract the small tree
 tree_small = model_small.estimators_[5]
 # Save the tree as a png image
-export_graphviz(tree_small, out_file = 'small_tree.dot', feature_names = feature_list, rounded = True, precision = 1)
+export_graphviz(tree_small, out_file = 'small_tree.dot', 
+                feature_names = feature_list, rounded = True, precision = 1)
 (graph, ) = pydot.graph_from_dot_file('small_tree.dot')
 graph.write_png('small_tree.png');
 
@@ -178,25 +175,20 @@ feature_importances = sorted(feature_importances, key = lambda x: x[1], reverse 
 
 
 
-
-
-
-
-
 # New random forest with only the two most important variables
 model_most_important = RandomForestRegressor(n_estimators= 1000, random_state=42)
 # Extract the two most important features
 important_indices = [feature_list.index('temp_1'), feature_list.index('average')]
-train_important = train_features[:, important_indices]
-test_important = test_features[:, important_indices]
+train_important = X_train[:, important_indices]
+test_important = X_test[:, important_indices]
 # Train the random forest
-model_most_important.fit(train_important, train_labels)
+model_most_important.fit(train_important, Y_train)
 # Make predictions and determine the error
 predictions = model_most_important.predict(test_important)
-errors = abs(predictions - test_labels)
+errors = abs(predictions - Y_test)
 # Display the performance metrics
 print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
-mape = np.mean(100 * (errors / test_labels))
+mape = np.mean(100 * (errors / Y_test))
 accuracy = 100 - mape
 print('Accuracy:', round(accuracy, 2), '%.')
 
