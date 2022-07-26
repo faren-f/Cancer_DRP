@@ -21,29 +21,11 @@ class CustomDataset(Dataset):
         
         X = np.array(X)
         Y = np.array(Y)
-        
-        cor_features  =   [] 
-        for i in range(X.shape[1]):
-            cor_features.append(np.corrcoef(np.transpose(X[:,i]),np.transpose(Y))[0,1])
-            
-        cor_features = np.abs(cor_features)
-        sorted_indices = np.argsort(cor_features)
-        reverse_sorted_indices = sorted_indices[::-1]
-        X = X[:,reverse_sorted_indices[0:500]]
 
         # Normalization
         ss = StandardScaler()
         X = ss.fit_transform(X)
-        Y = ss.fit_transform(Y)
-        
-        
-        
-        
-        ss = StandardScaler()
-        X = ss.fit_transform(X)
-        Y = ss.fit_transform(Y)
-
-
+        #Y = ss.fit_transform(Y)
 
         self.X = torch.tensor(X, dtype=torch.float)
         self.Y = torch.tensor(Y, dtype=torch.float)

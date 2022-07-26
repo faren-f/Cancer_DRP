@@ -100,7 +100,7 @@ def train(X,Y):
     optimizer.zero_grad()
     
     # Perform backward pass
-    loss_all_drug.backward()
+    loss.backward()
     
     # Perform optimization
     optimizer.step()    
@@ -114,14 +114,11 @@ def train(X,Y):
 def evaluation(x,y):
     
     Y_hat = model(x) 
-    #Y_Na_zero  = y.clone().detach()          
-    #Y_Na_zero = torch.where(torch.isnan(Y_Na_zero),torch.tensor(0.),y)
+    
     Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
     y = y.detach().numpy()
     Y_hat = Y_hat.detach().numpy()
-    Y_mask = (~np.isnan(y))
-    #Y_Na_zero  = Y_Na_zero.detach().numpy()
-    
+    Y_mask = (~np.isnan(y))    
             
     cor = []
     mse = []
@@ -136,7 +133,7 @@ def evaluation(x,y):
 
 # Read data and seperate to Train and Test
 Data = CustomDataset(root= "Raw_data")
-print(Data)
+
 input_size = Data.X.shape[1]
 hidden_size = [500,100]
 output_size = Data.Y.shape[1]

@@ -115,16 +115,10 @@ def evaluation(x,y):
     
     Y_hat = model(x) 
     
-    #Y_Na_zero  = y.clone().detach()          
-    #Y_Na_zero = torch.where(torch.isnan(Y_Na_zero),torch.tensor(0.),y)
     #Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
-    
     y = y.detach().numpy()
     Y_hat = Y_hat.detach().numpy()
-    Y_mask = (~np.isnan(y))
-    
-    #Y_Na_zero  = Y_Na_zero.detach().numpy()
-    
+    Y_mask = (~np.isnan(y))    
             
     cor = []
     mse = []
