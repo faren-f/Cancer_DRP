@@ -82,19 +82,19 @@ class MLP(nn.Module):
         return out
     
         
-def loss_function(Y,Y_hat):            
+def loss_function(Y,Y_pred):            
     Y_mask = torch.logical_not(torch.isnan(Y))      
-    sq_error = torch.pow(torch.subtract(Y[Y_mask],Y_hat[Y_mask]), 2)
+    sq_error = torch.pow(torch.subtract(Y[Y_mask],Y_pred[Y_mask]), 2)
     mse_loss = sq_error.mean()
     return mse_loss
 
         
 def train(X,Y):
     # Perform forward pass
-    Y_hat = model(X)
+    Y_pred = model(X)
     
     # Compute loss
-    loss = loss_function(Y,Y_hat)
+    loss = loss_function(Y,Y_pred)
     
     # Zero the gradients
     optimizer.zero_grad()
@@ -113,19 +113,19 @@ def train(X,Y):
 @torch.no_grad()
 def evaluation(x,y):
     
-    Y_hat = model(x) 
+    Y_pred = model(x) 
     
-    Y_hat = torch.add(torch.mul(Y_hat, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
+    Y_pred = torch.add(torch.mul(Y_pred, Norm_Y.STD), Norm_Y.Mean) # denormalization of Y_train_Norm 
     y = y.detach().numpy()
-    Y_hat = Y_hat.detach().numpy()
+    Y_pred = Y_pred.detach().numpy()
     Y_mask = (~np.isnan(y))    
             
     cor = []
     mse = []
     for i in range(x.shape[0]):
-        cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_hat[Y_mask[:,i],i])[0,1])
-        #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_hat[i,:])[0,1])
-        mse.append(np.mean((y[Y_mask[:,i],i]-Y_hat[Y_mask[:,i],i])**2))
+        cor.append(np.corrcoef(y[Y_mask[:,i],i],Y_pred[Y_mask[:,i],i])[0,1])
+        #cor.append(np.corrcoef(Y_Na_zero[i,:],Y_pred[i,:])[0,1])
+        mse.append(np.mean((y[Y_mask[:,i],i]-Y_pred[Y_mask[:,i],i])**2))
     Cor = np.mean(cor)
     MSE = np.mean(mse)
     return float(Cor), float(MSE)
