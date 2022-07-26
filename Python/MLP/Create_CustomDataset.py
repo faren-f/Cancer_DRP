@@ -39,7 +39,7 @@ class CustomDataset(Dataset):
     
         ss = StandardScaler()
         X = ss.fit_transform(X)
-        #Y = ss.fit_transform(Y)
+        Y = ss.fit_transform(Y)
         
         
         #Min-Max normalization    

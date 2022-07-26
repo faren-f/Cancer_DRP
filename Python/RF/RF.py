@@ -1,65 +1,130 @@
-# Pandas is used for data manipulation
-import pandas as pd
-# Read in data and display first 5 rows
-features = pd.read_csv('temps.csv')
-features.head(5)
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Jul 23 7:45:38 2022
 
+@author: Faren
+"""
 
-
-# Use numpy to convert to arrays
 import numpy as np
-# Labels are the values we want to predict
-labels = np.array(features['actual'])
-# Remove the labels from the features
-# axis 1 refers to the columns
-features= features.drop('actual', axis = 1)
-# Saving feature names for later use
-feature_list = list(features.columns)
-# Convert to numpy array
-features = np.array(features)
+import pandas as pd
+import random
+from sklearn.preprocessing import StandardScaler
 
-
-# Using Skicit-learn to split data into training and testing sets
-from sklearn.model_selection import train_test_split
-# Split the data into training and testing sets
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size = 0.25, random_state = 42)
-
-
-print('Training Features Shape:', train_features.shape)
-print('Training Labels Shape:', train_labels.shape)
-print('Testing Features Shape:', test_features.shape)
-print('Testing Labels Shape:', test_labels.shape)
-
-
-
-# Import the model we are using
+import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestRegressor
-# Instantiate model with 1000 decision trees
-rf = RandomForestRegressor(n_estimators = 1000, random_state = 42)
-# Train the model on training data
-rf.fit(train_features, train_labels);
+from sklearn.model_selection import train_test_split
+
+# load the dataset
+GE = pd.read_csv("Raw_Data/expresion_matrix.csv", header = 0, index_col=0, sep = ',' )
+sen = pd.read_csv("Raw_Data/sensitivity_matrix.csv", header= None, sep = ',')
+
+feature_list = list(GE.columns)
+
+GE = np.array(GE)
+sen = np.array(sen)
+sen = sen[:,324]
+
+Y = sen[np.where(~np.isnan(sen))].copy()
+X = GE[np.where(~np.isnan(sen))[0],:].copy()
+Y = np.expand_dims(Y, axis = 1)
+
+cor_features  =   [] 
+for i in range(X.shape[1]):
+    cor_features.append(np.corrcoef(np.transpose(X[:,i]),np.transpose(Y))[0,1])
+    
+cor_features = np.abs(cor_features)
+sorted_indices = np.argsort(cor_features)
+reverse_sorted_indices = sorted_indices[::-1]
+X = X[:,reverse_sorted_indices[0:500]]
+
+# Normalization
+ss = StandardScaler()
+X = ss.fit_transform(X)
+#Y = ss.fit_transform(Y)
+
+# Instantiate model 
+model = RandomForestRegressor(n_estimators = 200, random_state = 20, 
+                              max_samples = 300, min_samples_split =10,
+                              min_samples_leaf = 10, max_features = 200,
+                              n_jobs=-1)
+
+test_size = 0.2
+num_repeat = 10
+Cor = []
+MSE = []
+for i in range(num_repeat):
+  
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size = 0.25)
+
+    
+    # Train the model on training data
+    model.fit(X_train, Y_train)
+
+    # Use the forest's predict method on the test data
+    Y_pred = model.predict(X_test)
+    # Calculate the absolute errors
+    Y_test = np.squeeze(Y_test)
+    MSE.append(np.mean(np.square(Y_pred - Y_test)))
+    Cor.append(np.corrcoef(Y_pred,Y_test)[0,1])
+  
+    
+print(f'Mean Square Error: {np.mean(MSE)}, Cor: {np.mean(Cor)}')
 
 
 
 
-# Use the forest's predict method on the test data
-predictions = rf.predict(test_features)
-# Calculate the absolute errors
-errors = abs(predictions - test_labels)
-# Print out the mean absolute error (mae)
-print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
+
+
+# obtain n_estimators
+# n_estimators = [1, 2, 4, 8, 16, 32, 64, 100, 200]
+# train_results = []
+# test_results = []
+# for estimator in n_estimators:
+#    rf = RandomForestClassifier(n_estimators=estimator, n_jobs=-1)
+#    rf.fit(x_train, y_train)
+#    train_pred = rf.predict(x_train)
+#    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
+#    roc_auc = auc(false_positive_rate, true_positive_rate)
+#    train_results.append(roc_auc)
+#    y_pred = rf.predict(x_test)
+#    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
+#    roc_auc = auc(false_positive_rate, true_positive_rate)
+#    test_results.append(roc_auc)
+# from matplotlib.legend_handler import HandlerLine2D
+# line1, = plt.plot(n_estimators, train_results, ‘b’, label=”Train AUC”)
+# line2, = plt.plot(n_estimators, test_results, ‘r’, label=”Test AUC”)
+# plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+# plt.ylabel(‘AUC score’)
+# plt.xlabel(‘n_estimators’)
+# plt.show()
 
 
 
 
+# ## obtain max_depth
 
-# Calculate mean absolute percentage error (MAPE)
-mape = 100 * (errors / test_labels)
-# Calculate and display accuracy
-accuracy = 100 - np.mean(mape)
-print('Accuracy:', round(accuracy, 2), '%.')
-
-
+# max_depths = np.linspace(1, 32, 32, endpoint=True)
+# train_results = []
+# test_results = []
+# for max_depth in max_depths:
+#    rf = RandomForestClassifier(max_depth=max_depth, n_jobs=-1)
+#    rf.fit(x_train, y_train)
+#    train_pred = rf.predict(x_train)
+#    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_train, train_pred)
+#    roc_auc = auc(false_positive_rate, true_positive_rate)
+#    train_results.append(roc_auc)
+#    y_pred = rf.predict(x_test)
+#    false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
+#    roc_auc = auc(false_positive_rate, true_positive_rate)
+#    test_results.append(roc_auc)
+# from matplotlib.legend_handler import HandlerLine2D
+# line1, = plt.plot(max_depths, train_results, ‘b’, label=”Train AUC”)
+# line2, = plt.plot(max_depths, test_results, ‘r’, label=”Test AUC”)
+# plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+# plt.ylabel(‘AUC score’)
+# plt.xlabel(‘Tree depth’)
+# plt.show()
 
 
 
@@ -132,9 +197,6 @@ print('Mean Absolute Error:', round(np.mean(errors), 2), 'degrees.')
 mape = np.mean(100 * (errors / test_labels))
 accuracy = 100 - mape
 print('Accuracy:', round(accuracy, 2), '%.')
-
-
-
 
 
 

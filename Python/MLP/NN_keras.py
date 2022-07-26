@@ -65,7 +65,7 @@ for i in range(num_repeat):
     
     
     input_size = X.shape[1]
-    hidden_size = [100,5]
+    hidden_size = [100,10]
     output_size = 1
     batch_size = 10
     test_split = .2
