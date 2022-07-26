@@ -2,10 +2,8 @@
 #os.chdir("Desktop/Codes/Cancer_DRP/Python/MTL_NN")
 
 import numpy as np
-
 import torch
 from torch import nn
-
 from torch.utils.data import DataLoader
 from Create_CustomDataset import CustomDataset
     

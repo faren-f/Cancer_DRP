@@ -76,56 +76,54 @@ print(f'Mean Square Error: {np.mean(MSE)}, Cor: {np.mean(Cor)}')
 
 
 
-### obtain n_estimators
-n_estimators = [180,190,200,210,220,230]
+### obtain n_estimators: n_estimators is good around 200
+# n_estimators = [180,190,200,210,220,230]
 
-Cor_train = []
-Cor_test = []
-for estimator in n_estimators:
-    model = RandomForestRegressor(n_estimators=estimator, n_jobs=-1)
-    model.fit(X_train, Y_train)
-    Y_train_pred = model.predict(X_train)
-    #MSE.append(np.mean(np.square(Y_train_pred - Y_train)))
-    Y_train = np.squeeze(Y_train)
-    Cor_train.append(np.corrcoef(Y_train_pred,Y_train)[0,1])
-    Y_pred = model.predict(X_test)
-    Y_test = np.squeeze(Y_test)
-    Cor_test.append(np.corrcoef(Y_pred,Y_test)[0,1])
+# Cor_train = []
+# Cor_test = []
+# for estimator in n_estimators:
+#     model = RandomForestRegressor(n_estimators=estimator, n_jobs=-1)
+#     model.fit(X_train, Y_train)
+#     Y_train_pred = model.predict(X_train)
+#     #MSE.append(np.mean(np.square(Y_train_pred - Y_train)))
+#     Y_train = np.squeeze(Y_train)
+#     Cor_train.append(np.corrcoef(Y_train_pred,Y_train)[0,1])
+#     Y_pred = model.predict(X_test)
+#     Y_test = np.squeeze(Y_test)
+#     Cor_test.append(np.corrcoef(Y_pred,Y_test)[0,1])
   
     
-#from matplotlib.legend_handler import HandlerLine2D
-line1 = plt.plot(n_estimators, Cor_train, 'b', label='Cor_train')
-line2 = plt.plot(n_estimators, Cor_test, 'r', label='Cor_test')
-#plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel('Cor')
-plt.xlabel('n_estimators')
-plt.show()
+# #from matplotlib.legend_handler import HandlerLine2D
+# line1 = plt.plot(n_estimators, Cor_train, 'b', label='Cor_train')
+# line2 = plt.plot(n_estimators, Cor_test, 'r', label='Cor_test')
+# #plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+# plt.ylabel('Cor')
+# plt.xlabel('n_estimators')
+# plt.show()
 
 
+### obtain max_depth: there is no specific differemces between different depths
 
+# max_depths = np.linspace(1, 32, 32, endpoint=True)
+# Cor_train = []
+# Cor_test = []
+# for max_depth in max_depths:
+#     model = RandomForestRegressor(max_depth=max_depth, n_jobs=-1)
+#     model.fit(X_train, Y_train)
+#     Y_train_pred = model.predict(X_train)
+#     Y_train = np.squeeze(Y_train)
+#     Cor_train.append(np.corrcoef(Y_train_pred,Y_train)[0,1])
+#     Y_pred = model.predict(X_test)
+#     Y_test = np.squeeze(Y_test)
+#     Cor_test.append(np.corrcoef(Y_pred,Y_test)[0,1])
 
-### obtain max_depth
-
-max_depths = np.linspace(1, 32, 32, endpoint=True)
-Cor_train = []
-Cor_test = []
-for max_depth in max_depths:
-    model = RandomForestRegressor(max_depth=max_depth, n_jobs=-1)
-    model.fit(X_train, Y_train)
-    Y_train_pred = model.predict(X_train)
-    Y_train = np.squeeze(Y_train)
-    Cor_train.append(np.corrcoef(Y_train_pred,Y_train)[0,1])
-    Y_pred = model.predict(X_test)
-    Y_test = np.squeeze(Y_test)
-    Cor_test.append(np.corrcoef(Y_pred,Y_test)[0,1])
-
-#from matplotlib.legend_handler import HandlerLine2D    
-line1 = plt.plot(max_depths, Cor_train, 'b', label='Cor_train')
-line2 = plt.plot(max_depths, Cor_test, 'r', label='Cor_test')
-#plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
-plt.ylabel('Cor')
-plt.xlabel('Tree depth')
-plt.show()
+# #from matplotlib.legend_handler import HandlerLine2D    
+# line1 = plt.plot(max_depths, Cor_train, 'b', label='Cor_train')
+# line2 = plt.plot(max_depths, Cor_test, 'r', label='Cor_test')
+# #plt.legend(handler_map={line1: HandlerLine2D(numpoints=2)})
+# plt.ylabel('Cor')
+# plt.xlabel('Tree depth')
+# plt.show()
     
 
 
