@@ -17,14 +17,14 @@ from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
 # load the dataset
-GE = pd.read_csv("Raw_Data/expresion_matrix.csv", header = 0, index_col=0, sep = ',' )
-sen = pd.read_csv("Raw_Data/sensitivity_matrix.csv", header= None, sep = ',')
+GE = pd.read_csv("Raw_data/expresion_matrix.csv", header = 0, index_col=0, sep = ',' )
+sen = pd.read_csv("Raw_data/sensitivity_matrix.csv", header= None, sep = ',')
 
 feature_list = list(GE.columns)
 
 GE = np.array(GE)
 sen = np.array(sen)
-sen = sen[:,324]
+sen = sen[:,10]
 
 Y = sen[np.where(~np.isnan(sen))].copy()
 X = GE[np.where(~np.isnan(sen))[0],:].copy()
@@ -32,8 +32,8 @@ Y = np.expand_dims(Y, axis = 1)
 
 # Normalization
 ss = StandardScaler()
-#X = ss.fit_transform(X)
-#Y = ss.fit_transform(Y)
+X = ss.fit_transform(X)
+Y = ss.fit_transform(Y)
 
 # define model
 ratio = 0.06

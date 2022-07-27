@@ -6,7 +6,7 @@ import sklearn as sk
 
 
 # load dataset
-root= 'Raw_Data_From_R/ENet'
+root= 'Raw_data2'
 
 path = os.path.join(root, 'GE.csv')
 GE = pd.read_csv(path, header = None, sep = ',' )

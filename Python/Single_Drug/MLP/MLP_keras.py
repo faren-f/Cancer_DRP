@@ -26,7 +26,7 @@ sen = pd.read_csv("Raw_Data/sensitivity_matrix.csv", header= None, sep = ',')
 
 GE = np.array(GE)
 sen = np.array(sen)
-sen = sen[:,324]
+sen = sen[:,10]
 
 
 Y = sen[np.where(~np.isnan(sen))].copy()
