@@ -5,10 +5,10 @@ library(tensorflow)
 library(corrplot)
 library(ggvis)
 library(caTools)
-setwd("~/Desktop/Cancer_DRP/R")
+setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
 ## Read data
-GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
-sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
+GE = readRDS("Raw_data/expresion_matrix.rds")
+sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 
 #a = apply(sen,2,function(x){return(cor(x,sen[,325],use="complete.obs"))})
@@ -19,25 +19,27 @@ sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
 ## Classifier
 i = 325
 #i=1429
-sen_each_drug = sen[,i]
-sen_each_drug = sen_each_drug[!is.na(sen[,i])]
-expr_each_drug = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
-expr_each_drug = scale(expr_each_drug)
-sen_each_drug = scale(sen_each_drug)
-#sen_each_drug = (sen_each_drug-min(sen_each_drug))/(max(sen_each_drug)-min(sen_each_drug))
+Y = sen[,i]
+Y = Y[!is.na(sen[,i])]
+X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug 
 
-Final_Cor = rep(0,5)
-MSE = rep(0,5)
-for (j in 1:5){
+#Normalization
+X = scale(X)
+Y = scale(Y)
+#Y = (Y-min(Y))/(max(Y)-min(Y))
+Rep = 5
+Final_Cor = rep(0,Rep)
+MSE = rep(0,Rep)
+for (j in 1:Rep){
   print(j)
   
   ## Split data into train & test
-  sample = sample.split(sen_each_drug, SplitRatio = .8)
+  sample = sample.split(Y, SplitRatio = .8)
   
-  Xtrain = subset(expr_each_drug, sample == TRUE)
-  Xtest  = subset(expr_each_drug, sample == FALSE)
-  Ytrain = subset(sen_each_drug, sample == TRUE)
-  Ytest  = subset(sen_each_drug, sample == FALSE)
+  Xtrain = subset(X, sample == TRUE)
+  Xtest  = subset(X, sample == FALSE)
+  Ytrain = subset(Y, sample == TRUE)
+  Ytest  = subset(Y, sample == FALSE)
   
   ###Model
   # Initialize a sequential model
@@ -88,7 +90,6 @@ for (j in 1:5){
   print(MSE)
   
 }
-#}
   
 print(mean(Final_Cor))
 #print(sd(Final_Cor))

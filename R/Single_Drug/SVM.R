@@ -2,14 +2,16 @@ rm(list = ls())
 library(e1071)
 require(caTools)
 library(ROCR)
+library(pROC)
 
 setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
 
 ## Read data
-GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
-sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
+GE = readRDS("Raw_data/expresion_matrix.rds")
+sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 # Remove cell lines with Na from sensitivity matrix and GE matrix
+i= 325
 Y = sen[,i]
 Y = Y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
@@ -25,51 +27,44 @@ X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug
 #X = X[,ind_Corr]
 
 # GE normalization
-#X_norm = scale(X)
-#X_norm = (sel_X-min(sel_X))/(max(sel_X)-min(sel_X))
-X_norm = X
+#X = scale(X)
+#X = (sel_X-min(sel_X))/(max(sel_X)-min(sel_X))
+
 
 # sensitivity normalization
-Y_norm = (Y-min(Y))/(max(Y)-min(Y))
+#Y = (Y-min(Y))/(max(Y)-min(Y))
 
 #Binarizing drug sensitivity into sensitive or resistance
 #1)
-# thr = 1.15
-# hist(Y,30)
-# abline(v =thr,col = "red")
-# Y = ifelse(Y>thr_target,1,0)
-# Y = as.factor(Y+1)
-
-#2)
-median_sen_mat = median(Y)
-Y = as.factor(ifelse (Y>median_sen_mat,1,2))
+hist(Y,30)
+thr = 0.6
+abline(v =thr,col = "red")
+Y = as.factor(ifelse(Y>thr,1,2))
+table(Y)
 
 
 ## Classifier
 ## Hyperparameters
 kernelParam = 0.08
-Rep = 10
-Result_AUC_Final = c()
+Rep = 1
 # From = 200
 # To = 200
 # Step = 1
 
-Final_Cor = rep(0,Rep)
-MSE = rep(0,Rep)
+AUC_Final = rep(0,Rep)
 # for (nFeat in seq(From,To,Step)) {
-#   Result_AUC = c()
-  
-for (j in 1:Rep){
-  print(j)
-  i=325
+AUC = rep(0,Rep)
+ACC = rep(0,Rep)  
+for (i in 1:Rep){
+  print(i)
 
   ## Split data into train & test
-  sample = sample.split(Y_norm, SplitRatio = .8)
+  sample = sample.split(Y, SplitRatio = .8)
   
-  Xtrain = subset(X_norm, sample == TRUE)
-  Xtest  = subset(X_norm, sample == FALSE)
-  Ytrain = subset(Y_norm, sample == TRUE)
-  Ytest  = subset(Y_norm, sample == FALSE)
+  Xtrain = subset(X, sample == TRUE)
+  Xtest  = subset(X, sample == FALSE)
+  Ytrain = subset(Y, sample == TRUE)
+  Ytest  = subset(Y, sample == FALSE)
   
   ## Internal Feature selection
   #1)corr with sen
@@ -105,41 +100,51 @@ for (j in 1:Rep){
   #y_train_resampled = y_train
   
   ## SVM with internal Feature selection
-  #model = svm(y = as.factor(y_train_resampled), x = X_train_resampled[,featureSet],kernel = "radial", gamma = kernelParam, scale = T)
-  #y_hat_i = predict(model, newdata = rbind(X_test[,featureSet]))
+  #model = svm(y = y_train_resampled, x = X_train_resampled[,featureSet],kernel = "radial", gamma = kernelParam, scale = T)
+  #Y_pred = predict(model, newdata = X_test[,featureSet])
   
   ## SVM without Feature selection
-  model = svm(y = as.factor(Ytrain), x = Xtrain, kernel = "radial", gamma = kernelParam, scale = F)
-  Y_pred = predict(model, newdata = rbind(X_test))
+  model = svm(y = Ytrain, x = Xtrain, kernel = "radial", gamma = kernelParam, scale = F)
+  Y_pred = predict(model, newdata = Xtest)
+  Y_pred  = as.numeric(Y_pred)
+  Ytest = as.numeric(Ytest)
   
-  #AC = sum((as.numeric(prediction)==1 & as.numeric(Ytest)==1) |
-  #(as.numeric(prediction)==2 & as.numeric(Ytest)==2))
-  #ACC = AC/length(Ytest)*100
+  #Computing accuracy
+  AC = sum((Y_pred==1 & Ytest==1) | (Y_pred==2 & Ytest==2))
+  ACC[i] = AC/length(Ytest)*100
 
-  pred = prediction(y_hat, y)
+  pred = prediction(Y_pred, Ytest)
   auc = performance(pred, measure = "auc")
+  AUC[i] = as.numeric(auc@y.values)
   
-  #auc = performance(pred, "tpr", "fpr")
-  
-  Result_AUC = c(Result_AUC, as.numeric(auc@y.values))
-  #plot(Result_AUC,
-  #avg= "threshold", colorize=TRUE, lwd= 3,
-  #main= "With ROCR you can produce standard plots\nlike ROC curves ...")
+  #ROC curve (box plot)
+  perf = performance(pred, "tpr", "fpr")
+  plot(perf, avg="threshold", spread.estimate="boxplot")
 
-  Final_Cor[j] = cor(Ytest,y_hat)
-  MSE[j] = mean((Ytest-y_hat)^2)
+  #ROC curve 
+  perf = performance(pred, "tpr", "fpr")
+  plot(perf, avg= "threshold", colorize=TRUE, lwd= 3,
+       main= "With ROCR you can produce standard plots\nlike ROC curves ...")
+  plot(perf, lty=3, col="grey78", add=TRUE)
   
-  print(Final_Cor)[j]
-  print(MSE)[j]
+  #Precision & Recall
+  perf <- performance(pred, "prec", "rec")
+  plot(perf, avg= "threshold", colorize=TRUE,
+       lwd= 3, main= "... Precision/Recall graphs ...")
+  plot(perf, lty=3, col="grey78", add=TRUE)
+  
+  #Sensitivity & Specificity
+  perf <- performance(pred, "sens", "spec")
+  plot(perf, avg= "threshold", colorize=TRUE,
+       lwd= 3, main="... Sensitivity/Specificity plots ...")
+  plot(perf, lty=3, col="grey78", add=TRUE)
+  
+  
+  perf <- performance(pred, "lift", "rpp")
+  plot(perf, avg= "threshold", colorize=TRUE,
+       lwd= 3, main= "... and Lift charts.")
+  plot(perf, lty=3, col="grey78", add=TRUE)
+  
+  
 }
-
-print(Final_Cor)
-#print(MSE)
-print(mean(Final_Cor))
-#print(sd(Final_Cor))
-#print(dim(X_norm))
-#print(mean(MSE))
-#plot(Final_Cor,MSE)
-
-
 
