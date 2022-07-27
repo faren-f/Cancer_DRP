@@ -3,7 +3,7 @@ rm(list = ls())
 library(randomForest)
 require(caTools)
 
-setwd("~/Desktop/Codes/Cancer_DRP/R")
+setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
 
 ## Read data
 GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
@@ -39,13 +39,13 @@ for (j in 1:20){
   #Corr = matrix(0,ncol(GE),ncol(sen))
   #max_cor = rep(0,ncol(sen))
   #for(i in 1:ncol(sen)){
-  sen_each_drug = sen[,i]
-  sen_each_drug = sen_each_drug[!is.na(sen[,i])]
+  sen_i = sen[,i]
+  sen_i = sen_i[!is.na(sen[,i])]
   expr_each_drug = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
-  Corr = cor(expr_each_drug,sen_each_drug)
+  Corr = cor(expr_each_drug,sen_i)
   
   ## Corr input & output
-    #Corr[,i] = c(cor(expr_each_drug,sen_each_drug))
+    #Corr[,i] = c(cor(expr_each_drug,sen_i))
     #max_cor[i] = max(Corr)  
     #hist(abs(Corr))  
   #}
@@ -57,31 +57,26 @@ for (j in 1:20){
   # 
     
   #ind_Corr = which(abs(Corr)> 0.2)
-  #sel_expr_each_drug = expr_each_drug[,ind_Corr]
-  #expr_each_drug_norm = scale(expr_each_drug)
-  expr_each_drug_norm = expr_each_drug
-  #num = sel_expr_each_drug-min(sel_expr_each_drug)
-  #denum = max(sel_expr_each_drug)-min(sel_expr_each_drug)
-  #expr_each_drug_norm = num/denum
+  #sel_GE_i = GE_i[,ind_Corr]
+  #GE_i_norm = scale(GE_i)
+  GE_i_norm = GE_i
+  #GE_i_norm = (sel_GE_i-min(sel_GE_i))/(max(sel_GE_i)-min(sel_GE_i))
   
   
   #sen/res
-  #median_sen_mat = median(sen_each_drug)
-  #sen_each_drug_binarized = as.factor(ifelse (sen_each_drug>median_sen_mat,1,2))
+  #median_sen_mat = median(sen_i)
+  #sen_i_binarized = as.factor(ifelse (sen_i>median_sen_mat,1,2))
   
   # sensitivity normalization
-  sen_each_drug_binarized = sen_each_drug
-  num = sen_each_drug_binarized-min(sen_each_drug_binarized)
-  denum = max(sen_each_drug_binarized)-min(sen_each_drug_binarized)
-  sen_each_drug_binarized_norm = num/denum
+  sen_i_norm = (sen_i-min(sen_i))/(max(sen_i)-min(sen_i))
   
   ## Split data into train & test
-  sample = sample.split(sen_each_drug_binarized, SplitRatio = .8)
+  sample = sample.split(sen_i_norm, SplitRatio = .8)
   
-  Xtrain = subset(expr_each_drug_norm, sample == TRUE)
-  Xtest  = subset(expr_each_drug_norm, sample == FALSE)
-  Ytrain = subset(sen_each_drug_binarized_norm, sample == TRUE)
-  Ytest  = subset(sen_each_drug_binarized_norm, sample == FALSE)
+  Xtrain = subset(GE_i_norm, sample == TRUE)
+  Xtest  = subset(GE_i_norm, sample == FALSE)
+  Ytrain = subset(sen_i_norm, sample == TRUE)
+  Ytest  = subset(sen_i_norm, sample == FALSE)
   
   RF = randomForest(y = Ytrain,x = Xtrain, ntree = 200,mtry = 100)
   y_hat = predict(RF, newdata=Xtest)
