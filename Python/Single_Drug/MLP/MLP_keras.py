@@ -18,15 +18,13 @@ from keras import regularizers
 from keras.layers.core import Dropout
 
 # load the dataset
-
-
 GE = pd.read_csv("Raw_Data/expresion_matrix.csv", header = 0, index_col=0, sep = ',' )
 sen = pd.read_csv("Raw_Data/sensitivity_matrix.csv", header= None, sep = ',')
 
 
 GE = np.array(GE)
 sen = np.array(sen)
-sen = sen[:,9]
+sen = sen[:,1]
 
 
 Y = sen[np.where(~np.isnan(sen))].copy()
@@ -74,7 +72,7 @@ for i in range(num_repeat):
     # define the keras model
     model = Sequential()
     model.add(Dense(hidden_size[0], input_dim=input_size, 
-                    kernel_regularizer=regularizers.L1L2(l1=1e-4, l2=0.4),
+                    #kernel_regularizer=regularizers.L1L2(l1=1e-4, l2=0.4),
                     activation='sigmoid'))
                     #,kernel_initializer='normal'))                
     model.add(Dense(hidden_size[1], activation='sigmoid'))
