@@ -16,7 +16,7 @@ Final_Cor = rep(0,20)
 mse_test = rep(0,20)
 
 for (j in 1:20){
-  i=5
+  i=325
   print(j)
   #Corr = matrix(0,ncol(GE),ncol(sen))
   #for(i in 1:ncol(sen)){
@@ -78,6 +78,6 @@ for (j in 1:20){
 }
 #}
 
-print(mean(mse_test))
+#print(mean(mse_test))
 print(mean(Final_Cor))
-print(sd(Final_Cor))
+#print(sd(Final_Cor))

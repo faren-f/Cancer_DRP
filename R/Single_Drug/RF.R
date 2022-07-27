@@ -1,5 +1,4 @@
 rm(list = ls())
-
 library(randomForest)
 require(caTools)
 
@@ -35,17 +34,20 @@ MSE = rep(0,20)
 
 for (j in 1:20){
   print(j)
-  i=1429
+  i=325
   #Corr = matrix(0,ncol(GE),ncol(sen))
   #max_cor = rep(0,ncol(sen))
   #for(i in 1:ncol(sen)){
-  sen_i = sen[,i]
-  sen_i = sen_i[!is.na(sen[,i])]
-  expr_each_drug = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
-  Corr = cor(expr_each_drug,sen_i)
+  Y = sen[,i]
+  Y = Y[!is.na(sen[,i])]
+  X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
+  Corr = cor(X,Y)
+  #high_corr = order(Corr,decreasing = TRUE)
+  #X = X[,high_corr[1:200]]
+
   
-  ## Corr input & output
-    #Corr[,i] = c(cor(expr_each_drug,sen_i))
+    ## Corr input & output
+    #Corr[,i] = c(cor(X,Y))
     #max_cor[i] = max(Corr)  
     #hist(abs(Corr))  
   #}
@@ -57,26 +59,26 @@ for (j in 1:20){
   # 
     
   #ind_Corr = which(abs(Corr)> 0.2)
-  #sel_GE_i = GE_i[,ind_Corr]
-  #GE_i_norm = scale(GE_i)
-  GE_i_norm = GE_i
-  #GE_i_norm = (sel_GE_i-min(sel_GE_i))/(max(sel_GE_i)-min(sel_GE_i))
+  #sel_X = X[,ind_Corr]
+  #X_norm = scale(X)
+  X_norm = X
+  #X_norm = (sel_X-min(sel_X))/(max(sel_X)-min(sel_X))
   
   
   #sen/res
-  #median_sen_mat = median(sen_i)
-  #sen_i_binarized = as.factor(ifelse (sen_i>median_sen_mat,1,2))
+  #median_sen_mat = median(Y)
+  #Y_binarized = as.factor(ifelse (Y>median_sen_mat,1,2))
   
   # sensitivity normalization
-  sen_i_norm = (sen_i-min(sen_i))/(max(sen_i)-min(sen_i))
+  Y_norm = (Y-min(Y))/(max(Y)-min(Y))
   
   ## Split data into train & test
-  sample = sample.split(sen_i_norm, SplitRatio = .8)
+  sample = sample.split(Y_norm, SplitRatio = .8)
   
-  Xtrain = subset(GE_i_norm, sample == TRUE)
-  Xtest  = subset(GE_i_norm, sample == FALSE)
-  Ytrain = subset(sen_i_norm, sample == TRUE)
-  Ytest  = subset(sen_i_norm, sample == FALSE)
+  Xtrain = subset(X_norm, sample == TRUE)
+  Xtest  = subset(X_norm, sample == FALSE)
+  Ytrain = subset(Y_norm, sample == TRUE)
+  Ytest  = subset(Y_norm, sample == FALSE)
   
   RF = randomForest(y = Ytrain,x = Xtrain, ntree = 200,mtry = 100)
   y_hat = predict(RF, newdata=Xtest)
@@ -92,11 +94,11 @@ for (j in 1:20){
 }
 #}
 print(Final_Cor)
-print(MSE)
+#print(MSE)
 print(mean(Final_Cor))
-print(sd(Final_Cor))
-#print(dim(expr_each_drug_norm))
-print(mean(MSE))
+#print(sd(Final_Cor))
+#print(dim(X_norm))
+#print(mean(MSE))
 #plot(Final_Cor,MSE)
 
 
