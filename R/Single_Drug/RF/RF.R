@@ -2,11 +2,11 @@ rm(list = ls())
 library(randomForest)
 require(caTools)
 
-setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
+setwd("~/Desktop/Cancer_DRP/R/Single_Drug/RF/")
 
 ## Read data
-GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
-sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
+GE = readRDS("Raw_data/expresion_matrix.rds")
+sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 ## Pre Processing
 #Remove Genes with Low Median

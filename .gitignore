@@ -31,3 +31,4 @@ R/Data/Processed_Data/.Rhistory
 R/All_Data/Drug_Feature_Data/CID-SMILES
 R/All_Data/Processed_Data/.Rhistory
 R/Prepare_Data/Processed_Data/.Rhistory
+*.log
