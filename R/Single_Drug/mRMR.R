@@ -7,17 +7,16 @@ GE = readRDS("Raw_data/expresion_matrix.rds")
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 i=325
-Y = sen[,i]
+Y = sen[1:6,i]
 Y = Y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
 
 #Corr = cor(X,Y)
 #high_corr = order(Corr,decreasing = TRUE)
 #X = X[,high_corr[1:5]]
-X = X[,1:5]
+X = X[1:6,1:8]
 
-
-cor_xy = apply(X,2,function(x){return(abs(cor(Y,x)))})
+cor_xy = abs(cor(X,Y))
 Cor_xx = abs(cor(X,X))
 
 cor_xy_orders = order(cor_xy, decreasing = TRUE)
