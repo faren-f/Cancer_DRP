@@ -1,20 +1,21 @@
 rm(list=ls())
 
 setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
+library(infotheo)
 
 ## Read data
 GE = readRDS("Raw_data/expresion_matrix.rds")
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 i=325
-Y = sen[1:6,i]
+Y = sen[,i]
 Y = Y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
 
 #Corr = cor(X,Y)
 #high_corr = order(Corr,decreasing = TRUE)
 #X = X[,high_corr[1:5]]
-X = X[1:6,1:8]
+X = X[,1:8]
 
 cor_xy = abs(cor(X,Y))
 Cor_xx = abs(cor(X,X))
