@@ -8,7 +8,8 @@ library(igraph)
 ##### Load Data
 GE = readRDS("Raw_data/expresion_matrix.rds")
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
-string_db <- STRINGdb$new( version="11.5", species=9606, score_threshold=200, 
+string_db = STRINGdb$new( version="11.5", species=9606, score_threshold=200, 
                            input_directory="", protocol="http")
 
-full.graph <- string_db$get_graph()
+full_graph = string_db$get_graph()
+edge_list = as_edgelist(full_graph)
