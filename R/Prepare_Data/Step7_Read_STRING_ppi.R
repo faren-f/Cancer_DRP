@@ -1,5 +1,6 @@
-rm(list=(ls))
+rm(list=ls())
 
+library(biomaRt)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/ppi_Raw_data/")
 
 #Read Full graph
@@ -8,6 +9,9 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/ppi_Raw_data/")
 
 protein_links = read.delim2("9606.protein.links.v11.5.txt", header = TRUE, sep = " ")
 protein_info = read.delim2("9606.protein.info.v11.5.txt", header = TRUE, sep = "\t",quote="")
+
+# Reduce ppi links to select links with scores more than e.g. 900
+#protein_links_reduced = protein_links[protein_links$score>900,]
 
 #2) STRINGdb package;
 # library(STRINGdb)
@@ -42,5 +46,27 @@ protein_info = read.delim2("9606.protein.info.v11.5.txt", header = TRUE, sep = "
 #              values =  myValues, mart = ensembl)
 
 
+mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+
+peptide_id <- ppi_peptide_id$node1
+genes = getBM(filters= "ensembl_peptide_id", attributes= c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol"),
+              values=peptide_id , mart= mart)
+
+colnames(genes) = c("peptide_id_1","gene_id_1","gene_name_1")
+ppi = merge(ppi, genes, by.x="node1", by.y="peptide_id_1", all=FALSE)
+
+peptide_id <- ppi_peptide_id$node2
+genes = getBM(filters= "ensembl_peptide_id", attributes= c("ensembl_peptide_id","ensembl_gene_id","hgnc_symbol"),
+              values=peptide_id , mart= mart)
+
+colnames(genes) = c("peptide_id_2","gene_id_2","gene_name_2")
+ppi = merge(ppi, genes, by.x="node2", by.y="peptide_id_2", all=FALSE)
+
+ppi = ppi[,c(4,6,5,7)]
+colnames(ppi) = c("gene_id_1","gene_id_2","gene_name_1","gene_neme_2")
+ppi = ppi[!ppi$gene_id_1%in%"",]
+ppi = ppi[!ppi$gene_id_2%in%"",]
+
+saveRDS(ppi, "ppi_gene_900.rds")
 
 
