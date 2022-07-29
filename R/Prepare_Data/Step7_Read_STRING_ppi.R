@@ -57,6 +57,15 @@ res2 = getBM(attributes =  myAttributes, filters =  myFilter,
 #saveRDS(res2,"res2.rds")
 res1 = readRDS("res1.rds")
 res2 = readRDS("res2.rds")
+ 
+
+v = unique(protein_links$protein1)
+f = unique(protein_links$protein2)
+length(intersect(protein_links$protein1,protein_links$protein1))
+
+
+
+
 
 p = merge(protein_links, res1, by.x="protein1", by.y="ensembl_peptide_id", all=FALSE)
 p = merge(protein_links, res2, by.x="protein2", by.y="ensembl_peptide_id", all=FALSE)
