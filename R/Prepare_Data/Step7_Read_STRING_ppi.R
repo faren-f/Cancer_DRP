@@ -7,8 +7,6 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/ppi_Raw_data/")
 #1) SRTING website(Download>>Homo sapiens>>protein network data (full network, scored links between proteins))
 # Data from SRTING website is new version and compeleted than data that exist in STRINGdb package
 
-
-
 protein_links = read.delim2("9606.protein.links.v11.5.txt", header = TRUE, sep = " ")
 protein_info = read.delim2("9606.protein.info.v11.5.txt", header = TRUE, sep = "\t",quote="")
 
@@ -23,6 +21,12 @@ colname_2 = sapply(col2, '[[', 2)
 protein_links$protein1 = colname_1
 protein_links$protein2 = colname_2
 
+rm(col1)
+rm(col2)
+rm(colname_1)
+rm(colname_2)
+
+###############################3
 #2) STRINGdb package;
 # library(STRINGdb)
 # library(igraph)
@@ -33,27 +37,31 @@ protein_links$protein2 = colname_2
 # edge_list = as_edgelist(full_graph)
 
 
-
 # Convert ENSP to ENSG,... ------------------------------------------------
 
 ## Using biomaRt package
 ensembl = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 myFilter = "ensembl_peptide_id"
-myValues_1 = protein_links$protein1 
+myValues_1 = protein_links$protein1
 myAttributes = c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol")
 
 ## assemble and query the mart (for the first column of protein_links)
-res = getBM(attributes =  myAttributes, filters =  myFilter,
+res1 = getBM(attributes =  myAttributes, filters =  myFilter,
              values =  myValues_1, mart = ensembl)
-res1 = res
+
 ## assemble and query the mart (for the second column of protein_links)
 myValues_2 = protein_links$protein2 
 res2 = getBM(attributes =  myAttributes, filters =  myFilter,
             values =  myValues_2, mart = ensembl)
+#saveRDS(res1,"res1.rds")
+#saveRDS(res2,"res2.rds")
+res1 = readRDS("res1.rds")
+res2 = readRDS("res2.rds")
+
+p = merge(protein_links, res1, by.x="protein1", by.y="ensembl_peptide_id", all=FALSE)
+p = merge(protein_links, res2, by.x="protein2", by.y="ensembl_peptide_id", all=FALSE)
 
 
-colnames(res1) = c("peptide_id_1","gene_id_1","gene_name_1")
-colnames(res2) = c("peptide_id_2","gene_id_2","gene_name_2")
 
 
 
