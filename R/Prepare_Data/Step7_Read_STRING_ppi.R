@@ -3,15 +3,25 @@ rm(list=ls())
 library(biomaRt)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/ppi_Raw_data/")
 
-#Read Full graph
+# Read_ppi ----------------------------------------------------------------
 #1) SRTING website(Download>>Homo sapiens>>protein network data (full network, scored links between proteins))
 # Data from SRTING website is new version and compeleted than data that exist in STRINGdb package
+
+
 
 protein_links = read.delim2("9606.protein.links.v11.5.txt", header = TRUE, sep = " ")
 protein_info = read.delim2("9606.protein.info.v11.5.txt", header = TRUE, sep = "\t",quote="")
 
-# Reduce ppi links to select links with scores more than e.g. 900
+#Reduce ppi links to select links with scores more than e.g. 900
 #protein_links_reduced = protein_links[protein_links$score>900,]
+
+# Seperating 9606 from first part of the ENSPs in protein_links
+col1 = strsplit(protein_links$protein1, "[.]")
+colname_1 = sapply(col1, '[[', 2)
+col2 = strsplit(protein_links$protein2, "[.]")
+colname_2 = sapply(col2, '[[', 2)
+protein_links$protein1 = colname_1
+protein_links$protein2 = colname_2
 
 #2) STRINGdb package;
 # library(STRINGdb)
@@ -24,34 +34,34 @@ protein_info = read.delim2("9606.protein.info.v11.5.txt", header = TRUE, sep = "
 
 
 
+# Convert ENSP to ENSG,... ------------------------------------------------
+
+## Using biomaRt package
+ensembl = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
+myFilter = "ensembl_peptide_id"
+myValues_1 = protein_links$protein1 
+myAttributes = c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol")
+
+## assemble and query the mart (for the first column of protein_links)
+res = getBM(attributes =  myAttributes, filters =  myFilter,
+             values =  myValues_1, mart = ensembl)
+res1 = res
+## assemble and query the mart (for the second column of protein_links)
+myValues_2 = protein_links$protein2 
+res2 = getBM(attributes =  myAttributes, filters =  myFilter,
+            values =  myValues_2, mart = ensembl)
 
 
-
-
+colnames(res1) = c("peptide_id_1","gene_id_1","gene_name_1")
+colnames(res2) = c("peptide_id_2","gene_id_2","gene_name_2")
 
 
 
 #######change ids
-# ensembl = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
-# 
-# head(listFilters(ensembl), 3)             ## filters
-# myFilter <- "chromosome_name"
-# substr(filterOptions(myFilter, ensembl), 1, 50) ## return values
-# myValues <- c("21", "22")
-# head(listAttributes(ensembl), 3)          ## attributes
-# myAttributes <- c("ensembl_gene_id","chromosome_name")
-# 
-# ## assemble and query the mart
-# res <- getBM(attributes =  myAttributes, filters =  myFilter,
-#              values =  myValues, mart = ensembl)
-
-
 mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-
 peptide_id <- ppi_peptide_id$node1
 genes = getBM(filters= "ensembl_peptide_id", attributes= c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol"),
               values=peptide_id , mart= mart)
-
 colnames(genes) = c("peptide_id_1","gene_id_1","gene_name_1")
 ppi = merge(ppi, genes, by.x="node1", by.y="peptide_id_1", all=FALSE)
 
