@@ -13,7 +13,7 @@ library(igraph)
 library(pso)
 
 ##### Load Data
-load("Raw_data/GDSC_Expr_IC50_id.rds")
+load("Raw_data/GDSC/GDSC_Expr_IC50_id.rds")
 ppi = readRDS("Raw_data/ppi/ppi_gene_900.rds")
 
 Expr = data.frame(Expr)

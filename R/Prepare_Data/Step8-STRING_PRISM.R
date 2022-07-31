@@ -16,9 +16,13 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 ppi_edgelist = readRDS("ppi_data/Processed_data/ppi_EdgeList_compelete.rds")
 GE = readRDS("Processed_Data/expresion_matrix.rds")
 
+# Since length(intersect(ppi_edgelist$gene_symbol1,ppi_edgelist$gene_symbol2)) =
+#length(unique(ppi_edgelist$gene_symbol1)) = length(unique(ppi_edgelist$gene_symbol2)),
+# intersect_GE_ppi is obtained based on just (gene_symbol1)
+
 intersect_GE_ppi = intersect(colnames(GE),ppi_edgelist$gene_symbol1)
 GE = GE[,intersect_GE_ppi]
-ppi_edgelist = ppi_edgelist[ppi_edgelist$gene_symbol1 %in% intersect_GE_ppi,]
+ppi_edgelist_r = ppi_edgelist[ppi_edgelist$gene_symbol1 %in% intersect_GE_ppi,]
 
 saveRDS(ppi_edgelist,"ppi_data/Processed_data/ppi_EdgeList_compelete_PRISM.rds")
 saveRDS(GE,"ppi_data/Processed_data/expresion_matrix_ppi.rds")
