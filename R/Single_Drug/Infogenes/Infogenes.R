@@ -45,11 +45,9 @@ for (drugi in 1:1) {
   sen_i = as.matrix(sen[-NA_indx,drugi])
   
   ### Normalization
-  Expr_i_norm = scale(Expr_i,center = apply(Expr_i,2,mean),
-                      scale = apply(Expr_i,2,sd))  
+  Expr_i_norm = scale(Expr_i) 
   
-  sen_i_norm = scale(sen_i,center = apply(sen_i,2,mean,na.rm = TRUE), 
-                     scale = apply(sen_i,2,sd,na.rm = TRUE))
+  sen_i_norm = scale(sen_i)
   
   ## Correlation between genes and IC50s
   Corr = abs(apply(Expr_i_norm,2, function(X){return(cor(X,sen_i_norm))}))
