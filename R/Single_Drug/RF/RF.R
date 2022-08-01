@@ -81,13 +81,13 @@ for (j in 1:20){
   Ytest  = subset(Y_norm, sample == FALSE)
   
   RF = randomForest(y = Ytrain,x = Xtrain, ntree = 200,mtry = 100)
-  y_hat = predict(RF, newdata=Xtest)
+  y_pred = predict(RF, newdata=Xtest)
   #AC = sum((as.numeric(prediction)==1 & as.numeric(Ytest)==1) |
              #(as.numeric(prediction)==2 & as.numeric(Ytest)==2))
   #ACC = AC/length(Ytest)*100
   
-  Final_Cor[j] = cor(Ytest,y_hat)
-  MSE[j] = mean((Ytest-y_hat)^2)
+  Final_Cor[j] = cor(Ytest,y_pred)
+  MSE[j] = mean((Ytest-y_pred)^2)
   
   print(Final_Cor)[j]
   print(MSE)[j]

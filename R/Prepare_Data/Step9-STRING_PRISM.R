@@ -27,8 +27,9 @@ ppi_edgelist = ppi_edgelist[!is.na(ppi_edgelist$gene_symbol2),]
 
 intersect_GE_ppi = intersect(colnames(GE),ppi_edgelist$gene_symbol1)
 GE = GE[,intersect_GE_ppi]
-ppi_edgelist_r = ppi_edgelist[ppi_edgelist$gene_symbol1 %in% intersect_GE_ppi,]
+ppi_edgelist = ppi_edgelist[ppi_edgelist$gene_symbol1 %in% intersect_GE_ppi,]
+ppi_edgelist = ppi_edgelist[ppi_edgelist$gene_symbol2 %in% intersect_GE_ppi,]
 
 saveRDS(ppi_edgelist,"ppi_data/Processed_data/ppi_EdgeList_compelete_PRISM.rds")
-saveRDS(GE,"ppi_data/Processed_data/expresion_matrix_ppi.rds")
+saveRDS(GE,"ppi_data/Processed_data/expresion_matrix_PRISM_ppi.rds")
 
