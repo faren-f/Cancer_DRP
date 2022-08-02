@@ -32,9 +32,11 @@ sen = readRDS("Raw_data/sensitivity_matrix.rds")
 Final_Cor = rep(0,20)
 MSE = rep(0,20)
 
-for (j in 1:20){
+for (j in 1:5){
   print(j)
-  i=325
+  #i = 541
+  i = 265
+  #i = 325
   #Corr = matrix(0,ncol(GE),ncol(sen))
   #max_cor = rep(0,ncol(sen))
   #for(i in 1:ncol(sen)){
@@ -42,8 +44,8 @@ for (j in 1:20){
   Y = Y[!is.na(sen[,i])]
   X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
   Corr = cor(X,Y)
-  #high_corr = order(Corr,decreasing = TRUE)
-  #X = X[,high_corr[1:200]]
+  high_corr = order(Corr,decreasing = TRUE)
+  X = X[,high_corr[1:200]]
 
   
     ## Corr input & output
@@ -60,8 +62,8 @@ for (j in 1:20){
     
   #ind_Corr = which(abs(Corr)> 0.2)
   #sel_X = X[,ind_Corr]
-  #X_norm = scale(X)
-  X_norm = X
+  X_norm = scale(X)
+  #X_norm = X
   #X_norm = (sel_X-min(sel_X))/(max(sel_X)-min(sel_X))
   
   
@@ -70,8 +72,8 @@ for (j in 1:20){
   #Y_binarized = as.factor(ifelse (Y>median_sen_mat,1,2))
   
   # sensitivity normalization
-  Y_norm = (Y-min(Y))/(max(Y)-min(Y))
-  
+  #Y_norm = (Y-min(Y))/(max(Y)-min(Y))
+  Y_norm = scale(Y)
   ## Split data into train & test
   sample = sample.split(Y_norm, SplitRatio = .8)
   
@@ -79,6 +81,9 @@ for (j in 1:20){
   Xtest  = subset(X_norm, sample == FALSE)
   Ytrain = subset(Y_norm, sample == TRUE)
   Ytest  = subset(Y_norm, sample == FALSE)
+  
+  Ytrain = as.vector(Ytrain)
+  Ytest = as.vector(Ytest)
   
   RF = randomForest(y = Ytrain,x = Xtrain, ntree = 200,mtry = 100)
   y_pred = predict(RF, newdata=Xtest)

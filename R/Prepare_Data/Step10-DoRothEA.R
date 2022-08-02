@@ -2,16 +2,26 @@ rm(list=ls())
 
 require(caTools)
 library(randomForest)
-
+library(dorothea)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 GE = readRDS("Processed_Data/expresion_matrix.rds")
 sen = readRDS("Processed_Data/sensitivity_matrix.rds")
 
+i = 325                            # drug number
+GE = GE[!is.na(sen[,i]),]
+sen_i = sen[!is.na(sen[,i]),i]
+
+# Finding differentially expresed genes
+Cor_GE_sen = apply(GE,2,function(x){return(abs(cor(x,sen_i)))})
+idx_Cor = order(Cor_GE_sen,decreasing = TRUE)
+
+GE = GE[,1:200]
+GE = t(GE)              # input: rows are genes and columns are cell lines 
+
 # Finding transcription activities using dorothea
 data(dorothea_hs, package = "dorothea")
 
-GE = t(GE)              # input: rows are genes and columns are cell lines 
 tf_activities <- run_viper(GE, dorothea_hs,
                            options =  list(method = "scale", minsize = 4,
                                            eset.filter = FALSE, cores = 1,
@@ -20,13 +30,10 @@ tf_activities <- run_viper(GE, dorothea_hs,
 TF = t(tf_activities)
 
 
-i = 9                            # drug number
-X = TF[!is.na(sen[,i]),]
-y = sen[!is.na(sen[,i]),i]
 
 # Normalization
-X = scale(X)
-y = scale(y)
+X = scale(TF)
+y = scale(sen_i)
 Rep = 10
 MSE = rep(0,Rep)
 Corr = rep(0,Rep)
