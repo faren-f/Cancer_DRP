@@ -1,23 +1,21 @@
 rm(list = ls())
-setwd("~/Desktop/Codes/Cancer_DRP/R/")
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 # Library -----------------------------------------------------------------
 library('rtracklayer')
 library(ggplot2)
 # Read Data ---------------------------------------------------------------
-cellline_info = read.csv("Data/PRISM_Raw_Dataset/Secondary/secondary-screen-cell-line-info.csv")
+cellline_info = read.csv("PRISM_Raw_data/Secondary/secondary-screen-cell-line-info.csv")
 
-response = read.csv("Data/PRISM_Raw_Dataset/Secondary/secondary-screen-dose-response-curve-parameters.csv")
+response = read.csv("PRISM_Raw_data/Secondary/secondary-screen-dose-response-curve-parameters.csv")
 
-RNAseq = read.table("Data/PRISM_Raw_Dataset/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
+RNAseq = read.table("PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
                     header = TRUE, check.names = FALSE)
 
-#RNAseq = read.table("Data/PRISM_Raw_Dataset/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
+#RNAseq = read.table("PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
                      #skip = 2, header = TRUE, sep = "\t")
                   
-
-gene_transfer = import("Data/PRISM_Raw_Dataset/Expression/RNA_seq/gencode.v19.genes.v7_model.patched_contigs.gtf.gz")
-
+gene_transfer = import("PRISM_Raw_data/Expression/RNA_seq/gencode.v19.genes.v7_model.patched_contigs.gtf.gz")
 gene_transfer = data.frame(gene_transfer)
 
 # Pre-processing ----------------------------------------------------------
@@ -41,6 +39,8 @@ expr = cbind(RNAseq[,1],expr)
 
 ## Remove expressions with low mean 
 mean_expr = apply(expr[,-1], 1, mean)
+hist(mean_expr,100)
+abline(v = 0.02, col ="red")
 expr = expr[mean_expr > 1,]
 
 ### Depict Figure 2.A
@@ -51,7 +51,9 @@ expr = expr[mean_expr > 1,]
 
 ## Remove expressions with low std 
 sd_expr = apply(expr[,-1], 1, sd)
-expr = expr[sd_expr > 0.5,]
+hist(sd_expr,100, xlim=c(0,2))
+abline(v = 0.45, col ="red")
+expr = expr[sd_expr > 0.45,]
 
 ### Depict Figure 2.B
 #sd_expr = sd_expr[sd_expr>0.5]
@@ -109,15 +111,9 @@ expr = expr[,intersect_gene_id]
 colnames(expr) = gene_transfer1[gene_transfer1$gene_id %in% intersect_gene_id,2]
 
 
-# Expression matrix normalization
-### z_score normalization
-expr_norm = scale(expr)
-### min-max normalization
-#expr_norm_2 = apply(expr,2, function(x){return((x-min(x))/(max(x)-min(x)))})
-
 #'@Build_response_matrix_[sample*Drug]..........................................
 
-cell_id = rownames(expr_norm)
+cell_id = rownames(expr)
 drug_name = unique(response$name)
 #sen = matrix(0,length(cell_id),length(drug_name))
 #rownames(sen) = cell_id
@@ -143,12 +139,8 @@ drug_name = unique(response$name)
 #     
 #     }
 # }
-#saveRDS(sen, file = "Processed_Data/sensitivity_matrix.rds")
-sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
-## Sensitivity matrix normalization
-#sen_norm = scale(sen)
-#mean_sen_norm = apply(sen_norm,2,function(x){mean(x,na.rm=TRUE)})
-#hist(mean_sen_norm)
+#saveRDS(sen, file = "Processed_Data/Step1/sensitivity_matrix.rds")
+sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
 
 #### Visualization; just to check the distribution of means and standard deviation across samples and drugs
 dist_mean_sample = apply(sen,1,function(x){mean(x,na.rm =TRUE)})
@@ -165,9 +157,8 @@ hist(dist_sd_drug)
 
 # Save Data ---------------------------------------------------------------
 ## 1) sen matrix is saved in line 115 without normalization
-saveRDS(expr, file = "Data/Processed_Data/expresion_matrix.rds")
-write.table(expr, file = "Data/Processed_Data/expresion_matrix.csv",
+saveRDS(expr, file = "Processed_Data/Step1/expresion_matrix.rds")
+write.table(expr, file = "Processed_Data/Step1/expresion_matrix.csv",
             row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
-saveRDS(expr_norm, file = "Data/Processed_Data/expresion_normalized_matrix.rds")
-saveRDS(gene_transfer1, file = "Data/Processed_Data/gene_transfer.rds")
-w = read.csv("Data/Processed_Data/expresion_matrix.csv")
+
+saveRDS(gene_transfer1, file = "Processed_Data/Step1/gene_transfer.rds")
