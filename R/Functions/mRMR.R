@@ -1,9 +1,10 @@
 
-#                  Created on Thu Jul 28 16:16:48 2022
+#                  Created on Thu Jul 28 16:16 2022
 
 #                     @author: Farzaneh Firoozbakht
+#                   Email: faren.firoozbakht@gmail.com
 
-# Discription: This function find features that have highest corelation with drug sensitivity 
+# Description: This function find features that have highest corelation with drug sensitivity 
 # while they have lowest correlation with other previously selected features.
 
 

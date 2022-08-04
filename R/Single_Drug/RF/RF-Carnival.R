@@ -1,23 +1,8 @@
 rm(list=ls())
 
 library(CARNIVAL)
-library(readr)
 library(dplyr)
-library(lpSolve)
-library(stringr)
-library(igraph)
 library(tibble)
-library(tidyr)
-library(rjson)
-library(rmarkdown)
-library(RefManageR)
-library(BiocStyle)
-library(covr)
-library(knitr)
-library(testthat)
-library(sessioninfo)
-
-
 library(dorothea)
 library(OmnipathR)
 
@@ -36,7 +21,7 @@ sen_i = sen[!is.na(sen[,i]),i]
 Cor_GE_sen = apply(GE,2,function(x){return(abs(cor(x,sen_i)))})
 idx_Cor = order(Cor_GE_sen, decreasing = TRUE)
 
-GE = GE[,1:200]
+GE = GE[,1:600]
 GE = t(GE)              # input: rows are genes and columns are cell lines 
 
 # Finding transcription activities using dorothea
@@ -47,36 +32,45 @@ tf_activities <- run_viper(GE, dorothea_hs,
                                            eset.filter = FALSE, cores = 1,
                                            verbose = FALSE))
 TFs = rownames(tf_activities)
-measurements = rep(1, length(TFs))
-names(measurements) = TFs
+
 
 
 # Download protein-protein interactions
 interactions = import_omnipath_interactions() %>% as_tibble()
 net = interactions[,c(3,6,4)]
 
+a = mutate(net,in_OP_source = net$source_genesymbol %in% TFs)
+a = mutate(a,in_OP_target = a$target_genesymbol %in% TFs)
+net = net[which(a$in_OP_source&a$in_OP_target),]
 colnames(net) = c("source","interaction","target")
+
+s = unique(c(net$source,net$target))
+TFs = intersect(TFs,s)
+
 
 n = replace(net$interaction, net$interaction==0,-1)
 n = ifelse(net$interaction==0,-1,1)
 net[,2]=n
 
+#drug_targets = c("ABL1","SRC","EPHA2","YES1","KITLG")
+#perturbations = rep(1,length(drug_targets))
+#names(perturbations) = drug_targets
+
+
+measurements = rep(1, length(TFs))
+names(measurements) = TFs
+
 priorKnowledgeNetwork = net
 
-drug_targets = c("ABL1","SRC","EPHA2","YES1","KITLG")
-perturbations = rep(1,length(drug_targets))
-names(perturbations) = drug_targets
 
-
-
-runCARNIVAL(
-  inputObj = perturbations,
+res = runCARNIVAL(
+  inputObj = NULL,
   measObj = measurements,
   netObj = priorKnowledgeNetwork,
   weightObj = NULL,
-  solverPath = "/Users/faren/",
+  solverPath = "/Users/faren/Softwares/CPLEX_Studio_Community221/cplex/bin/x86-64_osx/cplex",
   solver = "cplex",
-  timelimit = 3600,
+  timelimit = 7200,
   mipGAP = 0.05,
   poolrelGAP = 1e-04,
   limitPop = 500,
@@ -92,7 +86,34 @@ runCARNIVAL(
   dir_name = getwd()
 )
 
-#https://github.com/saezlab/CARNIVAL/issues/51
+
+res$weightedSIF ##see @return
+res$nodesAttributes ## see @return
+res$sifAll ## see @return
+res3attributesAll ## see @return
+
+
+
+
+
+
+load(file = system.file("toy_perturbations_ex1.RData",
+                        package="CARNIVAL"))
+load(file = system.file("toy_measurements_ex1.RData",
+                        package="CARNIVAL"))
+load(file = system.file("toy_network_ex1.RData",
+                        package="CARNIVAL"))
+
+res3 = runCARNIVAL(inputObj = toy_perturbations_ex1,
+                   measObj = toy_measurements_ex1,
+                   netObj = toy_network_ex1,
+                   solverPath = "/Users/faren/Softwares/CPLEX_Studio_Community221/cplex/bin/x86-64_osx/cplex",
+                   solver = 'cplex')
+
+res3$weightedSIF ##see @return
+res3$nodesAttributes ## see @return
+res3$sifAll ## see @return
+res3$attributesAll ## see @return
 
 
 
@@ -101,16 +122,6 @@ runCARNIVAL(
 
 
 
-
-runVanillaCarnival(
-  perturbations,
-  measurements,
-  priorKnowledgeNetwork,
-  weights = NULL,
-  carnivalOptions = defaultLpSolveCarnivalOptions()
-)
-
-checkCarnivalOptions(carnivalOptions)
 
 
 

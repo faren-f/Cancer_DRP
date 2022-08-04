@@ -34,3 +34,7 @@ R/Prepare_Data/Processed_Data/.Rhistory
 *.log
 R/Single_Drug/Infogenes/.Rhistory
 *.docx
+R/Single_Drug/RF/.Rhistory
+*.RData
+*.RData
+*.lp
