@@ -7,10 +7,10 @@ library(dorothea)
 library(OmnipathR)
 
 
-setwd("~/Desktop/Cancer_DRP/R/Single_Drug/RF/")
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
-GE = readRDS("Raw_data/expresion_matrix.rds")
-sen = readRDS("Raw_data/sensitivity_matrix.rds")
+GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
+sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
 
 
 i = 325                            # drug number
@@ -24,37 +24,42 @@ idx_Cor = order(Cor_GE_sen, decreasing = TRUE)
 GE = GE[,1:600]
 GE = t(GE)              # input: rows are genes and columns are cell lines 
 
-# Finding transcription activities using dorothea
+# Finding transcription activities using DoRothEA
 data(dorothea_hs, package = "dorothea")
-
 tf_activities <- run_viper(GE, dorothea_hs,
                            options =  list(method = "scale", minsize = 4,
                                            eset.filter = FALSE, cores = 1,
                                            verbose = FALSE))
 TFs = rownames(tf_activities)
 
-
-
 # Download protein-protein interactions
 interactions = import_omnipath_interactions() %>% as_tibble()
 net = interactions[,c(3,6,4)]
 
-a = mutate(net,in_OP_source = net$source_genesymbol %in% TFs)
-a = mutate(a,in_OP_target = a$target_genesymbol %in% TFs)
-net = net[which(a$in_OP_source&a$in_OP_target),]
+
+# Finding overlaps between genes that are available in Omnipath interaction and TFs
+net = net[net$source_genesymbol %in% TFs & net$target_genesymbol %in% TFs,]
 colnames(net) = c("source","interaction","target")
-
-s = unique(c(net$source,net$target))
-TFs = intersect(TFs,s)
-
-
 n = replace(net$interaction, net$interaction==0,-1)
 n = ifelse(net$interaction==0,-1,1)
 net[,2]=n
 
-#drug_targets = c("ABL1","SRC","EPHA2","YES1","KITLG")
-#perturbations = rep(1,length(drug_targets))
-#names(perturbations) = drug_targets
+TFs = intersect(TFs,unique(c(net$source,net$target)))
+
+
+# Drug targets
+drug_targets = c("ABL1","SRC","EPHA2","YES1","KITLG")
+drug_targets = intersect(drug_targets,TFs)
+
+
+perturbations = rep(1,length(drug_targets))
+names(perturbations) = drug_targets
+
+if (length(perturbations)==0){
+  perturbations = NULL
+}else{
+  perturbations = perturbations
+}
 
 
 measurements = rep(1, length(TFs))
@@ -62,9 +67,8 @@ names(measurements) = TFs
 
 priorKnowledgeNetwork = net
 
-
 res = runCARNIVAL(
-  inputObj = NULL,
+  inputObj = perturbations,
   measObj = measurements,
   netObj = priorKnowledgeNetwork,
   weightObj = NULL,
@@ -90,7 +94,7 @@ res = runCARNIVAL(
 res$weightedSIF ##see @return
 res$nodesAttributes ## see @return
 res$sifAll ## see @return
-res3attributesAll ## see @return
+res$attributesAll ## see @return
 
 
 
