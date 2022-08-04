@@ -6,12 +6,10 @@ library(tibble)
 library(dorothea)
 library(OmnipathR)
 
-
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
-
 
 i = 325                            # drug number
 GE = GE[!is.na(sen[,i]),]
@@ -36,7 +34,6 @@ TFs = rownames(tf_activities)
 interactions = import_omnipath_interactions() %>% as_tibble()
 net = interactions[,c(3,6,4)]
 
-
 # Finding overlaps between genes that are available in Omnipath interaction and TFs
 net = net[net$source_genesymbol %in% TFs & net$target_genesymbol %in% TFs,]
 colnames(net) = c("source","interaction","target")
@@ -46,11 +43,9 @@ net[,2]=n
 
 TFs = intersect(TFs,unique(c(net$source,net$target)))
 
-
 # Drug targets
 drug_targets = c("ABL1","SRC","EPHA2","YES1","KITLG")
 drug_targets = intersect(drug_targets,TFs)
-
 
 perturbations = rep(1,length(drug_targets))
 names(perturbations) = drug_targets
@@ -60,7 +55,6 @@ if (length(perturbations)==0){
 }else{
   perturbations = perturbations
 }
-
 
 measurements = rep(1, length(TFs))
 names(measurements) = TFs
@@ -90,15 +84,8 @@ res = runCARNIVAL(
   dir_name = getwd()
 )
 
-
 res$weightedSIF ##see @return
 res$nodesAttributes ## see @return
 res$sifAll ## see @return
 res$attributesAll ## see @return
-
-
-
-
-
-
 
