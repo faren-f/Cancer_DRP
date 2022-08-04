@@ -19,7 +19,7 @@ library(sessioninfo)
 library(dorothea)
 
 
-#-----------------------------------------------------------
+#Load Toy example of CARNIVAL-----------------------------------------------------------
 load(file = system.file("toy_perturbations_ex1.RData",
                         package="CARNIVAL"))
 load(file = system.file("toy_measurements_ex1.RData",

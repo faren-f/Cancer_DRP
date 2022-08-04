@@ -97,32 +97,4 @@ res3attributesAll ## see @return
 
 
 
-load(file = system.file("toy_perturbations_ex1.RData",
-                        package="CARNIVAL"))
-load(file = system.file("toy_measurements_ex1.RData",
-                        package="CARNIVAL"))
-load(file = system.file("toy_network_ex1.RData",
-                        package="CARNIVAL"))
-
-res3 = runCARNIVAL(inputObj = toy_perturbations_ex1,
-                   measObj = toy_measurements_ex1,
-                   netObj = toy_network_ex1,
-                   solverPath = "/Users/faren/Softwares/CPLEX_Studio_Community221/cplex/bin/x86-64_osx/cplex",
-                   solver = 'cplex')
-
-res3$weightedSIF ##see @return
-res3$nodesAttributes ## see @return
-res3$sifAll ## see @return
-res3$attributesAll ## see @return
-
-
-
-
-
-
-
-
-
-
-
 
