@@ -4,8 +4,8 @@
 #                     @author: Farzaneh Firoozbakht
 #                   Email: faren.firoozbakht@gmail.com
 
-# Description: This function receives train and test and Random Forest 
-# hyper parameters and compute output prediction
+# Description: This function receives train and test and hyper parameters of the model 
+# to compute output prediction using Random Forest 
 
 library(randomForest)
 

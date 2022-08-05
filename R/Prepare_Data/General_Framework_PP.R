@@ -16,15 +16,15 @@ dim(GE)
 dim(sen)
 
 #loop across drugs--------------------------------------
-N_itration = 6
+N_itration = 12
 
 N_drugs = ncol(sen)
 mean_mse = rep(0,N_drugs)
 sd_mse = rep(0,N_drugs)
 mean_corr = rep(0,N_drugs)
 sd_corr = rep(0,N_drugs)
-
-for (i in 1:N_drugs){
+i=325
+#for (i in 1:N_drugs){
   print("The drug number is:")
   print(i)
   
@@ -107,11 +107,11 @@ for (i in 1:N_drugs){
   sd_mse[i] = sd(Result[,1])
   mean_corr[i] = mean(Result[,2])
   sd_corr[i] = sd(Result[,2])
-}
+#}
 stopCluster(cl)
 Results = cbind(mean_mse = mean_mse,sd_mse = sd_mse,
                  mean_corr = mean_corr,sd_corr = sd_corr)
-#saveRDS(Results,"Result_All_Drugs.rds")
+#saveRDS(Results,"Processed_Data/Result_All_Drugs.rds")
 
 cor_sort = data.frame(sort(Results[,3],decreasing = TRUE))
 

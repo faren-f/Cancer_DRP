@@ -1,11 +1,8 @@
 import decoupler as dc
 import os
-os.chdir("Desktop/Codes/Cancer_DRP/Python/decouple_R")
-
+os.chdir("Desktop/Cancer_DRP/Python/decouple_R")
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from numpy import savetxt
+
 
 # all the methods in decouple r that we can get TFs from them
 dc.show_methods()
@@ -87,7 +84,13 @@ tf_acts_udt = dc.run_udt(mat=GE, net=dorothea, source='source',
 
 
 
-savetxt('Saved_data/node_attr_cellline_TF_.csv', tf_acts_, delimiter=',')
+
+tf_acts_gsva.to_csv("Saved_data/TF_gsva.csv", sep=',', columns=None,header=True)
+
+
+
+
+
 
 
 

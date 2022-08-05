@@ -4,7 +4,7 @@ library(caTools)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 source ("RandomForest_Func.R")
-
+source ("ENet_Func.R")
 #Read data--------------------------------------------------
 GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
@@ -12,28 +12,31 @@ dim(GE)
 dim(sen)
 
 #loop across drugs--------------------------------------
-Rep = 5
+Rep = 2
 
-mean_mse = rep(0,ncol(sen))
-sd_mse = rep(0,ncol(sen))
-mean_corr = rep(0,ncol(sen))
-sd_corr = rep(0,ncol(sen))
-for (i in 1:ncol(sen)){
-  print(i)
+#mean_mse = rep(0,ncol(sen))
+#sd_mse = rep(0,ncol(sen))
+#mean_corr = rep(0,ncol(sen))
+#sd_corr = rep(0,ncol(sen))
+Results = data.frame()
+for (i in 325:326){
   #i=325
+  print(i)
   X = GE[!is.na(sen[,i]),]
   dim(X)
   y = sen[!is.na(sen[,i]),i]
   length(y)
   
   Corr = cor(X,y)
-  high_corr = order(Corr,decreasing = TRUE)
-  X = X[,high_corr[1:200]]
-  
+  order_corr = order(Corr,decreasing = TRUE)
+  X = X[,order_corr[1:5000]]
+
   
   #loop across repeats
-  mse = rep(0,Rep)
-  corr = rep(0,Rep)
+  mse_RF = rep(0,Rep)
+  corr_RF = rep(0,Rep)
+  mse_ENet = rep(0,Rep)
+  corr_ENet = rep(0,Rep)
   for(j in 1:Rep){
     
     sample = sample.split(y, SplitRatio = .8)
@@ -71,22 +74,42 @@ for (i in 1:ncol(sen)){
     # Models
     ntree = 200
     mtry = 100
-    y_pred = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
+    
+    y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
                       Xtest = Xtest,ntree,mtry)
     
+    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
+                             Xtest = Xtest)
+      
     # y_pred re-normalization
-    y_pred = (y_pred*STD_y)+Mean_y
+    y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+    y_pred_ENet = (y_pred_ENet*STD_y)+Mean_y
+    
 
     # Evaluation
-    mse[j] = mean((ytest-y_pred)^2)
-    corr[j] = cor(ytest,y_pred)
-
-    print(mse)[j]
-    print(corr)[j]
+    mse_RF[j] = mean((ytest-y_pred_RF)^2)
+    corr_RF[j] = cor(ytest,y_pred_RF)
     
+    mse_ENet[j] = mean((ytest-y_pred_ENet)^2)
+    corr_ENet[j] = cor(ytest,y_pred_ENet)
+
   }
-  mean_mse[i] = mean(mse)
-  sd_mse = sd(mse)
-  mean_corr = mean(corr)
-  sd_corr = sd(corr)
+  Results = rbind(Results, cbind(mean_mse_RF = mean(mse_RF),
+                         sd_mse_RF = sd(mse_RF),
+                         mean_corr_RF = mean(corr_RF),
+                         sd_corr_RF = sd(corr_RF),
+                         mean_mse_ENet = mean(mse_ENet),
+                         sd_mse_ENet = sd(mse_ENet),
+                         mean_corr_ENet = mean(corr_ENet),
+                         sd_corr_ENet = sd(corr_ENet)))
+  
+  
+  # mean_mse[i] = mean(mse)
+  # sd_mse[i] = sd(mse)
+  # mean_corr[i] = mean(corr)
+  # sd_corr[i] = sd(corr)
+  
+  #print(mean_mse[i])
+  #print(mean_corr[i])
+  
 }

@@ -6,6 +6,10 @@ setwd("~/Desktop/Cancer_DRP/R/Single_Drug/RF/")
 
 ## Read data
 GE = readRDS("Raw_data/expresion_matrix.rds")
+TF = read.table("Raw_data/TF_gsea_1.csv",header = TRUE,sep = ",",row.names=1)
+
+GE = TF
+
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 ## Pre Processing
@@ -29,14 +33,14 @@ sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 
 ## Classifier
-Final_Cor = rep(0,20)
-MSE = rep(0,20)
+Rep = 10
+corr = rep(0,Rep)
+mse = rep(0,Rep)
 
-for (j in 1:5){
+for (j in 1:Rep){
   print(j)
-  #i = 541
-  i = 265
-  #i = 325
+  #i = 540
+  i = 325
   #Corr = matrix(0,ncol(GE),ncol(sen))
   #max_cor = rep(0,ncol(sen))
   #for(i in 1:ncol(sen)){
@@ -45,7 +49,7 @@ for (j in 1:5){
   X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug   
   Corr = cor(X,Y)
   high_corr = order(Corr,decreasing = TRUE)
-  X = X[,high_corr[1:200]]
+  #X = X[,high_corr[1:200]]
 
   
     ## Corr input & output
@@ -91,20 +95,19 @@ for (j in 1:5){
              #(as.numeric(prediction)==2 & as.numeric(Ytest)==2))
   #ACC = AC/length(Ytest)*100
   
-  Final_Cor[j] = cor(Ytest,y_pred)
-  MSE[j] = mean((Ytest-y_pred)^2)
+  corr[j] = cor(Ytest,y_pred)
+  mse[j] = mean((Ytest-y_pred)^2)
   
-  print(Final_Cor)[j]
-  print(MSE)[j]
+  print(corr)
+  #print(mse)
 }
 #}
-print(Final_Cor)
-#print(MSE)
-print(mean(Final_Cor))
-#print(sd(Final_Cor))
-#print(dim(X_norm))
-#print(mean(MSE))
-#plot(Final_Cor,MSE)
+#print(corr)
+#print(mse)
+print(mean(corr))
+#print(sd(corr))
+#print(mean(mse))
+#plot(corr,mse)
 
 
 
