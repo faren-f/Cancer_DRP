@@ -85,7 +85,7 @@ tf_acts_udt = dc.run_udt(mat=GE, net=dorothea, source='source',
 
 
 
-tf_acts_gsva.to_csv("Saved_data/TF_gsva.csv", sep=',', columns=None,header=True)
+tf_acts_gsea_3.to_csv("Saved_data/TF_gsea_3.csv", sep=',', columns=None,header=True)
 
 
 

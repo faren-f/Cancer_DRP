@@ -19,27 +19,27 @@ sen = readRDS("Raw_data/sensitivity_matrix.rds")
 ## Classifier
 i = 325
 #i=1429
-Y = sen[,i]
-Y = Y[!is.na(sen[,i])]
+y = sen[,i]
+y = y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug 
 
 #Normalization
 X = scale(X)
-Y = scale(Y)
-#Y = (Y-min(Y))/(max(Y)-min(Y))
+y = scale(y)
+#y = (y-min(y))/(max(y)-min(y))
 Rep = 5
-Final_Cor = rep(0,Rep)
-MSE = rep(0,Rep)
+corr = rep(0,Rep)
+mse = rep(0,Rep)
 for (j in 1:Rep){
   print(j)
   
   ## Split data into train & test
-  sample = sample.split(Y, SplitRatio = .8)
+  sample = sample.split(y, SplitRatio = .8)
   
   Xtrain = subset(X, sample == TRUE)
   Xtest  = subset(X, sample == FALSE)
-  Ytrain = subset(Y, sample == TRUE)
-  Ytest  = subset(Y, sample == FALSE)
+  ytrain = subset(y, sample == TRUE)
+  ytest  = subset(y, sample == FALSE)
   
   ###Model
   # Initialize a sequential model
@@ -75,25 +75,25 @@ for (j in 1:Rep){
   # Fit the model 
     model %>% fit(
     Xtrain, 
-    Ytrain, 
+    ytrain, 
     epochs = 20, 
     batch_size = 10, 
     validation_split = 0.2)
   
   # Evaluate on test data and labels
-  #score <- model %>% evaluate(Xtest, Ytest_cat, batch_size = 10)
-  y_hat <- model %>% predict(Xtest)
-  Final_Cor[j] = cor(Ytest,y_hat)
-  MSE[j] = mean((Ytest-y_hat)^2)
+  #score <- model %>% evaluate(Xtest, ytest_cat, batch_size = 10)
+  y_pred <- model %>% predict(Xtest)
+  corr[j] = cor(ytest,y_pred)
+  mse[j] = mean((ytest-y_pred)^2)
   
-  print(Final_Cor)
-  print(MSE)
+  print(corr)
+  print(mse)
   
 }
   
-print(mean(Final_Cor))
-#print(sd(Final_Cor))
-#print(mean(MSE))
+print(mean(corr))
+#print(sd(corr))
+#print(mean(mse))
   
   
   
