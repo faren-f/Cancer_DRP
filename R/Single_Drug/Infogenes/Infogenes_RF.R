@@ -26,8 +26,8 @@ y = sen[!is.na(sen[,i]),i]
 X = scale(X)
 y = scale(y)
 Rep = 10
-MSE = rep(0,Rep)
-Corr = rep(0,Rep)
+mse = rep(0,Rep)
+corr = rep(0,Rep)
 for (j in 1:Rep){
   
   ## Split data into train & test
@@ -82,18 +82,15 @@ for (j in 1:Rep){
   RF = randomForest(y = ytrain,x = Xtrain, ntree = 200,mtry = 100)
   y_pred = predict(RF, newdata=Xtest)
   
+  mse[j] = mean((ytest - y_pred)^2)
+  corr[j] = cor(ytest, y_pred, method = "pearson")
   
-  
-  
-  MSE[j] = mean((ytest - y_pred)^2)
-  Corr[j] = cor(ytest, y_pred, method = "pearson")
-  
-  #print(MSE[j])
-  print(Corr[j])
+  #print(mse[j])
+  print(corr[j])
   
   }
 
-Test_Result = data.frame(MSE = MSE, Cor = Corr)
+Test_Result = data.frame(mse = mse, corr = corr)
 print(apply(Test_Result,2,mean))
 #print(apply(Test_Result,2,sd))
 

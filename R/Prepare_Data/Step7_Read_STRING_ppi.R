@@ -14,15 +14,15 @@
 rm(list=ls())
 
 library(biomaRt)
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/ppi_data/")
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 # Read_ppi ----------------------------------------------------------------
 #1) SRTING website(Download>>Homo sapiens>>protein network data (full network, scored links between proteins))
 # Data from SRTING website is new version and compeleted than data that exist in STRINGdb package
 
-protein_links = read.delim2("Raw_data/9606.protein.links.v11.5.txt", 
+protein_links = read.delim2("Raw_data/ppi_Raw_data/9606.protein.links.v11.5.txt", 
                             header = TRUE, sep = " ")
-protein_info = read.delim2("Raw_data/9606.protein.info.v11.5.txt", 
+protein_info = read.delim2("Raw_data/ppi_Raw_data/9606.protein.info.v11.5.txt", 
                            header = TRUE, sep = "\t",quote="")
 
 #Reduce ppi links to select links with scores more than e.g. 900
@@ -62,8 +62,8 @@ myAttributes = c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol","entrezge
 # conv_table = getBM(attributes =  myAttributes, filters =  myFilter,
 #                    values =  myValues, mart = ensembl)
 
-#saveRDS(conv_table,"Processed_data/biomart_conversion_table.rds")
-conv_table = readRDS("Processed_data/biomart_conversion_table.rds")
+saveRDS(conv_table,"Processed_data/Step7/biomart_conversion_table.rds")
+conv_table = readRDS("Processed_data/Step7/biomart_conversion_table.rds")
 
 #deplicated_conv_table = which(duplicated(conv_table, incomparables=FALSE, fromLast=FALSE, by=key(conv_table)))
 
@@ -89,5 +89,5 @@ colnames(merge_all) = c("protein_id1","protein_id2",
                         "entrez_id1","entrez_id2",
                         "ppi_score")
 
-saveRDS(merge_all, "Processed_data/ppi_EdgeList_compelete.rds")
+saveRDS(merge_all, "Processed_data/Step7/ppi_EdgeList_compelete.rds")
 
