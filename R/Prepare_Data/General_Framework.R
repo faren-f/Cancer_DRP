@@ -1,7 +1,6 @@
 rm(list=ls())
 
 library(caTools)
-
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 source ("RandomForest_Func.R")
 source ("ENet_Func.R")
@@ -20,7 +19,7 @@ Rep = 2
 #mean_corr = rep(0,ncol(sen))
 #sd_corr = rep(0,ncol(sen))
 Results = data.frame()
-for (i in 325:326){
+for (i in 1432:1432){
   #i=325
   print(i)
   X = GE[!is.na(sen[,i]),]
@@ -30,7 +29,7 @@ for (i in 325:326){
   
   Corr = cor(X,y)
   order_corr = order(Corr,decreasing = TRUE)
-  X = X[,order_corr[1:5000]]
+  X = X[,order_corr[1:1000]]
   
   
   #loop across repeats
@@ -78,16 +77,15 @@ for (i in 325:326){
     ntree = 200
     mtry = 100
     
-    
-    
     y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
                              Xtest = Xtest,ntree,mtry)
+    
+    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
+                             Xtest = Xtest)
     
     y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,
                      Xtest = Xtest)
     
-    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
-                             Xtest = Xtest)
     
     # y_pred re-normalization
     y_pred_RF = (y_pred_RF*STD_y)+Mean_y
@@ -106,7 +104,7 @@ for (i in 325:326){
     corr_MLP[j] = cor(ytest,y_pred_MLP)
     
   }
-  Results = cbind(Results, rbind(mean_mse_RF = mean(mse_RF),
+  Results = rbind(Results, data.frame(mean_mse_RF = mean(mse_RF),
                                  sd_mse_RF = sd(mse_RF),
                                  mean_corr_RF = mean(corr_RF),
                                  sd_corr_RF = sd(corr_RF),
@@ -119,13 +117,7 @@ for (i in 325:326){
                                  mean_corr_MLP = mean(corr_MLP),
                                  sd_corr_MLP = sd(corr_MLP)))
   
-  
-  # mean_mse[i] = mean(mse)
-  # sd_mse[i] = sd(mse)
-  # mean_corr[i] = mean(corr)
-  # sd_corr[i] = sd(corr)
-  
-  #print(mean_mse[i])
-  #print(mean_corr[i])
-  
 }
+
+Results = t(Results)
+#colnames(Results) = paste0("drug_",c(1:2))

@@ -7,46 +7,38 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-source ("RandomForest_Func.R")
 
 #Read data--------------------------------------------------
 GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
-dim(GE)
-dim(sen)
+
 
 #loop across drugs--------------------------------------
 N_itration = 12
-
 N_drugs = ncol(sen)
-mean_mse = rep(0,N_drugs)
-sd_mse = rep(0,N_drugs)
-mean_corr = rep(0,N_drugs)
-sd_corr = rep(0,N_drugs)
-i=325
-#for (i in 1:N_drugs){
-  print("The drug number is:")
-  print(i)
+Results = data.frame()
+#i=325
+for (i in 1432:1433){
+  print(paste0("The drug number is: ", as.character(i)))
   
   X = GE[!is.na(sen[,i]),]
-  dim(X)
   y = sen[!is.na(sen[,i]),i]
-  length(y)
   
   Corr = cor(X,y)
   high_corr = order(Corr,decreasing = TRUE)
-  X = X[,high_corr[1:200]]
+  X = X[,high_corr[1:1000]]
   
   
   # Cross validation loop
   
   clusterExport(cl, c("X","y","i"))
-  clusterEvalQ(cl, c(library(caTools),library(randomForest),
-                     source("RandomForest_Func.R")))
+  clusterEvalQ(cl, c(library(caTools),library(randomForest),source("RandomForest_Func.R"),
+                     library(glmnet),library(caret),source ("ENet_Func.R"),
+                     library(keras),library(tensorflow),source("MLP_Func.R")))
   
   RepLoop = function(j){
     
-    sample = sample.split(y, SplitRatio = .8)
+    sample = sample.split(y, SplitRatio = .9)
     
     Xtr_val = subset(X, sample == TRUE)
     Xtest  = subset(X, sample == FALSE)
@@ -81,18 +73,37 @@ i=325
     # Models
     ntree = 200
     mtry = 100
-    y_pred = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
+    y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
                           Xtest = Xtest,ntree,mtry)
     
+    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
+                             Xtest = Xtest)
+    
+    y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,
+                     Xtest = Xtest)
+    
+    
     # y_pred re-normalization
-    y_pred = (y_pred*STD_y)+Mean_y
+    y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+    y_pred_ENet = (y_pred_ENet*STD_y)+Mean_y
+    y_pred_MLP = (y_pred_MLP*STD_y)+Mean_y
     
     # Evaluation
-    mse = mean((ytest-y_pred)^2)
-    corr = cor(ytest,y_pred)
-    result = data.frame(mse = mse,corr = corr)
-    #print(mse)[j]
-    #print(corr)[j]
+    mse_RF = mean((ytest-y_pred_RF)^2)
+    corr_RF = cor(ytest,y_pred_RF)
+    
+    mse_ENet = mean((ytest-y_pred_ENet)^2)
+    corr_ENet = cor(ytest,y_pred_ENet)
+    
+    mse_MLP = mean((ytest-y_pred_MLP)^2)
+    corr_MLP = cor(ytest,y_pred_MLP)
+    
+    
+    
+    result = data.frame(mse_RF = mse_RF,corr_RF = corr_RF,
+                        mse_ENet = mse_ENet, corr_ENet = corr_ENet,
+                        mse_MLP = mse_MLP, corr_MLP = corr_MLP)
+    
     return(result)
     }
   
@@ -102,16 +113,24 @@ i=325
   for (k in 1:N_itration)
     Result = rbind(Result, result[[k]])
 
+  Results = rbind(Results, data.frame(mean_mse_RF = mean(Result$mse_RF),
+                                      sd_mse_RF = sd(Result$mse_RF),
+                                      mean_corr_RF = mean(Result$corr_RF),
+                                      sd_corr_RF = sd(Result$corr_RF),
+                                      mean_mse_ENet = mean(Result$mse_ENet),
+                                      sd_mse_ENet = sd(Result$mse_ENet),
+                                      mean_corr_ENet = mean(Result$corr_ENet),
+                                      sd_corr_ENet = sd(Result$corr_ENet),
+                                      mean_mse_MLP = mean(Result$mse_MLP),
+                                      sd_mse_MLP = sd(Result$mse_MLP),
+                                      mean_corr_MLP = mean(Result$corr_MLP),
+                                      sd_corr_MLP = sd(Result$corr_MLP)))
   
-  mean_mse[i] = mean(Result[,1])
-  sd_mse[i] = sd(Result[,1])
-  mean_corr[i] = mean(Result[,2])
-  sd_corr[i] = sd(Result[,2])
-#}
+}
 stopCluster(cl)
-Results = cbind(mean_mse = mean_mse,sd_mse = sd_mse,
-                 mean_corr = mean_corr,sd_corr = sd_corr)
-#saveRDS(Results,"Processed_Data/Result_All_Drugs.rds")
+Results = t(Results)
+#colnames(Results) = paste0("drug_",c(1:2))
 
-cor_sort = data.frame(sort(Results[,3],decreasing = TRUE))
+#saveRDS(Results,"Processed_Data/Result_All_Drugs.rds")
+#cor_sort = data.frame(sort(Results[,3],decreasing = TRUE))
 

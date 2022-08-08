@@ -38,15 +38,20 @@ MLP = function(ytrain,Xtrain,Xtest){
   
   model %>% compile(
     loss = 'mse',
-    optimizer = optimizer_adam(learning_rate = 0.0001))
+    optimizer = optimizer_adam(learning_rate = 0.00001))
+  
+  
+  callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 5, 
+                                           restore_best_weights = TRUE))
   
   # Fit the model 
   model %>% fit(
     Xtrain, 
     ytrain, 
-    epochs = 20, 
+    epochs = 200, 
     batch_size = 10, 
-    validation_split = 0.2)
+    validation_split = 0.2,
+    callbacks = callbacks)
   
   y_pred = predict(model, Xtest)
   

@@ -10,6 +10,7 @@
 library(glmnet)
 library(caret)
 
+
 ElasticNet = function(ytrain,Xtrain,Xtest){
   
   train_data = cbind(Xtrain,ytrain)
@@ -21,7 +22,7 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
   
   tune = expand.grid(alpha = seq(.05, 1, length = 15),
                      lambda = seq(0.001,0.1,by = 0.01))
-  model = train(ytrain ~., data = train_data,
+  model = caret::train(ytrain ~., data = train_data,
                          method = "glmnet",
                          metric="RMSE",
                          allowParallel = TRUE,

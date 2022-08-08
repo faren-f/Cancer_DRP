@@ -61,7 +61,7 @@ for (j in 1:Rep){
   tune = expand.grid(alpha = seq(.05, 1, length = 15),
                      lambda = seq(0.001,0.1,by = 0.01))
   # Training ELastic Net Regression model
-  model = train(ytrain_norm ~., data = train_data,
+  model = caret::train(ytrain_norm ~., data = train_data,
                          method = "glmnet",
                          metric="RMSE",
                          allowParallel = TRUE,

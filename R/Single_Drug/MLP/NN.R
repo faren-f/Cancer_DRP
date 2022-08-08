@@ -5,7 +5,10 @@ library(tensorflow)
 library(corrplot)
 library(ggvis)
 library(caTools)
-setwd("~/Desktop/Cancer_DRP/R/Single_Drug/")
+
+Res = readRDS("~/Desktop/Cancer_DRP/R/Prepare_Data/Processed_Data/Result_All_Drugs.rds")
+order_Res = order(Res[,3], decreasing = TRUE)
+setwd("~/Desktop/Cancer_DRP/R/Single_Drug/MLP/")
 ## Read data
 GE = readRDS("Raw_data/expresion_matrix.rds")
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
@@ -17,11 +20,15 @@ sen = readRDS("Raw_data/sensitivity_matrix.rds")
 
 
 ## Classifier
-i = 325
-#i=1429
+i = 1432
+#i=1
 y = sen[,i]
 y = y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] # remove cell lines that are "NA" For each drug 
+
+Corr = cor(X,y)
+order_corr = order(Corr,decreasing = TRUE)
+X = X[,order_corr[1:1000]]
 
 #Normalization
 X = scale(X)
@@ -34,7 +41,7 @@ for (j in 1:Rep){
   print(j)
   
   ## Split data into train & test
-  sample = sample.split(y, SplitRatio = .8)
+  sample = sample.split(y, SplitRatio = .9)
   
   Xtrain = subset(X, sample == TRUE)
   Xtest  = subset(X, sample == FALSE)
@@ -70,15 +77,20 @@ for (j in 1:Rep){
   # Compile the model
   model %>% compile(
     loss = 'mse',
-    optimizer = optimizer_adam(learning_rate = 0.0001))
+    optimizer = optimizer_adam(learning_rate = 0.00001))
   
+  callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 5, 
+                                           restore_best_weights = TRUE))
+
   # Fit the model 
     model %>% fit(
     Xtrain, 
     ytrain, 
-    epochs = 20, 
+    epochs = 200, 
     batch_size = 10, 
-    validation_split = 0.2)
+    validation_split = 0.2,
+    callbacks = callbacks)
+    
   
   # Evaluate on test data and labels
   #score <- model %>% evaluate(Xtest, ytest_cat, batch_size = 10)
@@ -87,7 +99,7 @@ for (j in 1:Rep){
   mse[j] = mean((ytest-y_pred)^2)
   
   print(corr)
-  print(mse)
+  #print(mse)
   
 }
   
