@@ -89,5 +89,5 @@ colnames(merge_all) = c("protein_id1","protein_id2",
                         "entrez_id1","entrez_id2",
                         "ppi_score")
 
-saveRDS(merge_all, "Processed_data/Step7/ppi_EdgeList_compelete.rds")
+saveRDS(merge_all, "Processed_data/Step7/ppi_STRING.rds")
 

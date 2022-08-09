@@ -6,7 +6,8 @@ setwd("~/Desktop/Cancer_DRP/R/Single_Drug/RF/")
 
 ## Read data
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
-GE = readRDS("Raw_data/expresion_matrix.rds")
+TF = read.table("Raw_data/TF_gsea_1.csv",header = TRUE,sep = ",",row.names=1)
+GE = TF
 
 #i = 540
 i = 325
@@ -15,10 +16,6 @@ i = 325
 y = sen[,i]
 y = y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] 
-
-Corr = cor(X,y)
-high_corr = order(Corr,decreasing = TRUE)
-X = X[,high_corr[1:600]]
 
 X = scale(X)
 #X = (X-min(X))/(max(X)-min(X))
@@ -32,6 +29,7 @@ mse = rep(0,Rep)
 
 for (j in 1:Rep){
   print(paste0("Rep is: ",j))
+  
   
   ## Split data into train & test
   sample = sample.split(y, SplitRatio = .8)
@@ -60,6 +58,4 @@ print(mean(corr))
 #print(sd(corr))
 print(mean(mse))
 #plot(corr,mse)
-
-
 

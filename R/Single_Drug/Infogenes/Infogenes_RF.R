@@ -25,11 +25,11 @@ y = sen[!is.na(sen[,i]),i]
 # Normalization
 X = scale(X)
 y = scale(y)
-Rep = 10
+Rep = 100
 mse = rep(0,Rep)
 corr = rep(0,Rep)
 for (j in 1:Rep){
-  
+  print(paste0("Rep is: ",j))
   ## Split data into train & test
   sample = sample.split(y, SplitRatio = .8)
   
@@ -56,8 +56,8 @@ for (j in 1:Rep){
   Cor_ind = order(Cor,decreasing = TRUE)
   
   # hyperparameters
-  N1 = 300
-  N2 = N1+200
+  N1 = 100
+  N2 = N1+500
   
   inf_gene_ind = Cor_ind[1:N1]
   inf_gene = my_genes[inf_gene_ind]
@@ -93,18 +93,5 @@ for (j in 1:Rep){
 Test_Result = data.frame(mse = mse, corr = corr)
 print(apply(Test_Result,2,mean))
 #print(apply(Test_Result,2,sd))
-
-## Save File Path
-# if (drugi<10) {
-#   DrugNo = paste0("00",as.character(drugi))
-# }else if (drugi<100){
-#   DrugNo = paste0("0",as.character(drugi))
-# }else{
-#   DrugNo = as.character(drugi)
-# }
-# FilePath = paste0("Results_InfoGenes/InfoGenes_",DrugNo,".rds")
-
-#save(Test_Result, ModelParam, file = FilePath)
-
 
 
