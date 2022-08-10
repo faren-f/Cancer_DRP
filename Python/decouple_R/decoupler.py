@@ -3,6 +3,7 @@ import os
 os.chdir("Desktop/Cancer_DRP/Python/decouple_R")
 import pandas as pd
 
+dorothea = dc.get_dorothea(organism='human', levels=['A','B','C'])
 
 # all the methods in decouple r that we can get TFs from them
 dc.show_methods()
@@ -13,7 +14,6 @@ GE.head()
 #sns.heatmap(GE, cmap='viridis')
 #plt.show()
 
-dorothea = dc.get_dorothea(organism='human', levels=['A','B','C'])
 
 # 1) get TFs using mlm method
 #tf_acts, tf_pvals = dc.run_mlm(mat=GE, net=dorothea, source='source', 

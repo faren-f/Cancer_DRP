@@ -9,12 +9,45 @@ cl = makeCluster(no_cores-2)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 #Read data--------------------------------------------------
-GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
 
+GE = "Raw"
+if (GE == "Raw"){
+  
+  GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
+  
+}else if(GE == "GE_STRING"){
+  
+  GE = readRDS("Processed_data/Step9/expresion_matrix_PRISM_STRING.rds")
+
+}else if(GE == "GE_Omnipath"){
+  
+  GE = readRDS("Processed_data/Step10/expresion_matrix_PRISM_Omnipath.rds")
+}
+
+
+Interaction_Network = ""
+
+if (Interaction_Network == "STRING"){
+  
+  STRING_edgelist = readRDS("Processed_data/Step9/ppi_STRING_PRISM.rds")
+  ppi = rbind(STRING_edgelist$gene_symbol1, STRING_edgelist$gene_symbol2)
+  
+}else if(Interaction_Network == "Ompnipath"){
+  
+  Omnipath_edgelist = readRDS("Processed_data/Step10/ppi_Omnipath_PRISM.rds")
+  ppi = rbind(Omnipath_edgelist$gene_symbol1, Omnipath_edgelist$gene_symbol2)
+}
+
+MyGraph = simplify(graph(ppi, directed = FALSE))
+my_genes = V(MyGraph)$name
+
+
+
+#TF =     # for decoupleR
 
 #loop across drugs--------------------------------------
-N_itration = 12
+N_itration = 6
 N_drugs = ncol(sen)
 Results = data.frame()
 #i=325
@@ -24,15 +57,11 @@ for (i in 1432:1433){
   X = GE[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
   
-  Corr = cor(X,y)
-  high_corr = order(Corr,decreasing = TRUE)
-  X = X[,high_corr[1:1000]]
-  
-  
   # Cross validation loop
   
   clusterExport(cl, c("X","y","i"))
-  clusterEvalQ(cl, c(library(caTools),library(randomForest),source("RF_Func_caret.R"),
+  clusterEvalQ(cl, c(source("high_corr_FS.R"), source("mRMR.R"),source("Infogenes_FS.R"),
+                     library(caTools),library(randomForest),source("RF_Func_caret.R"),
                      library(glmnet),library(caret),source ("ENet_Func.R"),
                      library(keras),library(tensorflow),source("MLP_Func.R")))
   
@@ -70,11 +99,31 @@ for (i in 1432:1433){
     ytrain_norm = (ytrain-Mean_y)/STD_y
     
     
+    # Feature selection: if we used transcription factors that are obtained from 
+    # decoupleR FS == FALSE otherwise it is TRUE
+    
+    if (FS == TRUE){
+      
+      # 1) high correlated genes with drug sensitivity
+      Xtrain = high_corr(Xtrain,ytrain,N)
+    
+      # 2) mRMR
+      Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
+      
+      # 3) Infogenes
+      Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes,N1,N2)
+      Xtest = Xtest[,colnames(Xtrain)]
+    
+      # 4) Pathways:Progeny
+      
+    }
+    
+    
     # Models
     ntree = 200
     mtry = 100
     y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
-                          Xtest = Xtest,ntree,mtry)
+                          Xtest = Xtest)
     
     y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
                              Xtest = Xtest)

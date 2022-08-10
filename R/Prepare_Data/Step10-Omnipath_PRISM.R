@@ -18,6 +18,8 @@ GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 
 ppi_edgelist = ppi_edgelist[(ppi_edgelist$source_genesymbol %in% colnames(GE) & 
                                ppi_edgelist$target_genesymbol %in% colnames(GE)),]
+colnames(ppi_edgelist) = c("gene_symbol1", "gene_symbol2")
+
 ppi_edgelist_dataframe = data.frame(ppi_edgelist)
 ppi_edgelist_dataframe = c(ppi_edgelist_dataframe[,1],ppi_edgelist_dataframe[,2])
 

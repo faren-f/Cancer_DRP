@@ -7,12 +7,26 @@ library(randomForest)
 
 setwd("~/Desktop/Cancer_DRP/R/Single_Drug/Infogenes/")
 
-GE = readRDS("Raw_data/PRISM/expresion_matrix_PRISM_ppi.rds")
 sen = readRDS("Raw_data/PRISM/sensitivity_matrix.rds")
-ppi_edgelist = readRDS("Raw_data/PRISM/ppi_EdgeList_compelete_PRISM.rds")
+
+# STRING
+GE = readRDS("Raw_data/PRISM/expresion_matrix_PRISM_STRING.rds")
+STRING_edgelist = readRDS("Raw_data/PRISM/ppi_STRING_PRISM.rds")
+
+# Omnipath
+#GE = readRDS("Raw_data/PRISM/expresion_matrix_PRISM_Omnipath.rds")
+#Omnipath_edgelist = readRDS("Raw_data/PRISM/ppi_Omnipath_PRISM.rds")
 
 # Build graph -------------------------------------------------------------
-ppi = rbind(ppi_edgelist$gene_symbol1, ppi_edgelist$gene_symbol2)
+Interaction_Network = "STRING"
+
+if (Interaction_Network == "STRING"){
+  ppi = rbind(STRING_edgelist$gene_symbol1, STRING_edgelist$gene_symbol2)
+  
+} else if(Interaction_Network == "Ompnipath"){
+  ppi = rbind(Omnipath_edgelist$gene_symbol1, Omnipath_edgelist$gene_symbol2)
+}
+
 MyGraph = simplify(graph(ppi, directed = FALSE))
 my_genes = V(MyGraph)$name
 

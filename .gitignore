@@ -42,3 +42,4 @@ R/Single_Drug/RF/.Rhistory
 R/Prepare_Data/.Rhistory
 R/Prepare_Data/ppi_data/.Rhistory
 *.cel
+*.xml
