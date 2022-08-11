@@ -24,7 +24,7 @@ if (Interaction_Network == "None"){
   ppi = rbind(STRING_edgelist$gene_symbol1, STRING_edgelist$gene_symbol2)
   MyGraph = simplify(graph(ppi, directed = FALSE))
   my_genes = V(MyGraph)$name
-
+  
 } else if(Interaction_Network == "Ompnipath"){
   
   GE = readRDS("Processed_data/Step10/expresion_matrix_PRISM_Omnipath.rds")
@@ -66,9 +66,8 @@ for (i in 1432:1433){
   
   # Cross validation loop
   
-  clusterExport(cl, c("X","y","i","my_genes","MyGraph"))
-  clusterEvalQ(cl, c(source("high_corr_FS.R"), source("mRMR.R"),
-                     library(igraph),source("Infogenes_FS.R"),
+  clusterExport(cl, c("X","y","i"))
+  clusterEvalQ(cl, c(source("high_corr_FS.R"), source("mRMR.R"),source("Infogenes_FS.R"),
                      library(caTools),library(randomForest),source("RF_Func_caret.R"),
                      library(glmnet),library(caret),source ("ENet_Func.R"),
                      library(keras),library(tensorflow),source("MLP_Func.R")))
@@ -108,33 +107,57 @@ for (i in 1432:1433){
     
     
     #FS_method = c("None","high_corr","mRMR","Infogenes","DoRothEA","Progeny")
+    
+    
+    if (Interaction_Network == "STRING" | "Omnipath"){
+      Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
+      
+    }else if(Interaction_Network == "OP_DoRothEA"){
+      Xtrain = Xtrain
+      
+    }else if(Interaction_Network == "None"){
+      
+      if(FS_method = "high_corr"){
+        Xtrain = high_corr(Xtrain,ytrain,N_feat=100)
+        
+      }else if(FS_method == "mRMR"){
+        Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
+        
+      }
+      
+    }
+    
+    
+    
+    
+    
     FS_method = "Infogenes"
     for(fs in FS_method){
       
       if(FS_method == "None"){
         Xtrain = Xtrain
-          
-        }else if(FS_method == "high_corr"){
-          Xtrain = high_corr(Xtrain,ytrain,N_feat=100)
-          
-        }else if(FS_method == "mRMR"){
-          Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
-          
-        }else if(FS_method == "Infogenes"){
+        
+      }else if(FS_method == "high_corr"){
+        Xtrain = high_corr(Xtrain,ytrain,N_feat=100)
+        
+      }else if(FS_method == "mRMR"){
+        Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
+        
+      }else if(FS_method == "Infogenes"){
         Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
         
-        }else if(FS_method == "DoRothEA"){
-          
-        }else if(FS_method == "Progeny"){
-          
-        }
+      }else if(FS_method == "DoRothEA"){
         
+      }else if(FS_method == "Progeny"){
+        
+      }
+      
       Xtest = Xtest[,colnames(Xtrain)]
       
       # Models
       
       y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
-                            Xtest = Xtest)
+                               Xtest = Xtest)
       
       y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
                                Xtest = Xtest)
@@ -165,8 +188,8 @@ for (i in 1432:1433){
                           mse_MLP = mse_MLP, corr_MLP = corr_MLP)
       
       return(result)
-      }}
-
+    }}
+  
   
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
@@ -174,7 +197,7 @@ for (i in 1432:1433){
   for (k in 1:N_itration){
     Result = rbind(Result, result[[k]])
   }
-
+  
   Results = rbind(Results, data.frame(mean_mse_RF = mean(Result$mse_RF),
                                       sd_mse_RF = sd(Result$mse_RF),
                                       mean_corr_RF = mean(Result$corr_RF),

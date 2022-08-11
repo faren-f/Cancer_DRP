@@ -16,7 +16,7 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
   train_data = cbind(Xtrain,ytrain)
   control = trainControl(method = "repeatedcv",
                          number = 5,
-                         repeats = 1,
+                         repeats = 5,
                          #search = "random",
                          verboseIter = TRUE)
   

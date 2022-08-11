@@ -19,10 +19,10 @@ RandomForest = function(ytrain,Xtrain,Xtest){
                          allowParallel = TRUE)
   
   
-  tuneGrid = expand.grid(.mtry = seq(50, 200, by=5))
+  tuneGrid = expand.grid(.mtry = seq(100, 200, by=10))
   
   maxtrees = list()
-  for (ntree in c(50,70,100,150,200,250)) {
+  for (ntree in c(100,150,200,250)) {
     model = caret::train(ytrain~., 
                           data = train_data,
                           method = "rf",

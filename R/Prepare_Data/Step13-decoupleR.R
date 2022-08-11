@@ -20,7 +20,7 @@ dorothea = get_dorothea(organism = "human", levels = c("A","B","C"))
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 X = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 X = t(X)
-method = "viper"
+method = "wmean"
 
 decoupleR_DR = function(X, dorothea, method){
   
@@ -168,3 +168,6 @@ decoupleR_DR = function(X, dorothea, method){
 
 
 X_TF = decoupleR_DR(X, dorothea, method)
+
+saveRDS(X_TF,"Processed_data/Step13/TF_wmean.rds")
+

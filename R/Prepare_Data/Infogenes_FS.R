@@ -7,10 +7,7 @@
 # genes (N1) with ytrain and number of high scored genes (N2) after diffusion in 
 #the ppi network, to select informative genes.
 
-N1 = 100
-N2 = N1+200
-
-Infogenes = function(Xtrain,ytrain,MyGraph,my_genes,N1,N2){
+Infogenes = function(Xtrain,ytrain,MyGraph,my_genes,N1=100,N2=300){
   
   Corr = abs(cor(Xtrain,ytrain))
   Cor_ind = order(Corr,decreasing = TRUE)
