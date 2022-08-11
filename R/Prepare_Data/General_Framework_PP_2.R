@@ -125,69 +125,50 @@ for (i in 1432:1433){
       }else if(FS_method == "mRMR"){
         Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
         
-      }
-      
-    }
-    
-    
-    FS_method = "Infogenes"
-    for(fs in FS_method){
-      
-      if(FS_method == "None"){
-        Xtrain = Xtrain
-        
-      }else if(FS_method == "high_corr"){
-        Xtrain = high_corr(Xtrain,ytrain,N_feat=100)
-        
-      }else if(FS_method == "mRMR"){
-        Xtrain = mRMR(Xtrain, ytrain, N_feat = 1000, alpha=1, do.plot = FALSE)
-        
-      }else if(FS_method == "Infogenes"){
-        Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
-        
       }else if(FS_method == "DoRothEA"){
         
       }else if(FS_method == "Progeny"){
         
       }
-      
-      Xtest = Xtest[,colnames(Xtrain)]
-      
-      # Models
-      
-      y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
-                               Xtest = Xtest)
-      
-      y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
-                               Xtest = Xtest)
-      
-      y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,
-                       Xtest = Xtest)
-      
-      
-      # y_pred re-normalization
-      y_pred_RF = (y_pred_RF*STD_y)+Mean_y
-      y_pred_ENet = (y_pred_ENet*STD_y)+Mean_y
-      y_pred_MLP = (y_pred_MLP*STD_y)+Mean_y
-      
-      # Evaluation
-      mse_RF = mean((ytest-y_pred_RF)^2)
-      corr_RF = cor(ytest,y_pred_RF)
-      
-      mse_ENet = mean((ytest-y_pred_ENet)^2)
-      corr_ENet = cor(ytest,y_pred_ENet)
-      
-      mse_MLP = mean((ytest-y_pred_MLP)^2)
-      corr_MLP = cor(ytest,y_pred_MLP)
-      
-      
-      
-      result = data.frame(mse_RF = mse_RF,corr_RF = corr_RF,
-                          mse_ENet = mse_ENet, corr_ENet = corr_ENet,
-                          mse_MLP = mse_MLP, corr_MLP = corr_MLP)
-      
-      return(result)
-    }}
+    }
+    
+    Xtest = Xtest[,colnames(Xtrain)]
+    
+    # Models
+    
+    y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
+                             Xtest = Xtest)
+    
+    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
+                             Xtest = Xtest)
+    
+    y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,
+                     Xtest = Xtest)
+    
+    
+    # y_pred re-normalization
+    y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+    y_pred_ENet = (y_pred_ENet*STD_y)+Mean_y
+    y_pred_MLP = (y_pred_MLP*STD_y)+Mean_y
+    
+    # Evaluation
+    mse_RF = mean((ytest-y_pred_RF)^2)
+    corr_RF = cor(ytest,y_pred_RF)
+    
+    mse_ENet = mean((ytest-y_pred_ENet)^2)
+    corr_ENet = cor(ytest,y_pred_ENet)
+    
+    mse_MLP = mean((ytest-y_pred_MLP)^2)
+    corr_MLP = cor(ytest,y_pred_MLP)
+    
+    
+    
+    result = data.frame(mse_RF = mse_RF,corr_RF = corr_RF,
+                        mse_ENet = mse_ENet, corr_ENet = corr_ENet,
+                        mse_MLP = mse_MLP, corr_MLP = corr_MLP)
+    
+    return(result)
+  }
   
   
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
