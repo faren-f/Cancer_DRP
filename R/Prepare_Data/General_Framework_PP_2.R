@@ -159,7 +159,6 @@ for (i in 1432:1433){
     corr_MLP = cor(ytest,y_pred_MLP)
     
     
-    
     result = data.frame(mse_RF = mse_RF,corr_RF = corr_RF,
                         mse_ENet = mse_ENet, corr_ENet = corr_ENet,
                         mse_MLP = mse_MLP, corr_MLP = corr_MLP)
