@@ -38,18 +38,18 @@ if (Interaction_Network == "None"){
 }
 
 
-Omics = "GE"
-if (Omics =="GE"){
-  Omic = GE
+omics = "GE"
+if (omics =="GE"){
+  omic = GE
   
-}else if(Omics =="TF"){
-  Omic = TF
+}else if(omics =="TF"){
+  omic = TF
   
-}else if(Omics =="Mu"){
-  Omic = Mu
+}else if(omics =="Mu"){
+  omic = Mu
   
-}else if(Omics =="GE+Mu+CNV"){
-  Omic = c(GE,Mu,CNV)
+}else if(omics =="GE+Mu+CNV"){
+  omic = c(GE,Mu,CNV)
 }
 
 
@@ -61,7 +61,7 @@ Results = data.frame()
 for (i in 1432:1433){
   print(paste0("The drug number is: ", as.character(i)))
   
-  X = Omic[!is.na(sen[,i]),]
+  X = omic[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
   
   # Cross validation loop
@@ -92,7 +92,7 @@ for (i in 1432:1433){
     Xtrain = Xtr_val
     ytrain = ytr_val
     
-    # Normalization
+    # Normalization-------------------------------------------------------------
     # Xtrain normalization
     Mean_X = apply(Xtrain,2,mean)
     STD_X = apply(Xtrain,2,sd)
@@ -107,7 +107,7 @@ for (i in 1432:1433){
     ytrain_norm = (ytrain-Mean_y)/STD_y
     
     
-    #FS_method = c("None","high_corr","mRMR","Infogenes","DoRothEA","Progeny")
+    # Feature selection---------------------------------------------------------
     FS_method = "Infogenes"
       
     if(FS_method == "None"){

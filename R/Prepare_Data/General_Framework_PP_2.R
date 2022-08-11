@@ -1,7 +1,6 @@
 rm(list=ls())
-
-library(caTools)
 library(parallel)
+library(caTools)
 library(igraph)
 
 no_cores = detectCores()
@@ -12,7 +11,7 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 #Read data--------------------------------------------------
 sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
 
-Interaction_Network = "STRING"
+Interaction_Network = "Omnipath"
 
 if (Interaction_Network == "None"){
   GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
@@ -25,7 +24,7 @@ if (Interaction_Network == "None"){
   MyGraph = simplify(graph(ppi, directed = FALSE))
   my_genes = V(MyGraph)$name
   
-} else if(Interaction_Network == "Ompnipath"){
+} else if(Interaction_Network == "Omnipath"){
   
   GE = readRDS("Processed_data/Step10/expresion_matrix_PRISM_Omnipath.rds")
   Omnipath_edgelist = readRDS("Processed_data/Step10/ppi_Omnipath_PRISM.rds")
@@ -38,18 +37,18 @@ if (Interaction_Network == "None"){
 }
 
 
-Omics = "GE"
-if (Omics =="GE"){
-  Omic = GE
+omics = "GE"
+if (omics =="GE"){
+  omic = GE
   
-}else if(Omics =="TF"){
-  Omic = TF
+}else if(omics =="TF"){
+  omic = TF
   
-}else if(Omics =="Mu"){
-  Omic = Mu
+}else if(omics =="Mu"){
+  omic = Mu
   
-}else if(Omics =="GE+Mu+CNV"){
-  Omic = c(GE,Mu,CNV)
+}else if(omics =="GE+Mu+CNV"){
+  omic = c(GE,Mu,CNV)
 }
 
 
@@ -61,15 +60,15 @@ Results = data.frame()
 for (i in 1432:1433){
   print(paste0("The drug number is: ", as.character(i)))
   
-  X = Omic[!is.na(sen[,i]),]
+  X = omic[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
   
   # Cross validation loop
   
-  clusterExport(cl, c("X","y","i","my_genes","MyGraph"))
+  clusterExport(cl, c("X","y","i","my_genes","MyGraph","Interaction_Network"))
   clusterEvalQ(cl, c(source("high_corr_FS.R"), source("mRMR.R"),
                      library(igraph),source("Infogenes_FS.R"),
-                     library(caTools),library(randomForest),source("RF_Func_caret.R"),
+                     library(caTools),library(randomForest),source("RandomForest_Func.R"),
                      library(glmnet),library(caret),source ("ENet_Func.R"),
                      library(keras),library(tensorflow),source("MLP_Func.R")))
   
@@ -92,7 +91,7 @@ for (i in 1432:1433){
     Xtrain = Xtr_val
     ytrain = ytr_val
     
-    # Normalization
+    # Normalization-------------------------------------------------------------
     # Xtrain normalization
     Mean_X = apply(Xtrain,2,mean)
     STD_X = apply(Xtrain,2,sd)
@@ -106,12 +105,10 @@ for (i in 1432:1433){
     STD_y = sd(ytrain)
     ytrain_norm = (ytrain-Mean_y)/STD_y
     
-    
-    #FS_method = c("None","high_corr","mRMR","Infogenes","DoRothEA","Progeny")
-    
+    # Feature selection---------------------------------------------------------
     FS_method = "high_corr"
     
-    if (Interaction_Network == "STRING" | "Omnipath"){
+    if (Interaction_Network == "STRING"|Interaction_Network=="Omnipath"){
       Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
       
     }else if(Interaction_Network == "OP_DoRothEA"){
@@ -119,7 +116,7 @@ for (i in 1432:1433){
       
     }else if(Interaction_Network == "None"){
       
-      if(FS_method = "high_corr"){
+      if(FS_method == "high_corr"){
         Xtrain = high_corr(Xtrain,ytrain,N_feat=100)
         
       }else if(FS_method == "mRMR"){
