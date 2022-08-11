@@ -130,9 +130,6 @@ for (i in 1432:1433){
     }
     
     
-    
-    
-    
     FS_method = "Infogenes"
     for(fs in FS_method){
       
