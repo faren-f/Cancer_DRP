@@ -1,3 +1,15 @@
+
+#                  Created on Thu Jan 02 10:16 2021
+
+#                     @author: Farzaneh Firoozbakht
+#                   Email: faren.firoozbakht@gmail.com
+
+# Description: This script reads raw data from CCLE cell lines and PRISM drug sensitivity and convert
+# gene-ids to gene symbols and do log2 normalization on RNAseq data. finally it prepare drug 
+# sensitivity matrix and gene expression matrix.
+
+
+
 rm(list = ls())
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
@@ -5,17 +17,17 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 library('rtracklayer')
 library(ggplot2)
 # Read Data ---------------------------------------------------------------
-cellline_info = read.csv("PRISM_Raw_data/Secondary/secondary-screen-cell-line-info.csv")
+cellline_info = read.csv("Raw_data/PRISM/Secondary/secondary-screen-cell-line-info.csv")
 
-response = read.csv("PRISM_Raw_data/Secondary/secondary-screen-dose-response-curve-parameters.csv")
+response1 = read.csv("Raw_data/PRISM/Secondary/secondary-screen-dose-response-curve-parameters.csv")
 
-RNAseq = read.table("PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
+RNAseq = read.table("Raw_data/PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
                     header = TRUE, check.names = FALSE)
 
-#RNAseq = read.table("PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
+#RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
 #skip = 2, header = TRUE, sep = "\t")
 
-gene_transfer = import("PRISM_Raw_data/Expression/RNA_seq/gencode.v19.genes.v7_model.patched_contigs.gtf.gz")
+gene_transfer = import("Raw_data/PRISM/Expression/RNA_seq/gencode.v19.genes.v7_model.patched_contigs.gtf.gz")
 gene_transfer = data.frame(gene_transfer)
 
 # Pre-processing ----------------------------------------------------------
@@ -77,11 +89,11 @@ rownames(expr) = 1:nrow(expr)
 expr1 = expr[,-1]
 
 ## Convert ccle_name to depmap_id in expression matrix
-id_name = response[,c(2,3)]
-id_name = id_name[!duplicated(id_name[,2]),]
-id_name = id_name[!is.na(id_name[,2]),]
-rownames(id_name) = id_name[,2]
-dep_id = id_name[colnames(expr1),1] 
+depid_name = response[,c(2,3)]
+depid_name = depid_name[!duplicated(depid_name[,2]),]
+depid_name = depid_name[!is.na(depid_name[,2]),]
+rownames(depid_name) = depid_name[,2]
+dep_id = depid_name[colnames(expr1),1] 
 colnames(expr1) = dep_id
 expr = cbind(expr[,1],expr1)
 rm(expr1)
@@ -152,8 +164,8 @@ drug_name = unique(response$name)
 #     
 #     }
 # }
-#saveRDS(sen, file = "Processed_Data/Step1/sensitivity_matrix.rds")
-sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
+#saveRDS(sen, file = "Processed_Data/S1/sensitivity_matrix.rds")
+sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 
 #### Visualization; just to check the distribution of means and standard deviation across samples and drugs
 # dist_mean_sample = apply(sen,1,function(x){mean(x,na.rm =TRUE)})
@@ -170,8 +182,8 @@ sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
 
 # Save Data ---------------------------------------------------------------
 ## 1) sen matrix is saved in line 115 without normalization
-saveRDS(Expr, file = "Processed_Data/Step1/expresion_matrix.rds")
-write.table(Expr, file = "Processed_Data/Step1/expresion_matrix.csv",
+saveRDS(Expr, file = "Processed_Data/S1/expresion_matrix.rds")
+write.table(Expr, file = "Processed_Data/S1/expresion_matrix.csv",
             row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
 
-saveRDS(gene_transfer1, file = "Processed_Data/Step1/gene_transfer.rds")
+saveRDS(gene_transfer1, file = "Processed_Data/S1/gene_transfer.rds")

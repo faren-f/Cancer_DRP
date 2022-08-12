@@ -4,7 +4,7 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 #Method5)
 library(PharmacoGx)
 availablePSets()
-GDSC = downloadPSet("GDSC_2020(v2-8.2)")
+gCSI = downloadPSet("gCSI_2019")
 
 #Method1)
 library(ArrayExpress)

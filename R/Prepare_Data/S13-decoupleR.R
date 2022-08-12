@@ -170,4 +170,4 @@ decoupleR_DR = function(X, dorothea, method){
 X_TF = decoupleR_DR(X, dorothea, method)
 
 saveRDS(X_TF,"Processed_data/Step13/TF_wmean.rds")
-
+t = readRDS("Processed_data/Step13/TF_wmean.rds")

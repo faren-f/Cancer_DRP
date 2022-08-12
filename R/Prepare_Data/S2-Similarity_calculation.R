@@ -1,5 +1,5 @@
 rm(list=ls())
-setwd("~/Desktop/Codes/Cancer_DRP/R/")
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 
 # Library -----------------------------------------------------------------
@@ -9,11 +9,10 @@ library(rcdk)
 
 # Read_Data ---------------------------------------------------------------
 
-expr = readRDS("Data/Processed_Data/expresion_matrix.rds")
-expr_norm = readRDS("Data/Processed_Data/expresion_normalized_matrix.rds")
+expr = readRDS("Processed_Data/Step1/expresion_matrix.rds")
 
-sen = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
-response = read.csv("Data/PRISM_Raw_Dataset/Secondary/secondary-screen-dose-response-curve-parameters.csv")
+sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
+response = read.csv("Raw_data/PRISM_Raw_data/Secondary/secondary-screen-dose-response-curve-parameters.csv")
 
 
 # Similarity calculation --------------------------------------------------
@@ -24,13 +23,11 @@ response = read.csv("Data/PRISM_Raw_Dataset/Secondary/secondary-screen-dose-resp
 
 #1)cell line-cell line similarity across genes
 sample_sim_exp = cor(t(expr))
-#saveRDS(sample_sim_exp,"Processed_Data/Sample_Sim_Exp.rds")
+#saveRDS(sample_sim_exp,"Processed_Data/Step2/Sample_Sim_Exp.rds")
 
 #2)cell line-cell line similarity across drugs
 sample_sim_sen = cor(t(sen), use="complete.obs") # "use" is ignoring "NA"
 
-#3)normalized cell line-cell line similarity across genes
-#sample_sim_exp_norm = cor(t(expr_norm))
 
 ## Plot cell line-cell line similarity (1) against (2)
 concat_sample_sim_exp = matrix(sample_sim_exp, length(sample_sim_exp))
@@ -55,8 +52,8 @@ plot(concat_sample_sim_exp, concat_sample_sim_sen, cex=.005, pch=20,
              # verbose = getOption("verbose"),arg = NULL, first = NULL)
 
 #CID_Name_all = cbind(CID_Name_all[,2],CID_Name_all[,1])
-#saveRDS(CID_Name_all, "Processed_Data/CID_Name_all.rds")
-#CID_Name_all = readRDS("Processed_Data/CID_Name_all.rds")
+#saveRDS(CID_Name_all, "Processed_Data/Step2/CID_Name_all.rds")
+#CID_Name_all = readRDS("Processed_Data/Step2/CID_Name_all.rds")
 #CID_Name = CID_Name_all[!duplicated(CID_Name_all[,1]),]
 #CID_Name = data.frame(CID_Name)
 ### There are some "NA" in the compound_CIDs, so they are hand curated using 
@@ -75,21 +72,21 @@ plot(concat_sample_sim_exp, concat_sample_sim_sen, cex=.005, pch=20,
 # which(is.na(CID_Name[,2]))
 #CID_Name = cbind(CID_Name[,2],CID_Name[,1])
 #colnames(CID_Name) = c("CID","Name")
-#saveRDS(CID_Name,"Processed_Data/CID_Name.rds")
-CID_Name = readRDS("Data/Processed_Data/CID_Name.rds")
+#saveRDS(CID_Name,"Processed_Data/Step2/CID_Name.rds")
+CID_Name = readRDS("Processed_Data/Step2/CID_Name.rds")
 
 # CID_Smile_PubChem -------------------------------------------------------
 ######CID_Smile is downloaded from https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/
 ###1)Smiles from PubChem: It did not work
-#CID_Smile_all = read.table("Drug_Feature_Data/CID-SMILES", sep = "\t")
-#saveRDS(CID_Smile_all, "Data/Processed_Data/CID_Smile_all.rds")
+#CID_Smile_all = read.table("Raw_data/Drug_Feature_Data/CID-SMILES", sep = "\t")
+#saveRDS(CID_Smile_all, "Processed_Data/Step2/CID_Smile_all.rds")
 
 ## I saved CID_Smile_all with the "rds" format since it is faster to read in R 
-#CID_Smile_all = readRDS("Processed_Data/CID_Smile_all.rds")
+#CID_Smile_all = readRDS("Processed_Data/Step2/CID_Smile_all.rds")
 #length(intersect(CID_Smile[,1],as.numeric(CID_Name[,2])))              
 #CID_Smile = CID_Smile_all[CID_Smile_all[,1] %in% as.numeric(CID_Name[,2]),]
-#saveRDS(CID_Smile, "Data/Processed_Data/CID_Smile.rds")
-#CID_Smile = readRDS("Data/Processed_Data/CID_Smile.rds")
+#saveRDS(CID_Smile, "Processed_Data/Step2/CID_Smile.rds")
+#CID_Smile = readRDS("Processed_Data/Step2/CID_Smile.rds")
 
 #Smiles =  CID_Smile[,2]
 #molecule <- parse.smiles(Smiles)
@@ -124,19 +121,19 @@ rownames(CID_Name_Smile) = CID_Name_Smile[,2]
 CID_Name_Smile = CID_Name_Smile[colnames(sen),]
 
 
-#saveRDS(CID_Name_Smile,"Processed_Data/CID_Name_Smile.rds")
+#saveRDS(CID_Name_Smile,"Processed_Data/Step2/CID_Name_Smile.rds")
 
 ### get fingerprints using "rcdk" package
 Smiles =  CID_Name_Smile[,3]
 molecule <- parse.smiles(Smiles)
 Fingerprints = lapply(molecule, get.fingerprint, type='circular')
-saveRDS(Fingerprints,"Data/Processed_Data/Fingerprints.rds")  
+saveRDS(Fingerprints,"Processed_Data/Step2/Fingerprints.rds")  
 
 Fingerprints_sim = fingerprint::fp.sim.matrix(Fingerprints, method='tanimoto')
 rownames (Fingerprints_sim) =  CID_Name_Smile[,2]
 colnames (Fingerprints_sim) =  CID_Name_Smile[,2]
 
-saveRDS(Fingerprints_sim,"Data/Processed_Data/Fingerprints_sim.rds")  
+saveRDS(Fingerprints_sim,"Processed_Data/Step2/Fingerprints_sim.rds")  
 
 ## Just for visualization
 ## convert similarity to distance(disimilarity) for clustring
