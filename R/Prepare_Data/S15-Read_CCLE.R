@@ -7,7 +7,6 @@
 # gene-ids to gene symbols and do log2 normalization on RNAseq data. finally it prepare drug 
 # sensitivity matrix and gene expression matrix.
 
-
 rm(list=ls())
 library('rtracklayer')
 library(dplyr)
@@ -159,6 +158,7 @@ for (i in ccle_name_Expr){
     
     if (sum(cell_i_drug_j) == 0)
       IC50[i,j] = NA
+      AA[i,j] = NA
 
     else if (sum(cell_i_drug_j) == 1){
              IC50[i,j] = response[cell_i_drug_j,11]
@@ -194,7 +194,7 @@ saveRDS(AA, file = "Processed_Data/S15/sensitivity_matrix_Activity_Area.rds")
 # hist(dist_sd_drug)
 
 # Save Data ---------------------------------------------------------------
-## 1) IC50 matrix is saved in line 115 without normalization
+## 1) IC50, activity area matrices are saved in line 178-179
 saveRDS(Expr, file = "Processed_Data/S15/expresion_matrix.rds")
 write.table(Expr, file = "Processed_Data/S15/expresion_matrix.csv",
             row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")

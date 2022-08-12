@@ -8,8 +8,6 @@
 # gene-ids to gene symbols and do log2 normalization on RNAseq data. finally it prepare drug 
 # sensitivity matrix and gene expression matrix.
 
-
-
 rm(list = ls())
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
@@ -19,9 +17,9 @@ library(ggplot2)
 # Read Data ---------------------------------------------------------------
 cellline_info = read.csv("Raw_data/PRISM/Secondary/secondary-screen-cell-line-info.csv")
 
-response1 = read.csv("Raw_data/PRISM/Secondary/secondary-screen-dose-response-curve-parameters.csv")
+response = read.csv("Raw_data/PRISM/Secondary/secondary-screen-dose-response-curve-parameters.csv")
 
-RNAseq = read.table("Raw_data/PRISM_Raw_data/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
+RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
                     header = TRUE, check.names = FALSE)
 
 #RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
@@ -140,48 +138,81 @@ Expr = Expr[,-ind_extra]
 
 cell_id = rownames(Expr)
 drug_name = unique(response$name)
-#sen = matrix(0,length(cell_id),length(drug_name))
-#rownames(sen) = cell_id
-#colnames(sen) = drug_name
-#response = response[!is.na(response$depmap_id),]
+AUC = matrix(0,length(cell_id),length(drug_name))
+IC50 = matrix(0,length(cell_id),length(drug_name))
+EC50 = matrix(0,length(cell_id),length(drug_name))
 
-### Because for some of the cell lines we do not have the response against 
-#some drugs we put 'NA' for them in line 86-87
-# c = 0
-# for (i in cell_id){
-#   c = c+1
-#   print(c)
-#   for (j in drug_name){
-#     cell_i_drug_j = response$depmap_id == i & response$name == j
-#     if (sum(cell_i_drug_j) == 0)
-#       sen[i,j] = NA
-#     
-#     else if (sum(cell_i_drug_j) == 1)
-#              sen[i,j] = response[cell_i_drug_j,"auc"]
-#     
-#     else
-#       sen[i,j] = mean(response[cell_i_drug_j,"auc"])
-#     
-#     }
-# }
-#saveRDS(sen, file = "Processed_Data/S1/sensitivity_matrix.rds")
-sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
+rownames(AUC) = cell_id
+colnames(AUC) = drug_name
+
+rownames(IC50) = cell_id
+colnames(IC50) = drug_name
+
+rownames(EC50) = cell_id
+colnames(EC50) = drug_name
+
+response = response[!is.na(response$depmap_id),]
+
+## Because for some of the cell lines we do not have the response against
+# some drugs we put 'NA' for them in line 86-87
+c = 0
+for (i in cell_id){
+  c = c+1
+  print(c)
+  
+  for (j in drug_name){
+    cell_i_drug_j = response$depmap_id == i & response$name == j
+    
+    if (sum(cell_i_drug_j) == 0){
+      AUC[i,j] = NA
+      IC50[i,j] = NA
+      EC50[i,j] = NA
+
+    }else if (sum(cell_i_drug_j) == 1){
+             AUC[i,j] = response[cell_i_drug_j,"auc"]
+             IC50[i,j] = response[cell_i_drug_j,"ic50"]
+             EC50[i,j] = response[cell_i_drug_j,"ec50"]
+             
+    }else{
+      AUC[i,j] = mean(response[cell_i_drug_j,"auc"])
+      IC50[i,j] = mean(response[cell_i_drug_j,"ic50"])
+      EC50[i,j] = mean(response[cell_i_drug_j,"ec50"])
+      
+      }
+   }
+}
+
+saveRDS(AUC, file = "Processed_Data/S1/sensitivity_matrix_AUC.rds")
+saveRDS(IC50, file = "Processed_Data/S1/sensitivity_matrix_IC50.rds")
+saveRDS(EC50, file = "Processed_Data/S1/sensitivity_matrix_EC50.rds")
+
+write.table(AUC, file = "Processed_Data/S1/sensitivity_matrix_AUC.csv",
+            row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
+write.table(IC50, file = "Processed_Data/S1/sensitivity_matrix_IC50.csv",
+            row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
+write.table(EC50, file = "Processed_Data/S1/sensitivity_matrix_EC50.csv",
+            row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
+
+
+#AUC = readRDS("Processed_Data/S1/sensitivity_matrix_AUC.rds")
+#IC50 = readRDS("Processed_Data/S1/sensitivity_matrix_IC50.rds")
+#EC50 = readRDS("Processed_Data/S1/sensitivity_matrix_EC50.rds")
 
 #### Visualization; just to check the distribution of means and standard deviation across samples and drugs
-# dist_mean_sample = apply(sen,1,function(x){mean(x,na.rm =TRUE)})
+# dist_mean_sample = apply(AUC,1,function(x){mean(x,na.rm =TRUE)})
 # hist(dist_mean_sample)
 # 
-# dist_sd_sample = apply(sen,1,function(x){sd(x,na.rm =TRUE)})
+# dist_sd_sample = apply(AUC,1,function(x){sd(x,na.rm =TRUE)})
 # hist(dist_sd_sample)
 # 
-# dist_mean_drug = apply(sen,2,function(x){mean(x,na.rm =TRUE)})
+# dist_mean_drug = apply(AUC,2,function(x){mean(x,na.rm =TRUE)})
 # hist(dist_mean_drug)
 # 
-# dist_sd_drug = apply(sen,2,function(x){sd(x,na.rm =TRUE)})
+# dist_sd_drug = apply(AUC,2,function(x){sd(x,na.rm =TRUE)})
 # hist(dist_sd_drug)
 
 # Save Data ---------------------------------------------------------------
-## 1) sen matrix is saved in line 115 without normalization
+## 1) AUC and IC50 matrices are saved in line 179-180
 saveRDS(Expr, file = "Processed_Data/S1/expresion_matrix.rds")
 write.table(Expr, file = "Processed_Data/S1/expresion_matrix.csv",
             row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
