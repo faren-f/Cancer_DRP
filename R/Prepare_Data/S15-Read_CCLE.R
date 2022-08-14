@@ -156,11 +156,11 @@ for (i in ccle_name_Expr){
   for (j in drug_name){
     cell_i_drug_j = response$CCLE.Cell.Line.Name == i & response$Compound == j
     
-    if (sum(cell_i_drug_j) == 0)
+    if (sum(cell_i_drug_j) == 0){
       IC50[i,j] = NA
       AA[i,j] = NA
 
-    else if (sum(cell_i_drug_j) == 1){
+    }else if (sum(cell_i_drug_j) == 1){
              IC50[i,j] = response[cell_i_drug_j,11]
              AA[i,j] = response[cell_i_drug_j,13]
     

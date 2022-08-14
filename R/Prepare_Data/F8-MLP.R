@@ -14,7 +14,7 @@ MLP = function(ytrain,Xtrain,Xtest){
   
   # Add layers to the model
   model %>% 
-    layer_dense(units = 100, activation = 'sigmoid', input_shape = ncol(Xtrain)) %>% 
+    layer_dense(units = 100, activation = 'sigmoid', input_shape = ncol(Xtrain)) %>%
     #kernel_regularizer = regularizer_l2(0.001)) %>%  
     #layer_dropout(rate = 0.4) %>% 
     #kernel_initializer = "normal" ,
@@ -48,7 +48,7 @@ MLP = function(ytrain,Xtrain,Xtest){
   model %>% fit(
     Xtrain, 
     ytrain, 
-    epochs = 200, 
+    epochs = 100, 
     batch_size = 10, 
     validation_split = 0.2,
     callbacks = callbacks)

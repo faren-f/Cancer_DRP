@@ -9,9 +9,9 @@
 
 DoRothEA = function(X){
   X = t(X)
-  data(dorothea_hs, package = "dorothea")
+  data("dorothea_hs_pancancer", package = "dorothea")
   
-  TF = dorothea::run_viper(X, dorothea_hs, options =  list(method = "scale", minsize = 4,
+  TF = dorothea::run_viper(X, dorothea_hs_pancancer, options =  list(method = "scale", minsize = 4,
                                             eset.filter = FALSE, cores = 1,
                                             verbose = FALSE))
   

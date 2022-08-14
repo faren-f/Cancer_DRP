@@ -3,26 +3,27 @@ library(parallel)
 library(caTools)
 library(igraph)
 library(dorothea)
+
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+res = readRDS("Processed_data/Other/Result_All_Drugs.rds")
+r = order(res[,3],decreasing = TRUE)
+r = data.frame(r)
+
 source("F4-DoRothEA.R")
 source("F9-decoupleR.R")
 
 no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 #Read data--------------------------------------------------
-#PRISM
-sen = readRDS("Processed_Data/S1/sensitivity_matrix_AUC.rds")
+sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
-#CCLE
-#sen = readRDS("Processed_Data/S15/sensitivity_matrix_Activity_Area.rds")
-#GE = readRDS("Processed_Data/S15/expresion_matrix.rds")
+omics = GE
 drugs = data.frame(colnames(sen))
 
-omics = GE
 
-Interaction_Network = "STRING"
+Interaction_Network = ""
 MyGraph = NA
 my_genes = NA
 if (Interaction_Network == "STRING"){
@@ -57,8 +58,8 @@ if (Interaction_Network == "STRING"){
 N_itration = 6
 N_drugs = ncol(sen)
 Results = data.frame()
-drug = 1211
-#i = 533
+
+drug = 533
 for (i in drug:drug){
   print(paste0("The drug number is: ", as.character(i)))
   
@@ -72,7 +73,6 @@ for (i in drug:drug){
                      library(igraph),source("F3-Infogenes.R"),
                      library(dorothea),source("F4-DoRothEA.R"),source("F9-decoupleR.R"),
                      library(caTools),library(randomForest),source("F7-RandomForest.R"),
-                     library(glmnet),library(caret),source ("F6-ENet.R"),
                      library(keras),library(tensorflow),source("F8-MLP.R")))
   
   RepLoop = function(j){
@@ -99,7 +99,7 @@ for (i in drug:drug){
     ytrain_norm = (ytrain-Mean_y)/STD_y
     
     # Feature selection---------------------------------------------------------
-    FS_method = "high_corr"
+    FS_method = c("mRMR","high_corr")
     
     if (Interaction_Network == "STRING" | Interaction_Network=="Omnipath"){
       Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
@@ -109,54 +109,48 @@ for (i in drug:drug){
       
     }else if(Interaction_Network == "" | Interaction_Network == "OP_DoRothEA"){
       
-      if(FS_method == "high_corr"){
-        Xtrain = high_corr(Xtrain,ytrain,N_feat=400)
+      for(f in FS_method){
         
-      }else if(FS_method == "mRMR"){
-        Xtrain = mRMR(Xtrain, ytrain, N_feat = 100, alpha=1, do.plot = FALSE)
-        
-      }else if(FS_method == "Progeny"){
-        
+        if(f == "high_corr"){
+          Xtr = high_corr(Xtrain,ytrain,N_feat=200)
+          Xte = Xtest[,colnames(Xtr)]
+          y_pred_RF = MLP(ytrain = ytrain ,Xtrain = Xtr,Xtest = Xte)
+          y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+          mse_RF_hc = mean((ytest-y_pred_RF)^2)
+          corr_RF_hc = cor(ytest,y_pred_RF)
+          
+        }else if(f == "mRMR"){
+          Xtr = mRMR(Xtrain, ytrain, N_feat = 200, alpha=1, do.plot = FALSE)
+          Xte = Xtest[,colnames(Xtr)]
+          y_pred_RF = MLP(ytrain = ytrain ,Xtrain = Xtr,Xtest = Xte)
+          y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+          mse_RF_mRMR = mean((ytest-y_pred_RF)^2)
+          corr_RF_mRMR = cor(ytest,y_pred_RF)
+          
+        }
       }
     }
     
-    Xtest = Xtest[,colnames(Xtrain)]
+    #Xtest = Xtest[,colnames(Xtrain)]
     
     # Models
     
-    y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,
-                             Xtest = Xtest)
-    
-    y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,
-                             Xtest = Xtest)
-    
-    y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,
-                     Xtest = Xtest)
+    #y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     
     
     # y_pred re-normalization
-    y_pred_RF = (y_pred_RF*STD_y)+Mean_y
-    y_pred_ENet = (y_pred_ENet*STD_y)+Mean_y
-    y_pred_MLP = (y_pred_MLP*STD_y)+Mean_y
+    #y_pred_RF = (y_pred_RF*STD_y)+Mean_y
     
     # Evaluation
-    mse_RF = mean((ytest-y_pred_RF)^2)
-    corr_RF = cor(ytest,y_pred_RF)
-    
-    mse_ENet = mean((ytest-y_pred_ENet)^2)
-    corr_ENet = cor(ytest,y_pred_ENet)
-    
-    mse_MLP = mean((ytest-y_pred_MLP)^2)
-    corr_MLP = cor(ytest,y_pred_MLP)
+    #mse_RF = mean((ytest-y_pred_RF)^2)
+    #corr_RF = cor(ytest,y_pred_RF)
     
     
-    result = data.frame(mse_RF = mse_RF,corr_RF = corr_RF,
-                        mse_ENet = mse_ENet, corr_ENet = corr_ENet,
-                        mse_MLP = mse_MLP, corr_MLP = corr_MLP)
+    result = data.frame(mse_RF_hc = mse_RF_hc,mse_RF_mRMR = mse_RF_mRMR,
+                        corr_RF_hc = corr_RF_hc, corr_RF_mRMR = corr_RF_mRMR)
     
     return(result)
   }
-  
   
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
@@ -165,24 +159,13 @@ for (i in drug:drug){
     Result = rbind(Result, result[[k]])
   }
   
-  Results = rbind(Results, data.frame(mean_mse_RF = mean(Result$mse_RF),
-                                      sd_mse_RF = sd(Result$mse_RF),
-                                      mean_corr_RF = mean(Result$corr_RF),
-                                      sd_corr_RF = sd(Result$corr_RF),
-                                      mean_mse_ENet = mean(Result$mse_ENet),
-                                      sd_mse_ENet = sd(Result$mse_ENet),
-                                      mean_corr_ENet = mean(Result$corr_ENet),
-                                      sd_corr_ENet = sd(Result$corr_ENet),
-                                      mean_mse_MLP = mean(Result$mse_MLP),
-                                      sd_mse_MLP = sd(Result$mse_MLP),
-                                      mean_corr_MLP = mean(Result$corr_MLP),
-                                      sd_corr_MLP = sd(Result$corr_MLP)))
+  Results = rbind(Results, data.frame(mean_corr_RF_hc = mean(Result$corr_RF_hc),
+                                      mean_corr_RF_mRMR = mean(Result$corr_RF_mRMR),
+                                      mean_mse_RF_hc = mean(Result$mse_RF_hc),
+                                      mean_mse_RF_mRMR = mean(Result$mse_RF_mRMR)
+                                      ))
   
 }
 stopCluster(cl)
 Results = t(Results)
-#colnames(Results) = paste0("drug_",c(1:2))
-
-#saveRDS(Results,"Processed_Data/Result_All_Drugs.rds")
-#cor_sort = data.frame(sort(Results[,3],decreasing = TRUE))
 

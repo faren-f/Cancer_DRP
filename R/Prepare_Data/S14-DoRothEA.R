@@ -9,17 +9,17 @@
 rm(list=ls())
 
 library(dorothea)
-data(dorothea_hs, package = "dorothea")
+data("dorothea_hs", package = "dorothea")
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-X = readRDS("Processed_Data/Step1/expresion_matrix.rds")
+X = readRDS("Processed_Data/S1/expresion_matrix.rds")
 X = t(X)
 
-TF_activities = dorothea::run_viper(X, dorothea_hs,
-                           options =  list(method = "scale", minsize = 4,
+TF = dorothea::run_viper(X, dorothea_hs,
+                           options =  list(minsize = 5,
                                            eset.filter = FALSE, cores = 1,
                                            verbose = FALSE))
 
-saveRDS(TF_activities,"Processed_data/Step14/TF.rds")
+saveRDS(TF_activities,"Processed_data/S14/TF.rds")
 
 

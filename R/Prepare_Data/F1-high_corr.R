@@ -6,7 +6,7 @@
 # Description: This function receives Xtrain, ytrain data and number of selected 
 # genes(N), to select genes that are highly correlated with drug sensitivity (ytrain).
 
-high_corr = function(Xtrain,ytrain,N_feat=1000){
+high_corr = function(Xtrain,ytrain,N_feat){
   
   Corr = abs(cor(Xtrain,ytrain))
   high_corr = order(Corr,decreasing = TRUE)
