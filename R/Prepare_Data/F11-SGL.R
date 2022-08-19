@@ -11,7 +11,7 @@ library(SGL)
 My_SGL = function(ytrain,Xtrain,Xtest,index){
   
   data = list(x=Xtrain, y = ytrain)
-  cvfit = cvSGL(data, index, type = "linear", maxit = 10)
+  cvfit = cvSGL(data, index, type = "linear", maxit = 5)
   i_lambda_opt = which.min(cvfit$lldiff)
   lambda_opt = cvfit$lambdas[i_lambda_opt]
   fit = SGL(data, index, type = "linear", maxit = 10, lambdas = c(lambda_opt,0))

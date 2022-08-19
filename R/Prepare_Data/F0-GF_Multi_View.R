@@ -8,6 +8,7 @@ library(parallel)
 
 no_cores = detectCores()
 cl = makeCluster(no_cores-2)
+
 res_drugs = readRDS("Processed_data/S0/Result_All_Drugs.rds")
 order_drugs = data.frame(order = order(res_drugs[,3],decreasing = TRUE))
 
@@ -19,7 +20,7 @@ l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
 O1 = GE[,colnames(GE)%in%l1000_genes]
 
 # Transcription Factors
-O2 = DoRothEA(X = GE)
+#O2 = DoRothEA(X = GE)
 
 # Tissue types
 O3 = readRDS("Processed_data/S19/sample_tissue_types.rds")
@@ -28,31 +29,35 @@ O3 = readRDS("Processed_data/S19/sample_tissue_types.rds")
 #O4 = decoupleR(X = GE, method = "gsva")
 
 Results = c()
-for (i in 1:5){
+for (i in order_drugs[3:20,]){
   print(paste0("The drug number is: ", as.character(i)))
   
   # Drug target
-  DTs = Drug_Targets(X= GE)
-  O5 = GE[, DTs[[i]]]
-  
-  if (length(DTs[[i]])==1){
-    D = 1
-    
-  }else if(length(DTs[[i]])<1){
-    D = 0
-    
-    }else{
-      D = ncol(O5)
-    }
+  # DTs = Drug_Targets(X= GE)
+  # O5 = GE[, DTs[[i]]]
+  # 
+  # if (length(DTs[[i]])==1){
+  #   D = 1
+  #   
+  # }else if(length(DTs[[i]])<1){
+  #   D = 0
+  #   
+  #   }else{
+  #     D = ncol(O5)
+  #   }
   
   
   # concatenate all omics data
-  omics = cbind(O1,O2)
-  index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
+  omics = GE
+  index = rep(1,ncol(GE))
   #index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,D))
   
   X = omics[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
+  
+  Mean_X = apply(X,2,mean)
+  STD_X = apply(X,2,sd)
+  X = (X-Mean_X)/STD_X
   
   clusterExport(cl, c("X","y","i","index"))
   clusterEvalQ(cl, c(library(caTools),source("F7-RandomForest.R"),
@@ -70,12 +75,12 @@ for (i in 1:5){
     
     # Normalization-------------------------------------------------------------
     #Xtrain normalization
-    Mean_X = apply(Xtrain,2,mean)
-    STD_X = apply(Xtrain,2,sd)
-    Xtrain = (Xtrain-Mean_X)/STD_X
+    #Mean_X = apply(Xtrain,2,mean)
+    #STD_X = apply(Xtrain,2,sd)
+    #Xtrain = (Xtrain-Mean_X)/STD_X
     
     # Xtest normalization
-    Xtest = (Xtest-Mean_X)/STD_X
+    #Xtest = (Xtest-Mean_X)/STD_X
     
     #for when we have tissue types
     # Mean_X = apply(Xtrain[,1:2254],2,mean)
@@ -126,7 +131,7 @@ for (i in 1:5){
     return(result)
   }
   
-  N_itration = 6
+  N_itration = 12
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
   Result = data.frame()
@@ -143,3 +148,8 @@ for (i in 1:5){
 
 }
 stopCluster(cl)
+#c = colnames(sen)
+#rownames(Results) = c[order_drugs[3:20,]]
+#saveRDS(Results,"All_Results/.rds")
+
+
