@@ -47,8 +47,9 @@ for (i in 1:5){
   
   
   # concatenate all omics data
-  omics = cbind(O1,O2,O5)
-  index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,D))
+  omics = cbind(O1,O2)
+  index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
+  #index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,D))
   
   X = omics[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
