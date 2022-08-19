@@ -30,14 +30,12 @@ O3 = readRDS("Processed_data/S19/sample_tissue_types.rds")
 
 i = 299
 # Drug target
-DTs = Drug_Targets(X= GE)
-#GE_DT = GE[, c(DT, DT[1])]   # when we want to consider only drug targets as features
-O5 = GE[, DTs[[i]]]
+#DTs = Drug_Targets(X= GE)
+#O5 = GE[, DTs[[i]]]
 
 # concatenate all omics data
-omics = cbind(O1,O2,O5)
-
-index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,ncol(O5)))
+omics = cbind(O1,O2)
+index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
 
 X = omics[!is.na(sen[,i]),]
 y = sen[!is.na(sen[,i]),i]
@@ -127,7 +125,6 @@ Results = c(mean(Result$corr_SGL), mean(Result$corr_RF))
             #mean(Result$corr_Ridge), 
             #mean(Result$corr_MLP))
 print(Results)
-
 
 stopCluster(cl)
 
