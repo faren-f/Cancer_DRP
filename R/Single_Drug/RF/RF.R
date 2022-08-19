@@ -7,18 +7,18 @@ setwd("~/Desktop/Cancer_DRP/R/Single_Drug/RF/")
 ## Read data
 sen = readRDS("Raw_data/sensitivity_matrix.rds")
 GE = readRDS("Raw_data/expresion_matrix.rds")
-
+drug_targets = readRDS("Raw_data/drug_targets.rds")
 #i = 540
-i = 325
+i = 1020
 
 #for(i in 1:ncol(sen)){
 y = sen[,i]
 y = y[!is.na(sen[,i])]
 X = GE[!is.na(sen[,i]),] 
 
-Corr = cor(X,y)
-high_corr = order(Corr,decreasing = TRUE)
-X = X[,high_corr[1:600]]
+#Corr = cor(X,y)
+#high_corr = order(Corr,decreasing = TRUE)
+#X = X[,high_corr[1:600]]
 
 X = scale(X)
 #X = (X-min(X))/(max(X)-min(X))
@@ -26,7 +26,7 @@ X = scale(X)
 y = scale(y)
 #y = (y-min(y))/(max(y)-min(y))
 
-Rep = 100
+Rep = 1
 corr = rep(0,Rep)
 mse = rep(0,Rep)
 

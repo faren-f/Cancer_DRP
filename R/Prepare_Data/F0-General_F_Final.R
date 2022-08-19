@@ -16,6 +16,10 @@ cl = makeCluster(no_cores-2)
 #PRISM
 sen = readRDS("Processed_Data/S1/sensitivity_matrix_AUC.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
+drug_targets = readRDS("Processed_data/S1/drug_targets.rds")
+res_drugs = readRDS("Processed_data/Other/Result_All_Drugs.rds")
+order_drugs = data.frame(order = order(res_drugs[,3],decreasing = TRUE))
+
 #CCLE
 #sen = readRDS("Processed_Data/S15/sensitivity_matrix_Activity_Area.rds")
 #GE = readRDS("Processed_Data/S15/expresion_matrix.rds")
@@ -51,7 +55,7 @@ N_drugs = ncol(sen)
 Results = c()
 #drug = 1211
 #1) i = 1211
-i = 1414
+i = 1020
 print(paste0("The drug number is: ", as.character(i)))
   
 X = GE[!is.na(sen[,i]),]
@@ -59,7 +63,7 @@ X_TF = TF[!is.na(sen[,i]),]
 
 y = sen[!is.na(sen[,i]),i]
 
-for (N_feat in c(10,50,100,150,200)){
+for (N_feat in c(500)){
   print(N_feat)
   # Cross validation loop
   
@@ -105,7 +109,7 @@ for (N_feat in c(10,50,100,150,200)){
     ytrain_norm = (ytrain-Mean_y)/STD_y
     
     # Feature selection---------------------------------------------------------
-    FS_method_set = c("high_corr", "infogenes", "mRMR","DoRothEA")
+    FS_method_set = c("high_corr", "mRMR","DoRothEA")
     mse_RF = c()
     corr_RF = c()
     mse_Ridge = c()
@@ -121,12 +125,16 @@ for (N_feat in c(10,50,100,150,200)){
         Xtest_r = Xtest[,colnames(Xtrain_r)]
         
       }else if(FS_method == "mRMR"){
-        Xtrain_r = mRMR(Xtrain, ytrain, N_feat = N_feat, alpha=1, do.plot = FALSE)
-        Xtest_r = Xtest[,colnames(Xtrain_r)]
+        # Xtrain_r = mRMR(Xtrain, ytrain, N_feat = N_feat, alpha=1, do.plot = FALSE)
+        # Xtest_r = Xtest[,colnames(Xtrain_r)]
+        Xtrain_r = Xtrain
+        Xtest_r = Xtest
         
       }else if(FS_method == "DoRothEA"){
         Xtrain_r = high_corr(Xtrain_TF,ytrain,N_feat = N_feat)
         Xtest_r = Xtest_TF[,colnames(Xtrain_r)]
+        # Xtrain_r = Xtrain_TF
+        # Xtest_r = Xtest_TF
       }
       
 

@@ -13,7 +13,7 @@ library(ranger)
 
 decoupleR = function(X, method){
   dorothea = get_dorothea(organism = "human", levels = c("A","B","C"))
-  
+  X = t(X)
   if (method == "aucell"){
     X_tf = decoupleR::run_aucell(
       mat = X,
@@ -37,7 +37,8 @@ decoupleR = function(X, method){
       network = dorothea,
       method = "gsva",
       minsize = 5
-    )}
+    )
+    }
   
   else if (method == "mdt"){
     X_tf = run_mdt(
@@ -165,7 +166,6 @@ decoupleR = function(X, method){
     for (j in colnames(X_TF))
       X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,4]
   }
-  X_TF = t(X_TF)
   return(X_TF)
 }
 

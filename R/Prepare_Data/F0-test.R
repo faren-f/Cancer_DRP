@@ -13,9 +13,27 @@ cl = makeCluster(no_cores-2)
 
 
 #Read data--------------------------------------------------
+res = readRDS("Processed_data/S0/Result_All_Drugs.rds")
+res = order(res[,3],decreasing = TRUE)
 sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
-omics = GE
+##TF
+#TF_Do = DoRothEA(X = GE)
+#TF_Do = t(TF_Do)
+#omics = TF_Do
+
+#decoupleR
+TF_dR = decoupleR(X = GE, method = "gsva")
+omics = TF_dR
+
+
+##L1000
+l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
+#GE = GE[,colnames(GE)%in%l1000_genes]
+
+#sample_tissue_types = readRDS("Processed_data/S19/sample_tissue_types.rds")
+#GE = cbind(TF_Do,GE)
+#omics = GE
 
 Interaction_Network = ""
 MyGraph = NA
@@ -49,11 +67,11 @@ if (Interaction_Network == "STRING"){
 
 
 #loop across drugs--------------------------------------
-N_itration = 6
+N_itration = 60
 N_drugs = ncol(sen)
 Results = data.frame()
 #i=325
-drug = 325
+drug = 1253
 for (i in drug:drug){
   print(paste0("The drug number is: ", as.character(i)))
   
@@ -79,20 +97,20 @@ for (i in drug:drug){
     
     # Normalization-------------------------------------------------------------
     # Xtrain normalization
-    Mean_X = apply(Xtrain,2,mean)
-    STD_X = apply(Xtrain,2,sd)
-    Xtrain = (Xtrain-Mean_X)/STD_X
+    #Mean_X = apply(Xtrain,2,mean)
+    #STD_X = apply(Xtrain,2,sd)
+    #Xtrain = (Xtrain-Mean_X)/STD_X
     
     # Xtest normalization
-    Xtest = (Xtest-Mean_X)/STD_X
+    #Xtest = (Xtest-Mean_X)/STD_X
     
     # Ytrain normalization
-    Mean_y = mean(ytrain)
-    STD_y = sd(ytrain)
-    ytrain_norm = (ytrain-Mean_y)/STD_y
+    #Mean_y = mean(ytrain)
+    #STD_y = sd(ytrain)
+    #ytrain_norm = (ytrain-Mean_y)/STD_y
     
     # Feature selection---------------------------------------------------------
-    FS_method = "mRMR"
+    FS_method = ""
     
     if (Interaction_Network == "STRING" | Interaction_Network=="Omnipath"){
       Xtrain = Infogenes(Xtrain,ytrain,MyGraph,my_genes)
@@ -100,7 +118,7 @@ for (i in drug:drug){
     }else if(Interaction_Network == "OP_decoupleR"){
       Xtrain = Xtrain
       
-    }else if(Interaction_Network == "" | Interaction_Network == "OP_DoRothEA"){
+    }else if(Interaction_Network == "None" | Interaction_Network == "OP_DoRothEA"){
       
       if(FS_method == "high_corr"){
         Xtrain = high_corr(Xtrain,ytrain,N_feat=200)
@@ -120,7 +138,7 @@ for (i in drug:drug){
   
     
     # y_pred re-normalization
-    y_pred_RF = (y_pred_RF*STD_y)+Mean_y
+    #y_pred_RF = (y_pred_RF*STD_y)+Mean_y
      
     # Evaluation
     mse_RF = mean((ytest-y_pred_RF)^2)

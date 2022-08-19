@@ -12,8 +12,8 @@ rm(list=ls())
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
-ppi_edgelist = readRDS("Processed_data/Step7/ppi_STRING.rds")
-GE = readRDS("Processed_Data/Step1/expresion_matrix.rds")
+ppi_edgelist = readRDS("Processed_data/S7/ppi_STRING.rds")
+GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 
 #Removing the gene symbol rows with "NA"
 ppi_edgelist = ppi_edgelist[!is.na(ppi_edgelist$gene_symbol1),]
@@ -25,8 +25,8 @@ ppi_edgelist = ppi_edgelist[(ppi_edgelist$gene_symbol1 %in% colnames(GE) &
 GE = GE[,intersect(colnames(GE),unique(c(ppi_edgelist[,5],ppi_edgelist[,6])))]
 
 
-saveRDS(ppi_edgelist,"Processed_Data/Step9/ppi_STRING_PRISM.rds")
-saveRDS(GE,"Processed_data/Step9/expresion_matrix_PRISM_STRING.rds")
+saveRDS(ppi_edgelist,"Processed_Data/S9/ppi_STRING_PRISM.rds")
+saveRDS(GE,"Processed_data/S9/expresion_matrix_PRISM_STRING.rds")
 
 
 

@@ -28,6 +28,9 @@ RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_rsem_transcri
 gene_transfer = import("Raw_data/PRISM/Expression/RNA_seq/gencode.v19.genes.v7_model.patched_contigs.gtf.gz")
 gene_transfer = data.frame(gene_transfer)
 
+# Finding drug targets for all drugs
+drug_targets = response[!duplicated(response$name),c(12,14)]
+rownames(drug_targets) = 1:nrow(drug_targets)
 # Pre-processing ----------------------------------------------------------
 ## Log normalization of genes
 expr_raw = RNAseq[,c(-1,-2)]
@@ -218,3 +221,10 @@ write.table(Expr, file = "Processed_Data/S1/expresion_matrix.csv",
             row.names = TRUE, col.names = TRUE, quote = FALSE, sep = ",")
 
 saveRDS(gene_transfer1, file = "Processed_Data/S1/gene_transfer.rds")
+saveRDS(drug_targets, file = "Processed_Data/S1/drug_targets.rds")
+
+
+
+
+
+

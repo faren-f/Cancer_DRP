@@ -14,27 +14,29 @@
 rm(list=ls())
 
 library(biomaRt)
+library(dplyr)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 # Read_ppi ----------------------------------------------------------------
 #1) SRTING website(Download>>Homo sapiens>>protein network data (full network, scored links between proteins))
 # Data from SRTING website is new version and compeleted than data that exist in STRINGdb package
 
-protein_links = read.delim2("Raw_data/ppi_Raw_data/9606.protein.links.v11.5.txt", 
+protein_links = read.delim2("Raw_data/PPI/9606.protein.links.v11.5.txt", 
                             header = TRUE, sep = " ")
-protein_info = read.delim2("Raw_data/ppi_Raw_data/9606.protein.info.v11.5.txt", 
+protein_info = read.delim2("Raw_data/PPI/9606.protein.info.v11.5.txt", 
                            header = TRUE, sep = "\t",quote="")
 
+
 #Reduce ppi links to select links with scores more than e.g. 900
-#protein_links_reduced = protein_links[protein_links$score>900,]
+protein_links_reduced = protein_links[protein_links$combined_score>900,]
 
 # Seperating 9606 from first part of the ENSPs in protein_links
-col1 = strsplit(protein_links$protein1, "[.]")
+col1 = strsplit(protein_links_reduced$protein1, "[.]")
 colname_1 = sapply(col1, '[[', 2)
-col2 = strsplit(protein_links$protein2, "[.]")
+col2 = strsplit(protein_links_reduced$protein2, "[.]")
 colname_2 = sapply(col2, '[[', 2)
-protein_links$protein1 = colname_1
-protein_links$protein2 = colname_2
+protein_links_reduced$protein1 = colname_1
+protein_links_reduced$protein2 = colname_2
 
 rm(col1)
 rm(col2)
@@ -55,15 +57,15 @@ rm(colname_2)
 # Convert ENSP to ENSG & Gene symbol Using biomaRt package ----------------------------------------------
 ensembl = useMart("ensembl", dataset = "hsapiens_gene_ensembl")
 myFilter = "ensembl_peptide_id"
-myValues = unique(protein_links$protein1)
+myValues = unique(protein_links_reduced$protein1)
 myAttributes = c("ensembl_peptide_id", "ensembl_gene_id","hgnc_symbol","entrezgene_id")
 
 ## assemble and query the mart (for the first column of protein_links)
 # conv_table = getBM(attributes =  myAttributes, filters =  myFilter,
 #                    values =  myValues, mart = ensembl)
 
-saveRDS(conv_table,"Processed_data/Step7/biomart_conversion_table.rds")
-conv_table = readRDS("Processed_data/Step7/biomart_conversion_table.rds")
+#saveRDS(conv_table,"Processed_data/Step7/biomart_conversion_table.rds")
+conv_table = readRDS("Processed_data/S7/biomart_conversion_table.rds")
 
 #deplicated_conv_table = which(duplicated(conv_table, incomparables=FALSE, fromLast=FALSE, by=key(conv_table)))
 
@@ -75,7 +77,7 @@ conv_table = mutate_all(conv_table, na_if,"")
 
 # Making ppi_EdgeList_compelete -------------------------------------------------
 
-merge1 = merge(x=protein_links,y=conv_table,by.x="protein1",
+merge1 = merge(x=protein_links_reduced,y=conv_table,by.x="protein1",
                by.y ="ensembl_peptide_id", all=FALSE)
 
 merge_all = merge(x=merge1,y=conv_table,by.x="protein2",
@@ -89,5 +91,5 @@ colnames(merge_all) = c("protein_id1","protein_id2",
                         "entrez_id1","entrez_id2",
                         "ppi_score")
 
-saveRDS(merge_all, "Processed_data/Step7/ppi_STRING.rds")
+saveRDS(merge_all, "Processed_data/S7/ppi_STRING.rds")
 
