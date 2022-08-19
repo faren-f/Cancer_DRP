@@ -37,7 +37,7 @@ omics = cbind(O1,O2)
 #index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,ncol(O3)))
 index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
 
-i = 662
+i = 1399
 X = omics[!is.na(sen[,i]),]
 y = sen[!is.na(sen[,i]),i]
 
