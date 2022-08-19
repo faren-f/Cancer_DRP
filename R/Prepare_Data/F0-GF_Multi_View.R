@@ -2,41 +2,57 @@ rm(list=ls())
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 source("F4-DoRothEA.R")
-source("F9-decoupleR.R")
+#source("F9-decoupleR.R")
 source("F12-Drug_Targets.R")
 library(parallel)
 
 no_cores = detectCores()
 cl = makeCluster(no_cores-2)
+res_drugs = readRDS("Processed_data/S0/Result_All_Drugs.rds")
+order_drugs = data.frame(order = order(res_drugs[,3],decreasing = TRUE))
 
 sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
-O1 = GE
+
 # L1000
 l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-O2 = GE[,colnames(GE)%in%l1000_genes]
+O1 = GE[,colnames(GE)%in%l1000_genes]
 
 # Transcription Factors
-O3 = DoRothEA(X = GE)
+O2 = DoRothEA(X = GE)
 
 # Tissue types
-O4 = readRDS("Processed_data/S19/sample_tissue_types.rds")
+O3 = readRDS("Processed_data/S19/sample_tissue_types.rds")
 
 # decoupleR
-#O5 = decoupleR(X = GE, method = "gsva")
-#FS_Methods = c("L1000","DT","DoRothEA","decoupleR","TisueType","Pathways")
-omics = c(O1,O2,O3,O4,O5)
-i = 299
-for (i in 1:ncol(sen)){
+#O4 = decoupleR(X = GE, method = "gsva")
+
+Results = c()
+for (i in 1:5){
+  print(paste0("The drug number is: ", as.character(i)))
   
   # Drug target
   DTs = Drug_Targets(X= GE)
-  O6 = GE[, DTs[[i]]]
+  O5 = GE[, DTs[[i]]]
+  
+  if (length(DTs[[i]])==1){
+    D = 1
+    
+  }else if(length(DTs[[i]])<1){
+    D = 0
+    
+    }else{
+      D = ncol(O5)
+    }
+  
+  
+  # concatenate all omics data
+  omics = cbind(O1,O2,O5)
+  index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,D))
   
   X = omics[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
   
-  for(j in FS_Methods){}
   clusterExport(cl, c("X","y","i","index"))
   clusterEvalQ(cl, c(library(caTools),source("F7-RandomForest.R"),
                      library(keras),library(tensorflow),source("F8-MLP.R"),
@@ -73,7 +89,7 @@ for (i in 1:ncol(sen)){
     Mean_y = mean(ytrain)
     STD_y = sd(ytrain)
     ytrain_norm = (ytrain-Mean_y)/STD_y
-    
+  
     # Models
     y_pred_SGL = My_SGL(ytrain = ytrain_norm ,Xtrain = Xtrain,Xtest = Xtest,index = index)
     y_pred_RF = RandomForest(ytrain = ytrain_norm ,Xtrain = Xtrain,Xtest = Xtest)
@@ -101,15 +117,15 @@ for (i in 1:ncol(sen)){
     
     result = data.frame(corr_SGL = corr_SGL, 
                         corr_RF = corr_RF)
-    #corr_ENet = corr_ENet,
-    #corr_Lasso = corr_Lasso,
-    #corr_Ridge = corr_Ridge,
-    #corr_MLP = corr_MLP)
+                        #corr_ENet = corr_ENet,
+                        #corr_Lasso = corr_Lasso,
+                        #corr_Ridge = corr_Ridge,
+                        #corr_MLP = corr_MLP)
     
     return(result)
   }
   
-  N_itration = 12
+  N_itration = 6
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
   Result = data.frame()
@@ -117,11 +133,12 @@ for (i in 1:ncol(sen)){
     Result = rbind(Result, result[[k]])
   }
   
-  Results = c(mean(Result$corr_SGL), mean(Result$corr_RF))
-  #mean(Result$corr_ENet), mean(Result$corr_Lasso),
-  #mean(Result$corr_Ridge), 
-  #mean(Result$corr_MLP))
-  print(Results)
+  
+  Result_mean = apply(Result, 2, mean)
+  Result_sd = apply(Result, 2, sd)
+  print(Result_mean)
+  
+  Results = rbind(Results, c(Result_mean, Result_sd))
+
 }
 stopCluster(cl)
-
