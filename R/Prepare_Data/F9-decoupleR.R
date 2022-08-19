@@ -163,8 +163,15 @@ decoupleR = function(X, method){
   colnames(X_TF) = unique(X_tf$source) 
   
   for (i in rownames(X_TF)){
-    for (j in colnames(X_TF))
+    for (j in colnames(X_TF)){
+      
+      if(method == "consensus"){
+      X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,5]
+      
+      }else{
       X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,4]
+      }
+    }
   }
   return(X_TF)
 }

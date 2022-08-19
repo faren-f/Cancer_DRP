@@ -14,7 +14,7 @@ DoRothEA = function(X){
   TF = dorothea::run_viper(X, dorothea_hs_pancancer, options =  list(method = "scale", minsize = 4,
                                             eset.filter = FALSE, cores = 1,
                                             verbose = FALSE))
-  
+  TF = t(TF)
   
   return(TF)
 }
