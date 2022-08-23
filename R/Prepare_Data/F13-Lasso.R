@@ -1,35 +1,39 @@
-#                  Created on Wed Aug 4 12:04 2022
+#                  Created on Wed Aug 20 19:34 2022
 
 #                     @author: Farzaneh Firoozbakht
 #                   Email: faren.firoozbakht@gmail.com
 
 # Description: This function receives train and test data and hyper parameters 
 # of the model to compute output prediction using linear regression model 
-# regularized by L2 norm popular as Ridge regression model
+# regularized by L1 norm popular as Lasso regression model
 
 library(glmnet)
 library(caret)
 
-Ridge = function(ytrain,Xtrain,Xtest){
+Lasso = function(ytrain,Xtrain,Xtest){
   
-  train_data = cbind(Xtrain,ytrain)
   control = trainControl(method = "repeatedcv",
                          number = 5,
                          repeats = 5,
-                         verboseIter = TRUE)
-  tune = expand.grid(alpha = 0,lambda = seq(0.1,10,by = 0.5))
-  #tune = expand.grid(alpha = 0, lambda = c(0.001,0.01,0.1,1,10))
-  model = caret::train(ytrain ~., data = train_data,
+                         verboseIter = FALSE)
+  
+  tune = expand.grid(alpha = 1,lambda = seq(0.01,10,by = 0.1))
+  #tune = expand.grid(alpha = 1, lambda = c(0.001,0.01,0.1,1,10,100))
+  model = caret::train(y= ytrain,
+                       x = Xtrain,
                        method = "glmnet",
                        metric="RMSE",
                        allowParallel = TRUE,
                        tuneGrid = tune,
                        trControl = control)
-  y_pred = predict(model,Xtest)
   
+  y_pred = predict(model,Xtest)
+  model$bestTune
   return(y_pred)
   
 }
+
+
 
 
 

@@ -10,7 +10,6 @@
 library(glmnet)
 library(caret)
 
-
 ElasticNet = function(ytrain,Xtrain,Xtest){
   
   train_data = cbind(Xtrain,ytrain)
@@ -20,8 +19,8 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                          #search = "random",
                          verboseIter = TRUE)
   
-  #tune = expand.grid(alpha = seq(.05, 1, length = 15),lambda = seq(0.001,0.1,by = 0.01))
-  tune = expand.grid(alpha = seq(.5, 1, length = 2),lambda = c(0.001,0.01,0.1))
+  tune = expand.grid(alpha = seq(.05, 1, length = 15),lambda = seq(0.01,10,by = 0.1))
+  #tune = expand.grid(alpha = seq(.5, 1, length = 2),lambda = c(0.001,0.01,0.1))
   
   model = caret::train(ytrain ~., data = train_data,
                          method = "glmnet",

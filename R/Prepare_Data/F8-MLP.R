@@ -14,17 +14,20 @@ MLP = function(ytrain,Xtrain,Xtest){
   
   # Add layers to the model
   model %>% 
-    layer_dense(units = 100, activation = 'sigmoid', input_shape = ncol(Xtrain)) %>%
-    #kernel_regularizer = regularizer_l2(0.001)) %>%  
-    #layer_dropout(rate = 0.4) %>% 
+    layer_dense(units = 150, activation = 'sigmoid', input_shape = ncol(Xtrain),
+    kernel_regularizer = regularizer_l2(0.5)) %>% 
+    #layer_dropout(rate = 0.2)) %>% 
     #kernel_initializer = "normal" ,
     #bias_initializer = "Zeros") %>%  
     
-    layer_dense(units = 10, activation = 'sigmoid') %>% 
-    #layer_dropout(rate = 0.3) %>% 
+    layer_dense(units = 80, activation = 'sigmoid')%>%  
+    #kernel_regularizer = regularizer_l2(0.1)) %>% 
+    #layer_dropout(rate = 0.3)) %>% 
     
-    #layer_dense(units = 125, activation = 'relu') %>% 
-    #layer_dropout(rate = 0.2) %>% 
+    #layer_dense(units = 10, activation = 'sigmoid') %>% 
+    #kernel_regularizer = regularizer_l2(1)) %>% 
+    
+    #layer_dropout(rate = 0.2)) %>% 
     
     
     #layer_dense(units = 125, activation = 'relu') %>%
@@ -38,7 +41,7 @@ MLP = function(ytrain,Xtrain,Xtest){
   
   model %>% compile(
     loss = 'mse',
-    optimizer = optimizer_adam(learning_rate = 0.00001))
+    optimizer = optimizer_adam(learning_rate = 0.0001))
   
   
   callbacks = list(callback_early_stopping(monitor = "val_loss", patience = 5, 
@@ -48,8 +51,8 @@ MLP = function(ytrain,Xtrain,Xtest){
   model %>% fit(
     Xtrain, 
     ytrain, 
-    epochs = 100, 
-    batch_size = 10, 
+    epochs = 200, 
+    batch_size = 5, 
     validation_split = 0.2,
     callbacks = callbacks)
   

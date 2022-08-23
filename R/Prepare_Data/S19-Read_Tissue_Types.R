@@ -17,10 +17,10 @@ for (i in sample_ids){
   for(j in tissue_types)
   
   if(sum(cellline_info$depmap_id==i & cellline_info$primary_tissue==j))
-    sample_tissue_types[i,j]=2
+    sample_tissue_types[i,j]=1
   
     else
-      sample_tissue_types[i,j]=1
+      sample_tissue_types[i,j]=0
 }
 
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
@@ -28,4 +28,13 @@ GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 sample_tissue_types = sample_tissue_types[intersect(rownames(GE),rownames(sample_tissue_types)),]
 
 saveRDS(sample_tissue_types,"Processed_data/S19/sample_tissue_types.rds")
+
+S = apply(sample_tissue_types,2,sum)
+sum(S[S>14])
+I = which(S<14)
+Other = apply(sample_tissue_types[,I],1,sum)
+sample_tissue_types_other = cbind(sample_tissue_types[,-I],Other)
+
+saveRDS(sample_tissue_types_other,"Processed_data/S19/sample_tissue_types_other.rds")
+
 
