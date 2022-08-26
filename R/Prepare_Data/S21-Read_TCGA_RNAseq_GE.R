@@ -121,3 +121,11 @@ for (i in Cancers){
 }
 TT = data.frame(TT)
 
+N_TT = c()
+for(u in unique(TT[,1])){
+  N_TT = c(N_TT, sum(TT$TT %in% u))
+}
+
+Number_of_each_Cancer = cbind(unique(TT[,1]),N_TT)
+
+
