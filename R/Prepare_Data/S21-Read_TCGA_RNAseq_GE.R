@@ -117,5 +117,5 @@ for (i in Cancers){
   TT = c(TT,rep(i,nrow(Cancer_i)))
   TCGA_GE = rbind(TCGA_GE,Cancer_i)
 }
-
+TT = data.frame(TT)
 
