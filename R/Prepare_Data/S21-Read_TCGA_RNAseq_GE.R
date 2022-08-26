@@ -23,15 +23,54 @@ Cancer_type = data.frame(lapply(x, rep, x$s))
 Response_table$Cancer_type = Cancer_type[,1]
 
 ## Read RNAseq data from (http://firebrowse.org) 
-BRCA = read.table("Raw_data/TCGA/RNAseq/BRCA/BRCA.rnaseqv2_RSEM_genes_normalized.txt",
-                      fill = TRUE, header=FALSE)
-BLCA = read.table("Raw_data/TCGA/RNAseq/BLCA/BLCA.rnaseqv2_RSEM_genes_normalized.txt",
-                      fill = TRUE, header=FALSE)
 
-Cancers = c("BRCA","BLCA")
+ACC = read.table("Raw_data/TCGA/RNAseq/ACC/ACC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+BLCA = read.table("Raw_data/TCGA/RNAseq/BLCA/BLCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+BRCA = read.table("Raw_data/TCGA/RNAseq/BRCA/BRCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+CESC = read.table("Raw_data/TCGA/RNAseq/CESC/CESC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+CHOL = read.table("Raw_data/TCGA/RNAseq/CHOL/CHOL.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+COAD = read.table("Raw_data/TCGA/RNAseq/COAD/COAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+COADREAD = read.table("Raw_data/TCGA/RNAseq/COADREAD/COADREAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+DLBC = read.table("Raw_data/TCGA/RNAseq/DLBC/DLBC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+ESCA = read.table("Raw_data/TCGA/RNAseq/ESCA/ESCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+GBM = read.table("Raw_data/TCGA/RNAseq/GBM/GBM.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+GBMLGG = read.table("Raw_data/TCGA/RNAseq/GBMLGG/GBMLGG.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+HNSC = read.table("Raw_data/TCGA/RNAseq/HNSC/HNSC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+KICH = read.table("Raw_data/TCGA/RNAseq/KICH/KICH.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+KIPAN = read.table("Raw_data/TCGA/RNAseq/KIPAN/KIPAN.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+KIRC = read.table("Raw_data/TCGA/RNAseq/KIRC/KIRC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+KIRP = read.table("Raw_data/TCGA/RNAseq/KIRP/KIRP.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+LAML = read.table("Raw_data/TCGA/RNAseq/LAML/LAML.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+LGG = read.table("Raw_data/TCGA/RNAseq/LGG/LGG.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+LIHC = read.table("Raw_data/TCGA/RNAseq/LIHC/LIHC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+LUAD = read.table("Raw_data/TCGA/RNAseq/LUAD/LUAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+LUSC = read.table("Raw_data/TCGA/RNAseq/LUSC/LUSC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+MESO = read.table("Raw_data/TCGA/RNAseq/MESO/MESO.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+OV = read.table("Raw_data/TCGA/RNAseq/OV/OV.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+PAAD = read.table("Raw_data/TCGA/RNAseq/PAAD/PAAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+PCPG = read.table("Raw_data/TCGA/RNAseq/PCPG/PCPG.rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__RSEM_genes_normalized__data.data.txt",fill = TRUE, header=FALSE)
+PRAD = read.table("Raw_data/TCGA/RNAseq/PRAD/PRAD.rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__RSEM_genes_normalized__data.data.txt",fill = TRUE, header=FALSE)
+READ = read.table("Raw_data/TCGA/RNAseq/READ/READ.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+SARC = read.table("Raw_data/TCGA/RNAseq/SARC/SARC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+SKCM = read.table("Raw_data/TCGA/RNAseq/SKCM/SKCM.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+STAD = read.table("Raw_data/TCGA/RNAseq/STAD/STAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+STES = read.table("Raw_data/TCGA/RNAseq/STES/STES.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+TGCT = read.table("Raw_data/TCGA/RNAseq/TGCT/TGCT.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+THCA = read.table("Raw_data/TCGA/RNAseq/THCA/THCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+THYM = read.table("Raw_data/TCGA/RNAseq/THYM/THYM.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+UCEC = read.table("Raw_data/TCGA/RNAseq/UCEC/UCEC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+UCS = read.table("Raw_data/TCGA/RNAseq/UCS/UCS.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+UVM = read.table("Raw_data/TCGA/RNAseq/UVM/UVM.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+
+Cancers = c("ACC","BLCA","BRCA","CESC","COAD","ESCA",
+            "HNSC","KIRC","KIRP","LGG","LIHC","LUAD",
+            "LUSC","MESO","OV","PAAD","PCPG","PRAD","READ",
+            "SARC","SKCM","STAD","TGCT","THCA","UCEC","UCS")
+
 TCGA_GE = c()
 TT = c()
 for (i in Cancers){
+  print(i)
   Cancer_i = get(i)
   Cancer_i = Cancer_i[-2,]
   patient_all = Cancer_i[1,]
@@ -78,8 +117,5 @@ for (i in Cancers){
   TT = c(TT,rep(i,nrow(Cancer_i)))
   TCGA_GE = rbind(TCGA_GE,Cancer_i)
 }
-  
-#hist(Cancer_i,100)
-
 
 
