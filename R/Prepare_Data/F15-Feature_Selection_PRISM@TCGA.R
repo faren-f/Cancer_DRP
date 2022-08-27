@@ -5,19 +5,17 @@
 
 # Description: 
 
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 
 source("F9-decoupleR.R")
-
-Feature_Selection = function(selected_features){
+source("F4-DoRothEA.R")
+Feature_Selection = function(selected_features,GE,GE_test){
   Omics = list()
   if (prod(selected_features == "")){
     writeLines("selected_features is empty!\nEnter your desired features")
     omics = c()
     index = c()
     Omics = list(omics,index)
-  
+    
   }else if (prod(selected_features == "Whole_genes")){
     omics = GE
     index = rep(1,ncol(omics))
@@ -25,14 +23,20 @@ Feature_Selection = function(selected_features){
     
   }else if (prod(selected_features == "Landmark_genes")){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-    omics = GE[,colnames(GE)%in%l1000_genes]
+    I_G = intersect(l1000_genes,colnames(GE_test))
+    
+    omics = GE[,I_G]
+    omics_test = GE_test[,I_G]
+    
     index = rep(1,ncol(omics))
-    Omics = list(omics,index)
+    Omics = list(omics,index,omics_test)
     
   }else if (prod(selected_features == "TF_DoRothEA")){
-    omics = readRDS("Processed_data/S14/DoRothEA_TF.rds")
+    omics = DoRothEA(GE)
+    omics_test = DoRothEA(GE_test)
+    
     index = rep(1,ncol(omics))
-    Omics = list(omics,index)
+    Omics = list(omics,index,omics_test)
     
   }else if (prod(selected_features == "Tissue_types")){
     omics = readRDS("Processed_data/S19/sample_tissue_types.rds")
@@ -43,12 +47,12 @@ Feature_Selection = function(selected_features){
     omics = decoupleR(X = GE, method = "gsva")
     index = rep(1,ncol(omics))
     Omics = list(omics,index)
-  
+    
   }else if (prod(selected_features == c("Landmark_genes","TF_DoRothEA"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
     O1 = GE[,colnames(GE)%in%l1000_genes]
     O2 = readRDS("Processed_data/S14/DoRothEA_TF.rds")
-
+    
     omics = cbind(O1,O2)
     colnames(omics) = 1:ncol(omics)
     index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
@@ -66,7 +70,7 @@ Feature_Selection = function(selected_features){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
     O1 = GE[,colnames(GE)%in%l1000_genes]
     O2 = decoupleR(X = GE, method = "gsva")
-
+    
     omics = cbind(O1,O2)
     colnames(omics) = 1:ncol(omics)
     index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
@@ -95,7 +99,7 @@ Feature_Selection = function(selected_features){
     O1 = GE[,colnames(GE)%in%l1000_genes]
     O2 = readRDS("Processed_data/S14/DoRothEA_TF.rds")
     O3 = decoupleR(X = GE, method = "gsva")
-
+    
     omics = cbind(O1,O2,O3)
     colnames(omics) = 1:ncol(omics)
     index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,ncol(O3)))
@@ -106,7 +110,7 @@ Feature_Selection = function(selected_features){
     O1 = GE[,colnames(GE)%in%l1000_genes]
     O2 = readRDS("Processed_data/S19/sample_tissue_types.rds")
     O3 = decoupleR(X = GE, method = "gsva")
-
+    
     omics = cbind(O1,O2,O3)
     colnames(omics) = 1:ncol(omics)
     
@@ -126,7 +130,7 @@ Feature_Selection = function(selected_features){
     index = c(rep(1,ncol(O1)),rep(2,ncol(O2)),rep(3,ncol(O3)),rep(4,ncol(O4)))
     Omics = list(omics,index)    
   }
-return(Omics)
+  return(Omics)
 }
 
 

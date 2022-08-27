@@ -3,6 +3,7 @@ library("readxl")
 
 # Read clinical data from table (2016-Ding)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+res_TCGA = readRDS("Processed_data/S21/Drug_Response_matrix_TCGA.rds")
 N_Patients = readRDS("Processed_data/S21/Num_Patients_in_each_cancer.rds")
 Response_table = read_excel("Raw_data/TCGA/2016-Ding/bioinfo16_supplementary_tables.xlsx",
                       sheet = 3,na = "---")
@@ -119,13 +120,19 @@ for (i in Cancers){
   TT = c(TT,rep(i,nrow(Cancer_i)))
   TCGA_GE = rbind(TCGA_GE,Cancer_i)
 }
-TT = data.frame(TT)
 
 N_TT = c()
-for(u in unique(TT[,1])){
-  N_TT = c(N_TT, sum(TT$TT %in% u))
+for(u in unique(TT)){
+  N_TT = c(N_TT, sum(TT %in% u))
 }
 
 Number_of_each_Cancer = cbind(unique(TT[,1]),N_TT)
 
+I_samples = intersect(rownames(TCGA_GE),rownames(res_TCGA))
 
+TCGA_GE = TCGA_GE[I_samples,]
+res_TCGA = res_TCGA[I_samples,]
+
+saveRDS(Number_of_each_Cancer,"Processed_data/S22/Number_of_each_Cancer_TCGA.rds")
+saveRDS(TCGA_GE,"Processed_data/S22/expresion_matrix_TCGA.rds")
+saveRDS(res_TCGA,"Processed_data/S22/Drug_response_matrix_TCGA.rds")

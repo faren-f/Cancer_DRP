@@ -16,7 +16,7 @@ drugs = unique(Response_table$drug_name)
 # drugs that are common between TCGA and PRISM
 sen = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
 TCGA_PRISM_drugs = intersect(drugs,colnames(sen))
-saveRDS(TCGA_PRISM_drugs,"Processed_data/S21/TCGA_PRISM_drugs.rds")
+saveRDS(TCGA_PRISM_drugs,"Processed_data/S21/Drugs_TCGA@PRISM.rds")
 
 # Patients & Cancer type in TCGA
 Cancer_Patient = Response_table[!duplicated(Response_table$bcr_patient_barcode),1:2]
@@ -49,11 +49,11 @@ for(i in Cancer_Patient[,2]){
     }
   }
 }
-saveRDS(response_mat,"Processed_data/S21/TCGA_Drug_Response_matrix.rds")
+saveRDS(response_mat,"Processed_data/S21/Drug_Response_matrix_TCGA.rds")
 
 # Cancers types in TCGA that have drug responses
 cancers = unique(Response_table$Cancer)
-saveRDS(cancers,"Processed_data/S21/TCGA_Cancer_types.rds")
+saveRDS(cancers,"Processed_data/S21/Cancer_types_TCGA.rds")
 # Number of patients in each cancer
 N_P = c()
 for (i in cancers){
