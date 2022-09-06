@@ -19,9 +19,9 @@ S = c()
 for(i in Cancer_types){
   S = c(S,sum(Response_table$Cancer == i))
 }
-x = data.frame(c = Cancer,s = S)
-Cancer_type = data.frame(lapply(x, rep, x$s))
-Response_table$Cancer_type = Cancer_type[,1]
+
+Cancer_type = rep(Cancer,times = S)
+Response_table$Cancer_type = Cancer_type
 
 ## Read RNAseq data from (http://firebrowse.org) 
 
@@ -29,6 +29,7 @@ ACC = read.table("Raw_data/TCGA/RNAseq/ACC/ACC.rnaseqv2_RSEM_genes_normalized.tx
 ACC = ACC[,1:(ncol(ACC)-1)]
 BLCA = read.table("Raw_data/TCGA/RNAseq/BLCA/BLCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
 BRCA = read.table("Raw_data/TCGA/RNAseq/BRCA/BRCA.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+BRCA = BRCA[,1:(ncol(BRCA)-1)]
 CESC = read.table("Raw_data/TCGA/RNAseq/CESC/CESC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
 #CHOL = read.table("Raw_data/TCGA/RNAseq/CHOL/CHOL.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
 COAD = read.table("Raw_data/TCGA/RNAseq/COAD/COAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
@@ -50,6 +51,7 @@ LUSC = read.table("Raw_data/TCGA/RNAseq/LUSC/LUSC.rnaseqv2_RSEM_genes_normalized
 MESO = read.table("Raw_data/TCGA/RNAseq/MESO/MESO.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
 OV = read.table("Raw_data/TCGA/RNAseq/OV/OV.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
 PAAD = read.table("Raw_data/TCGA/RNAseq/PAAD/PAAD.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
+PAAD = PAAD[,1:(ncol(PAAD)-1)]
 PCPG = read.table("Raw_data/TCGA/RNAseq/PCPG/PCPG.rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__RSEM_genes_normalized__data.data.txt",fill = TRUE, header=FALSE)
 PRAD = read.table("Raw_data/TCGA/RNAseq/PRAD/PRAD.rnaseqv2__illuminahiseq_rnaseqv2__unc_edu__Level_3__RSEM_genes_normalized__data.data.txt",fill = TRUE, header=FALSE)
 READ = read.table("Raw_data/TCGA/RNAseq/READ/READ.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
@@ -126,7 +128,7 @@ for(u in unique(TT)){
   N_TT = c(N_TT, sum(TT %in% u))
 }
 
-Number_of_each_Cancer = cbind(unique(TT[,1]),N_TT)
+Number_of_each_Cancer = cbind(unique(TT),N_TT)
 
 I_samples = intersect(rownames(TCGA_GE),rownames(res_TCGA))
 
@@ -136,3 +138,4 @@ res_TCGA = res_TCGA[I_samples,]
 saveRDS(Number_of_each_Cancer,"Processed_data/S22/Number_of_each_Cancer_TCGA.rds")
 saveRDS(TCGA_GE,"Processed_data/S22/expresion_matrix_TCGA.rds")
 saveRDS(res_TCGA,"Processed_data/S22/Drug_response_matrix_TCGA.rds")
+saveRDS(Cancer_type,"Processed_data/S22/Cancer_Types.rds")

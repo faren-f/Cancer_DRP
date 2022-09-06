@@ -6,7 +6,18 @@
 # Description: 
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
+conv_table = readRDS("Processed_data/S7/biomart_conversion_table.rds")
+
+#GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
+
+
+### for cisplatin
+# GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
+# cisplatin_genes = readRDS("Processed_data/S26/cisplatin_gene_pathways.rds")
+# I = intersect(colnames(GE),cisplatin_genes$hgnc_symbol)
+GE = GE[,a]
+##########
+
 
 source("F9-decoupleR.R")
 

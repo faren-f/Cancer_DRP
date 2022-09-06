@@ -17,7 +17,7 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                          number = 5,
                          repeats = 5,
                          #search = "random",
-                         verboseIter = TRUE)
+                         verboseIter = FALSE)
   
   tune = expand.grid(alpha = seq(.05, 1, length = 15),lambda = seq(0.01,10,by = 0.1))
   #tune = expand.grid(alpha = seq(.5, 1, length = 2),lambda = c(0.001,0.01,0.1))

@@ -16,7 +16,7 @@ Ridge = function(ytrain,Xtrain,Xtest){
   control = trainControl(method = "repeatedcv",
                          number = 5,
                          repeats = 5,
-                         verboseIter = TRUE)
+                         verboseIter = FALSE)
   tune = expand.grid(alpha = 0,lambda = seq(0.1,10,by = 0.5))
   #tune = expand.grid(alpha = 0, lambda = c(0.001,0.01,0.1,1,10))
   model = caret::train(ytrain ~., data = train_data,
