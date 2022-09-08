@@ -1,5 +1,7 @@
 rm(list=ls())
 
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+
 source("F7-RandomForest.R")
 source("F6-ENet.R")
 source("F8-MLP.R")
@@ -10,15 +12,11 @@ source("F16-Zscore_Normalization.R")
 source("F17-Rank_Normalization.R")
 source("F18-Combat_Normalization.R")
 
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-Cancer_type = readRDS("Processed_data/S22/Cancer_Types.rds")
-Cancer_type = data.frame(Cancer_type)
-N_Cancer = readRDS("Processed_data/S22/Number_of_each_Cancer_TCGA.rds")
 low_sample_drugs = c(1,3,4,5,6,7,12,13,14,19,20,21,22,23,24,25,28,29,31,33,36,37
                      ,39,40,41,42,43,45,47,49,51,52,56,57,58)
 sen_PRISM = readRDS("Processed_data/S23/sensitivity_matrix_PRISM_with@TCGA@drugs.rds")
-#res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
-res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
+res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
+#res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
 
 sen_PRISM = sen_PRISM[,-low_sample_drugs]
 res_TCGA = res_TCGA[,-low_sample_drugs]
@@ -33,9 +31,10 @@ GE = GE[,-which(q3_genes==0)]
 
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
+#saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
 Results = c()
 
-for (i in 3:N_drug){
+for (i in 2:N_drug){
   
   print(paste0("The drug number is: ", as.character(i)))
   
@@ -56,27 +55,28 @@ for (i in 3:N_drug){
     Xtest = X_Normalization[[2]]
 
     source("F15-Feature_Selection_PRISM@TCGA.R")
-    selected_features = c("Landmark_genes")
+    selected_features = c("Whole_genes")
     Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
     Xtrain = Omics_List[[1]]
     index = Omics_List[[2]]
     Xtest = Omics_List[[3]]
     
     # Ytrain normalization
-    #Mean_ytrain = mean(ytrain)
-    #STD_ytrain = sd(ytrain)
-    #ytrain = (ytrain-Mean_ytrain)/STD_ytrain
-    
+    # Mean_ytrain = mean(ytrain)
+    # STD_ytrain = sd(ytrain)
+    # ytrain = (ytrain-Mean_ytrain)/STD_ytrain
+
     # Models
-    #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
-    #y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    #y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    #y_pred_Lasso = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+    y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
+    #y_pred_Ridge = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    #y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
     #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     
     # Evaluation
     corr_Ridge = cor(ytest,y_pred_Ridge)
+    print(corr_Ridge)
     #corr_RF = cor(ytest,y_pred_RF)
     #corr_ENet = cor(ytest,y_pred_ENet)
     #corr_Lasso = cor(ytest,y_pred_Lasso)
@@ -85,7 +85,7 @@ for (i in 3:N_drug){
     
     ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value
     Ranksum = wilcox.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative ="greater")$p.value
-    
+    print(Ranksum)
   } else{
     corr_Ridge = 0
     ttest = 1
@@ -107,6 +107,12 @@ for (i in 3:N_drug){
     
 sum(Results$Ranksum<0.05)
 which(Results$Ranksum<0.05)
-PRISM_TCGA_drugs = colnames(sen_PRISM)
-saveRDS(PRISM_TCGA_drugs,"Processed_data/Other/PRISM_TCGA_drugs.rds")
-which(!is.na(res_TCGA[,6]))
+# PRISM_TCGA_drugs = colnames(sen_PRISM)
+# saveRDS(PRISM_TCGA_drugs,"Processed_data/Other/PRISM_TCGA_drugs.rds")
+# which(!is.na(res_TCGA[,6]))
+# boxplot(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2],
+#         y_pred_Ridge[ytest==3], y_pred_Ridge[ytest==4])
+# 
+
+
+

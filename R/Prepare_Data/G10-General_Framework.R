@@ -17,7 +17,7 @@ which(colnames(sen) %in% TCGA_PRISM_drugs_sig_samples)
 I =intersect(colnames(sen),TCGA_PRISM_drugs_sig_samples)
 sen = sen[,I]
 source("F14-Feature_Selection.R")
-selected_features = c("Whole_genes")
+selected_features = c("Landmark_genes")
 Omics_List = Feature_Selection(selected_features)
 omics = Omics_List[[1]]
 index = Omics_List[[2]]
@@ -25,7 +25,7 @@ index = Omics_List[[2]]
 N_drug = ncol(sen)
 Results = c()
 #4,5,14,16,17,31,39,48,75,78
-for (i in 21){
+for (i in 6){
   print(paste0("The drug number is: ", as.character(i)))
 
   X = omics[!is.na(sen[,i]),]
@@ -61,13 +61,14 @@ for (i in 21){
     #y_pred_Lasso = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     #y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+  
     
     # Evaluation
     #corr_SGL = cor(ytest,y_pred_SGL)
     #corr_RF = cor(ytest,y_pred_RF)
     #corr_ENet = cor(ytest,y_pred_ENet)
     #corr_Lasso = cor(ytest,y_pred_Lasso)
-    corr_Ridge = cor(ytest,y_pred_Ridge)
+    corr_Ridge = cor(ytest,y_pred_Ridge,method = "pearson")
     #corr_MLP = cor(ytest,y_pred_MLP)
     
     result = data.frame(corr_Ridge = corr_Ridge)
@@ -102,6 +103,13 @@ stopCluster(cl)
 #saveRDS(Results,"All_Results/.rds")
 #all = readRDS("All_Results/SGL_RF@L1000_TF@12run.rds")
 #a = data.frame(colnames(sen))
+
+plot(ytest,y_pred_Ridge)
+
+
+
+
+plot(ytest)
 
 
 s = colnames(sen)[which(Results[,1]>0.2)]

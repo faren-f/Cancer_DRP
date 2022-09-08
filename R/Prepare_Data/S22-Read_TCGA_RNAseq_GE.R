@@ -22,7 +22,7 @@ for(i in Cancer_types){
 
 Cancer_type = rep(Cancer,times = S)
 Response_table$Cancer_type = Cancer_type
-
+Cancer_type = cbind(Cancer_type,Response_table$bcr_patient_barcode)
 ## Read RNAseq data from (http://firebrowse.org) 
 
 ACC = read.table("Raw_data/TCGA/RNAseq/ACC/ACC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
