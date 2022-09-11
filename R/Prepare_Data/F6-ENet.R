@@ -19,9 +19,13 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                          #search = "random",
                          verboseIter = FALSE)
   
-  tune = expand.grid(alpha = seq(.05, 1, length = 15),lambdas = seq(.000001,.0001,.000001))
-  #tune = expand.grid(alpha = seq(.5, 1, length = 2),lambda = c(0.001,0.01,0.1))
+  # tune = expand.grid(alpha = seq(.05, 2, length = 20), 
+  #                     lambda = round(exp(seq(-15,-5,by = 0.1)), 7))
+  tune = expand.grid(alpha = seq(.05, 2, length = 20),
+                     lambda = seq(.000001,0.0001,.000001))
   
+  #tune = expand.grid(alpha = seq(.05, 1, length = 15),lambda = seq(.000001,.0001,.000001))
+
   model = caret::train(ytrain ~., data = train_data,
                          method = "glmnet",
                          metric="RMSE",
@@ -30,7 +34,8 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                          trControl = control)
   
   y_pred = predict(model,Xtest)
-  
+  #plot(model$results$RMSE)
+  #model$bestTune
   return(y_pred)
   
 }

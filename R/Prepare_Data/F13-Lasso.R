@@ -17,7 +17,8 @@ Lasso = function(ytrain,Xtrain,Xtest){
                          repeats = 5,
                          verboseIter = FALSE)
   
-  tune = expand.grid(alpha = 1,lambdas = seq(.000001,.0001,.000001))
+  tune = expand.grid(alpha = 1, lambda = round(exp(seq(-7,2.3,by = 0.1)), 4))
+  #tune = expand.grid(alpha = 1,lambda = seq(.000001,.0001,.000001))
   #tune = expand.grid(alpha = 1, lambda = c(0.001,0.01,0.1,1,10,100))
   model = caret::train(y= ytrain,
                        x = Xtrain,

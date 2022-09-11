@@ -5,7 +5,7 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 source("F12-Drug_Targets.R")
 
 conv_table = readRDS("Processed_data/S7/biomart_conversion_table.rds")
-drugs = as.character(readRDS("Processed_data/Other/24_drugs.rds")[,1])
+Drugs = as.character(readRDS("Processed_data/Other/24_drugs.rds")[,1])
 Drug_Targets = readRDS("Processed_data/S1/drug_targets.rds")
 rownames(Drug_Targets) = Drug_Targets$name  
 
@@ -13,7 +13,7 @@ gene2path = as.list(reactomeEXTID2PATHID)
 path2gene = as.list(reactomePATHID2EXTID)
   
 Pathways = list()
-for(i in drugs){
+for(i in Drugs){
   Pathways[[i]] = list() 
   Drug_Targets_i = strsplit(Drug_Targets[i,2],", ")
   
@@ -24,8 +24,6 @@ for(i in drugs){
   }
 }
 
-  
-
 # Save data
 saveRDS(Pathways,"Processed_data/S26/Drug_Pathways.rds")
-
+Pathways= readRDS("Processed_data/S26/Drug_Pathways.rds")
