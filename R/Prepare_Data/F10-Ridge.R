@@ -17,8 +17,11 @@ Ridge = function(ytrain,Xtrain,Xtest){
                          number = 5,
                          repeats = 5,
                          verboseIter = FALSE)
-  # tune = expand.grid(alpha = 0,lambda = seq(0.01,10,by = 0.5))
-  tune = expand.grid(alpha = 0, lambda = round(exp(seq(-7,2.3,by = 0.1)), 4))
+  tune = expand.grid(alpha = 0,lambda = seq(0.01,10,by = 0.5))
+  #tune = expand.grid(alpha = 0,lambda = seq(0.01,1,by = 0.01))
+  
+  #tune = expand.grid(alpha = 0, lambda = round(exp(seq(-7,2.3,by = 0.1)), 4))
+  #tune = expand.grid(alpha = 0, lambda = seq(.000001,0.0001,.000001))
   
   model = caret::train(ytrain ~., data = train_data,
                        method = "glmnet",
@@ -28,7 +31,7 @@ Ridge = function(ytrain,Xtrain,Xtest){
                        trControl = control)
   y_pred = predict(model,Xtest)
   #plot(model$results$RMSE)
-  model$bestTune
+  #model$bestTune
   return(y_pred)
   
 }

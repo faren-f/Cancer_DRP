@@ -22,6 +22,9 @@ response = read.csv("Raw_data/PRISM/Secondary/secondary-screen-dose-response-cur
 RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_rsem_transcripts_tpm_20180929.txt.gz",
                     header = TRUE, check.names = FALSE)
 
+ccle = read.csv("Raw_data/PRISM/Expression/RNA_seq/CCLE_expression.csv",
+                header = FALSE)
+
 #RNAseq = read.table("Raw_data/PRISM/Expression/RNA_seq/CCLE_RNAseq_genes_rpkm_20180929.gct.txt", 
 #skip = 2, header = TRUE, sep = "\t")
 

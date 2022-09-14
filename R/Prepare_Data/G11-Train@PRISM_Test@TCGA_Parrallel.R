@@ -27,10 +27,9 @@ N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
 
-N_genes = c()
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
-                    "drugs","N_genes"))
+                    "drugs"))
 clusterEvalQ(cl, c(source("F7-RandomForest.R"),
                    source("F6-ENet.R"),source("F8-MLP.R"),
                    source("F10-Ridge.R"),source("F11-SGL.R"),
@@ -43,20 +42,21 @@ clusterEvalQ(cl, c(source("F7-RandomForest.R"),
 DrugLoop = function(i){
 
   print(paste0("The drug number is: ", as.character(i)))
-  drug = drugs[i,1]
+  #drug = drugs[i,1]
   
   #Drug Pathway feature selection
-  pathway_gene_set = Drug_Pathway_gene_set(drug)
-
-  if(!isEmpty(pathway_gene_set[[1]])){
-    
-    I = intersect(colnames(GE),pathway_gene_set[,1])
-    X = GE[,I]
-    X_TCGA = GE_TCGA[,I]
-    N_genes = c(N_genes, length(I))
-    index = rep(1,ncol(X))
+  # pathway_gene_set = Drug_Pathway_gene_set(drug)
+  # 
+  # if(!isEmpty(pathway_gene_set[[1]])){
+  # 
+  #   I = intersect(colnames(GE),pathway_gene_set[,1])
+  #   X = GE[,I]
+  #   X_TCGA = GE_TCGA[,I]
+  #   N_genes = c(N_genes, length(I))
+  #   index = rep(1,ncol(X))
     ##################
-    
+    X = GE
+    X_TCGA = GE_TCGA
     Xtrain = X[!is.na(sen_PRISM[,i]),]
     ytrain = sen_PRISM[!is.na(sen_PRISM[,i]),i]
     
@@ -73,12 +73,12 @@ DrugLoop = function(i){
       Xtrain = X_Normalization[[1]]
       Xtest = X_Normalization[[2]]
       
-      #source("F15-Feature_Selection_PRISM@TCGA.R")
-      #selected_features = c("Whole_genes")
-      #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
-      # Xtrain = Omics_List[[1]]
-      # index = Omics_List[[2]]
-      # Xtest = Omics_List[[3]]
+      source("F15-Feature_Selection_PRISM@TCGA.R")
+      selected_features = c("Whole_genes")
+      Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+      Xtrain = Omics_List[[1]]
+      index = Omics_List[[2]]
+      Xtest = Omics_List[[3]]
       
       # Ytrain normalization
       # Mean_ytrain = mean(ytrain)
@@ -88,8 +88,8 @@ DrugLoop = function(i){
       # Models
       #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
       #y_pred_Ridge = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+      #y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+      y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
       #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
       #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
       
@@ -110,11 +110,11 @@ DrugLoop = function(i){
       ttest = 1
       Ranksum = 1
     }
-  }else{
-    corr_Ridge = 0
-    ttest = 1
-    Ranksum = 1
-  }
+  # }else{
+  #   corr_Ridge = 0
+  #   ttest = 1
+  #   Ranksum = 1
+  # }
     #plot(ytest,y_pred_Ridge)
     #boxplot(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2])
     #plot(ytest,y_pred_SGL)
