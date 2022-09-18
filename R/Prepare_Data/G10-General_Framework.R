@@ -16,8 +16,9 @@ TCGA_PRISM_drugs_sig_samples = readRDS("Processed_data/Other/PRISM_TCGA_drugs.rd
 which(colnames(sen) %in% TCGA_PRISM_drugs_sig_samples)
 I =intersect(colnames(sen),TCGA_PRISM_drugs_sig_samples)
 sen = sen[,I]
+
 source("F14-Feature_Selection.R")
-selected_features = c("Landmark_genes")
+selected_features = c("progeny")
 Omics_List = Feature_Selection(selected_features)
 omics = Omics_List[[1]]
 index = Omics_List[[2]]
@@ -25,7 +26,7 @@ index = Omics_List[[2]]
 N_drug = ncol(sen)
 Results = c()
 #4,5,14,16,17,31,39,48,75,78
-for (i in 12){
+for (i in 5){
   print(paste0("The drug number is: ", as.character(i)))
 
   X = omics[!is.na(sen[,i]),]
@@ -81,7 +82,7 @@ for (i in 12){
     return(result)
   }
   
-  N_itration = 100
+  N_itration = 10
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
   Result = data.frame()

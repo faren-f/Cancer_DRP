@@ -20,6 +20,7 @@ GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 
 
 source("F9-decoupleR.R")
+source("F5-Progeny.R")
 
 Feature_Selection = function(selected_features){
   Omics = list()
@@ -55,6 +56,10 @@ Feature_Selection = function(selected_features){
     index = rep(1,ncol(omics))
     Omics = list(omics,index)
   
+  }else if (prod(selected_features == "progeny")){
+    omics = Progeny_pw_act(X = GE)
+    index = rep(1,ncol(omics))
+    Omics = list(omics,index)
   }else if (prod(selected_features == c("Landmark_genes","TF_DoRothEA"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
     O1 = GE[,colnames(GE)%in%l1000_genes]

@@ -47,18 +47,18 @@ for (i in 1:N_drug){
     #ytrain = (ytrain-Mean_ytrain)/STD_ytrain
     
     # Models
-    y_pred_SGL = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
+    #y_pred_SGL = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
     #y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     #y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    y_pred_Lasso = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
-    y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    #y_pred_Lasso = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+    #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     
     # Evaluation
-    corr_SGL = cor(ytest,y_pred_SGL)
+    #corr_SGL = cor(ytest,y_pred_SGL)
     #corr_RF = cor(ytest,y_pred_RF)
     #corr_ENet = cor(ytest,y_pred_ENet)
-    corr_Lasso = cor(ytest,y_pred_Lasso)
+    #corr_Lasso = cor(ytest,y_pred_Lasso)
     corr_Ridge = cor(ytest , y_pred_Ridge)
     
     ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value

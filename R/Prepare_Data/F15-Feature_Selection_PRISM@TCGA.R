@@ -8,6 +8,8 @@
 
 source("F9-decoupleR.R")
 source("F4-DoRothEA.R")
+source("F5-Progeny.R")
+ 
 Feature_Selection = function(selected_features,GE,GE_test){
   if (prod(selected_features == "")){
     writeLines("selected_features is empty!\nEnter your desired features")
@@ -55,6 +57,13 @@ Feature_Selection = function(selected_features,GE,GE_test){
     omics = Pathway_genes(X = GE, drug=)
     index = rep(1,ncol(omics))
     Omics = list(omics,index)
+    
+  }else if (prod(selected_features == "progeny")){
+    omics = Progeny_pw_act(GE)
+    omics_test = Progeny_pw_act(GE_test)
+    
+    index = rep(1,ncol(omics))
+    Omics = list(omics,index,omics_test)
     
   }else if (prod(selected_features == c("Landmark_genes","TF_DoRothEA"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
@@ -115,6 +124,60 @@ Feature_Selection = function(selected_features,GE,GE_test){
     omics = cbind(O1,O2)
     index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
     Omics = list(omics,index)
+    
+    
+  }else if (prod(selected_features == c("Landmark_genes","progeny"))){
+    l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
+    I_G = intersect(l1000_genes,colnames(GE_test))
+    
+    O1 = GE[,I_G]
+    O1_test = GE_test[,I_G]
+    
+    O2 = Progeny_pw_act(GE)
+    O2_test = Progeny_pw_act(GE_test)
+    
+    omics = cbind(O1,O2)
+    omics_test = cbind(O1_test,O2_test)
+    
+    colnames(omics) = 1:ncol(omics)
+    colnames(omics_test) = 1:ncol(omics_test)
+    
+    index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
+    Omics = list(omics,index,omics_test)
+    
+  }else if (prod(selected_features == c("TF_DoRothEA","progeny"))){
+    O1 = DoRothEA(GE)
+    O1_test = DoRothEA(GE_test)
+    
+    O2 = Progeny_pw_act(GE)
+    O2_test = Progeny_pw_act(GE_test)
+    
+    omics = cbind(O1,O2)
+    omics_test = cbind(O1_test,O2_test)
+    
+    colnames(omics) = 1:ncol(omics)
+    colnames(omics_test) = 1:ncol(omics_test)
+    
+    index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
+    Omics = list(omics,index,omics_test)
+    
+  }else if (prod(selected_features == c("TF_decoupleR","progeny"))){
+    
+    
+    O1 = decoupleR(X = GE, method = "gsva")
+    O1_test = decoupleR(X = GE_test, method = "gsva")
+    
+    O2 = Progeny_pw_act(GE)
+    O2_test = Progeny_pw_act(GE_test)
+    
+    omics = cbind(O1,O2)
+    omics_test = cbind(O1_test,O2_test)
+    
+    colnames(omics) = 1:ncol(omics)
+    colnames(omics_test) = 1:ncol(omics_test)
+    
+    index = c(rep(1,ncol(O1)),rep(2,ncol(O2)))
+    Omics = list(omics,index,omics_test)
     
   }else if (prod(selected_features == c("Landmark_genes","TF_DoRothEA","Tissue_types"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")

@@ -11,7 +11,6 @@ low_sample_drugs = c(1,3,4,5,6,7,12,13,14,19,20,21,22,23,24,25,28,29,31,33,36,37
 sen_PRISM = readRDS("Processed_data/S23/sensitivity_matrix_PRISM_with@TCGA@drugs.rds")
 res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
 #res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
-
 sen_PRISM = sen_PRISM[,-low_sample_drugs]
 res_TCGA = res_TCGA[,-low_sample_drugs]
 
@@ -74,7 +73,7 @@ DrugLoop = function(i){
       Xtest = X_Normalization[[2]]
       
       source("F15-Feature_Selection_PRISM@TCGA.R")
-      selected_features = c("Whole_genes")
+      selected_features = c("TF_decoupleR","progeny")
       Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
       Xtrain = Omics_List[[1]]
       index = Omics_List[[2]]
@@ -89,8 +88,8 @@ DrugLoop = function(i){
       #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
       #y_pred_Ridge = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
       #y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+      #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+      y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
       #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
       
       # Evaluation

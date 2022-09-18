@@ -3,12 +3,19 @@
 #                     @author: Farzaneh Firoozbakht
 #                   Email: faren.firoozbakht@gmail.com
 
-# Description: This function receives Xtrain, ytrain data and number of selected 
-# genes(N), to select genes that are highly correlated with drug sensitivity (ytrain).
+# Description: 
 
-
-
-Progeny = function(Xtrain){
+library(progeny)
+Progeny_pw_act = function(X){
   
-  progeny = get_progeny(organism='human', top=500)
-}
+  pathway_activity= progeny(
+    t(X),
+    scale = TRUE,
+    organism = "Human",
+    top = 100,
+    perm = 1
+    
+  )
+  return(pathway_activity)
+  }
+
