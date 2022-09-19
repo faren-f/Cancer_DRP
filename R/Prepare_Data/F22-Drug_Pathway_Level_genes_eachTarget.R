@@ -9,7 +9,7 @@ Drug_Pathway_gene_set_eachTarget = function(drug, level){
   
   source("F21-Drug_Pathway_Level_genes.R")
   pathway_gene_set_all = Drug_Pathway_gene_set(drug, level)
-  pathway_gene_set_all_Targets = list(all = pathway_gene_set[,1])
+  pathway_gene_set_all_Targets = list(all = pathway_gene_set_all)
   
   source("F20-Drug_Pathway_Level_eachTarget_Reactome.R")
   PW_tab_extend_all_targets = Drug_Pathway_Level_eachTarget(drug)
