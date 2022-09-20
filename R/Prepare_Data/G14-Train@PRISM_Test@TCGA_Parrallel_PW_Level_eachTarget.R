@@ -25,7 +25,7 @@ GE = GE[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 5
+d = 24
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
@@ -43,112 +43,114 @@ LevelLoop = function(i){
   print(paste0("The level number is: ", as.character(i)))
   
   #Drug Pathway feature selection
-  source("F21-Drug_Pathway_Level_genes_eachTarget.R")
-  pathway_gene_set = Drug_Pathway_gene_set(drug = drug, level=i)
+  source("F22-Drug_Pathway_Level_genes_eachTarget.R")
+  pathway_gene_set = Drug_Pathway_gene_set_eachTarget(drug = drug, level=i)
   
   if(!isEmpty(pathway_gene_set)){
+    
+    Result = c()
     for(j in names(pathway_gene_set)){
-    I = intersect(colnames(GE),pathway_gene_set[[j]])
-    X = GE[,I]
-    X_TCGA = GE_TCGA[,I]
-    index = rep(1,ncol(X))
-    ##################
-    #X = GE
-    #X_TCGA = GE_TCGA
-    Xtrain = X[!is.na(sen_PRISM[,d]),]
-    ytrain = sen_PRISM[!is.na(sen_PRISM[,d]),d]
-    
-    Xtest = X_TCGA[!is.na(res_TCGA[,d]),]
-    ytest = res_TCGA[!is.na(res_TCGA[,d]),d]
-    
-    length(ytest)
-    if(length(ytest)>10){
       
-      #X_Normalization = Rank(Xtrain,Xtest)
-      #X_Normalization = Rank(Xtrain,Xtest)
-      X_Normalization = Combat_Scale(Xtrain,Xtest)
-      
-      Xtrain = X_Normalization[[1]]
-      Xtest = X_Normalization[[2]]
-      N_genes = ncol(Xtrain)
-      #source("F15-Feature_Selection_PRISM@TCGA.R")
-      #selected_features = c("TF_decoupleR","progeny")
-      #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
-      #Xtrain = Omics_List[[1]]
-      #index = Omics_List[[2]]
-      #Xtest = Omics_List[[3]]
-      
-      # Ytrain normalization
-      # Mean_ytrain = mean(ytrain)
-      # STD_ytrain = sd(ytrain)
-      # ytrain = (ytrain-Mean_ytrain)/STD_ytrain
-      
-      # Models
-      #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
-      #y_pred_Ridge = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      #y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
-      #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      
-      # Evaluation
-      corr_Ridge = cor(ytest,y_pred_Ridge)
-      #print(corr_Ridge)
-      #corr_RF = cor(ytest,y_pred_RF)
-      #corr_ENet = cor(ytest,y_pred_ENet)
-      #corr_Lasso = cor(ytest,y_pred_Lasso)
-      #corr_Ridge = cor(ytest , y_pred_Ridge)
-      #corr_Ridge = cor(ytest , y_pred_Ridge)
-      
-      ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value
-      Ranksum = wilcox.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative ="greater")$p.value
-      #print(Ranksum)
-    } else{
-      corr_Ridge = 0
-      ttest = 1
-      Ranksum = 1
+      if(!is.null(pathway_gene_set[[j]])){
+        I = intersect(colnames(GE),pathway_gene_set[[j]])
+        X = GE[,I]
+        X_TCGA = GE_TCGA[,I]
+        if(!is.null(ncol(X))){
+          index = rep(1,ncol(X))
+          ##################
+          #X = GE
+          #X_TCGA = GE_TCGA
+          Xtrain = X[!is.na(sen_PRISM[,d]),]
+          ytrain = sen_PRISM[!is.na(sen_PRISM[,d]),d]
+          
+          Xtest = X_TCGA[!is.na(res_TCGA[,d]),]
+          ytest = res_TCGA[!is.na(res_TCGA[,d]),d]
+          
+          length(ytest)
+          if(length(ytest)>10){
+            
+            #X_Normalization = Rank(Xtrain,Xtest)
+            #X_Normalization = Rank(Xtrain,Xtest)
+            X_Normalization = Combat_Scale(Xtrain,Xtest)
+            
+            Xtrain = X_Normalization[[1]]
+            Xtest = X_Normalization[[2]]
+            N_genes = ncol(Xtrain)
+            #source("F15-Feature_Selection_PRISM@TCGA.R")
+            #selected_features = c("TF_decoupleR","progeny")
+            #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+            #Xtrain = Omics_List[[1]]
+            #index = Omics_List[[2]]
+            #Xtest = Omics_List[[3]]
+            
+            # Ytrain normalization
+            # Mean_ytrain = mean(ytrain)
+            # STD_ytrain = sd(ytrain)
+            # ytrain = (ytrain-Mean_ytrain)/STD_ytrain
+            
+            # Models
+            #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
+            #y_pred_Ridge = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+            #y_pred_Ridge = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+            #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+            y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+            #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+            
+            # Evaluation
+            corr_Ridge = cor(ytest,y_pred_Ridge)
+            #print(corr_Ridge)
+            #corr_RF = cor(ytest,y_pred_RF)
+            #corr_ENet = cor(ytest,y_pred_ENet)
+            #corr_Lasso = cor(ytest,y_pred_Lasso)
+            #corr_Ridge = cor(ytest , y_pred_Ridge)
+            #corr_Ridge = cor(ytest , y_pred_Ridge)
+            
+            ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value
+            Ranksum = wilcox.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative ="greater")$p.value
+            
+        }else{
+          N_genes = 0
+          corr_Ridge = 0
+          ttest = 1
+          Ranksum = 1
+        }
+          
+          Result = rbind(Result, cbind(corr_Ridge,ttest,Ranksum,N_genes))
+          }else{
+            N_genes = 0
+            corr_Ridge = 0
+            ttest = 1
+            Ranksum = 1
+            Result = rbind(Result, cbind(corr_Ridge,ttest,Ranksum,N_genes))
+          }
+      }else{
+        Result = c()
+      }
     }
-  }else{
-    corr_Ridge = 0
-    ttest = 1
-    Ranksum = 1
-    N_genes = 0 
+      }else{
+    #corr_Ridge = 0
+    #ttest = 1
+    #Ranksum = 1
+    Result = c()
   }
-  #plot(ytest,y_pred_Ridge)
-  #boxplot(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2])
-  #plot(ytest,y_pred_SGL)
-  #corr_MLP = cor(ytest,y_pred_MLP)
-  result = data.frame(corr_Ridge = corr_Ridge, ttest=ttest, 
-                      Ranksum = Ranksum, N_genes = N_genes)
-  #corr_SGL = corr_SGL,
-  #corr_RF = corr_RF,
-  #corr_ENet = corr_ENet,
-  #corr_Lasso = corr_Lasso,
-  #corr_MLP = corr_MLP)
-  
+  result = Result
   return(result)
 }
+N_Level = 10
+result = parLapply(cl, sapply(1:N_Level, list), LevelLoop)
 
-result = parLapply(cl, sapply(1:11, list), LevelLoop) 
-
-Result = data.frame()
-for (k in 1:11){
-  Result = rbind(Result, result[[k]])
+Result = list()
+for (k in 1:N_Level){
+  if(!is.null(result[[k]]))
+    Result[[k]] = result[[k]]
 }
 
 stopCluster(cl)
 
-print(sum(Result$Ranksum<0.05))
-print(which(Result$Ranksum<0.05))
-print(which(Result$ttest<0.05))
-
-#print(N_genes)
-# PRISM_TCGA_drugs = colnames(sen_PRISM)
-# saveRDS(PRISM_TCGA_drugs,"Processed_data/Other/PRISM_TCGA_drugs.rds")
-# which(!is.na(res_TCGA[,6]))
-# boxplot(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2],
-#         y_pred_Ridge[ytest==3], y_pred_Ridge[ytest==4])
+# print(sum(Result$Ranksum<0.05))
+# print(which(Result$Ranksum<0.05))
+# print(which(Result$ttest<0.05))
 # 
-plot(-log(Result$Ranksum), type = "l")
-
+# plot(-log(Result$Ranksum), type = "l")
+# 
 
