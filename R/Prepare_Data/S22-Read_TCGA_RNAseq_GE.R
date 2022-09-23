@@ -22,7 +22,9 @@ for(i in Cancer_types){
 
 Cancer_type = rep(Cancer,times = S)
 Response_table$Cancer_type = Cancer_type
-Cancer_type = cbind(Cancer_type,Response_table$bcr_patient_barcode)
+TCGA_Patients = cbind(Cancer_type,Response_table$bcr_patient_barcode,
+                    Response_table$drug_name, Response_table$measure_of_response,
+                    Response_table$Cancer)
 ## Read RNAseq data from (http://firebrowse.org) 
 
 ACC = read.table("Raw_data/TCGA/RNAseq/ACC/ACC.rnaseqv2_RSEM_genes_normalized.txt",fill = TRUE, header=FALSE)
@@ -138,4 +140,4 @@ res_TCGA = res_TCGA[I_samples,]
 saveRDS(Number_of_each_Cancer,"Processed_data/S22/Number_of_each_Cancer_TCGA.rds")
 saveRDS(TCGA_GE,"Processed_data/S22/expresion_matrix_TCGA.rds")
 saveRDS(res_TCGA,"Processed_data/S22/Drug_response_matrix_TCGA.rds")
-saveRDS(Cancer_type,"Processed_data/S22/Cancer_Types.rds")
+saveRDS(TCGA_Patients,"Processed_data/S22/TCGA_Patients.rds")

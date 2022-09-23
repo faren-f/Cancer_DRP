@@ -33,7 +33,7 @@ Response_table$response_binarized = res_binarized
 response_mat = matrix(0,nrow(Cancer_Patient),length(TCGA_PRISM_drugs))
 rownames(response_mat) = Cancer_Patient[,2]
 colnames(response_mat) = TCGA_PRISM_drugs
-
+save_name = c()
 for(i in Cancer_Patient[,2]){
   for (j in TCGA_PRISM_drugs){
     I = Response_table$bcr_patient_barcode == i & Response_table$drug_name == j
@@ -41,14 +41,17 @@ for(i in Cancer_Patient[,2]){
       response_mat[i,j] = Response_table[I,15]
       
     }else if(sum(I)==2){
-      if(Response_table[which(I)[1],15]==Response_table[which(I)[2],15])
+      if(Response_table[which(I)[1],15]==Response_table[which(I)[2],15]){
         response_mat[i,j] = Response_table[which(I)[1],15]
+      }else{
+        save_name = rbind(save_name,c(i,j))
+      }
     }else{
       response_mat[i,j] = NA
     }
   }
 }
-
+response_mat["TCGA-IB-7645","gemcitabine"] = 1
 # Cancers types in TCGA that have drug responses
 cancers = unique(Response_table$Cancer)
 

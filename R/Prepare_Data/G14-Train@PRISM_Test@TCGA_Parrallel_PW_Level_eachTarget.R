@@ -25,7 +25,7 @@ GE = GE[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 24
+d = 3
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
@@ -133,7 +133,8 @@ LevelLoop = function(i){
     #Ranksum = 1
     Result = c()
   }
-  result = Result
+  result = cbind(Result, Targets = names(pathway_gene_set))
+
   return(result)
 }
 N_Level = 10
@@ -141,16 +142,35 @@ result = parLapply(cl, sapply(1:N_Level, list), LevelLoop)
 
 Result = list()
 for (k in 1:N_Level){
-  if(!is.null(result[[k]]))
+  if(ncol(result[[k]])!=1)
     Result[[k]] = result[[k]]
 }
 
 stopCluster(cl)
 
-# print(sum(Result$Ranksum<0.05))
-# print(which(Result$Ranksum<0.05))
-# print(which(Result$ttest<0.05))
+df = c()
+for(i in 1:length(Result)){
+  target_i = data.frame(Result[[i]])
+  df = rbind(df,cbind(p_val = round(-log10(as.numeric(target_i$Ranksum)),2), 
+                      level = i, target = target_i$Targets,
+                      N_genes = target_i$N_genes))
+}
+
+df = data.frame(df)
+df$p_val = as.numeric(df$p_val)
+df$level = as.numeric(df$level)
+
+# plt = ggplot(df) +
+#   geom_line(aes(x = level, y = p_val, color = target), size = .5) + 
+#   geom_point(aes(x = level, y = p_val, color = target), size = 1) +
+#   theme_classic(base_size = 10) + theme(legend.position = "right") +
+#   geom_hline(yintercept = -log10(0.05),linetype = "dashed")+
+#   labs(title= drug, x ="Level", y = "-log(P-value)")+
+#   theme(plot.title = element_text(hjust = 0.5))
 # 
-# plot(-log(Result$Ranksum), type = "l")
 # 
+# pdf(paste0("Figures/FS/Drug_pathway/", drug,".pdf"), height = 4, width = 5)
+# plt
+# dev.off()
+
 
