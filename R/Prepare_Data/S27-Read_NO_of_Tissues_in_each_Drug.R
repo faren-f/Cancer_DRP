@@ -6,11 +6,8 @@ TCGA_Patients = data.frame(TCGA_Patients)
 colnames(TCGA_Patients) = c("Cancer_type", "Patient", "Drug","Response","Cancer_type_Perfect_name")
 
 N_Cancer = readRDS("Processed_data/S22/Number_of_each_Cancer_TCGA.rds")
-low_sample_drugs = c(1,3,4,5,6,7,12,13,14,19,20,21,22,23,24,25,28,29,31,33,36,37
-                     ,39,40,41,42,43,45,47,49,51,52,56,57,58)
-res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
-res_TCGA = res_TCGA[,-low_sample_drugs]
 
+res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 N_drug = ncol(res_TCGA)
 drugs = data.frame(colnames(res_TCGA))
 

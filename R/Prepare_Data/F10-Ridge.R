@@ -10,21 +10,22 @@
 library(glmnet)
 library(caret)
 
-Ridge = function(ytrain,Xtrain,Xtest){
+Ridge = function(ytrain, Xtrain, Xtest, weight = NULL){
   
   train_data = cbind(Xtrain,ytrain)
   control = trainControl(method = "repeatedcv",
                          number = 5,
                          repeats = 5,
                          verboseIter = FALSE)
-  #tune = expand.grid(alpha = 0,lambda = seq(0.01,10,by = 0.5))
-  #tune = expand.grid(alpha = 0,lambda = seq(0.01,1,by = 0.01))
+  tune = expand.grid(alpha = 0,lambda = seq(0.01,10,by = 0.5))
+  #tune = expand.grid(alpha = 0,lambda = seq(0.01,100,by = 0.1))
   
   #tune = expand.grid(alpha = 0, lambda = round(exp(seq(-7,2.3,by = 0.1)), 4))
-  tune = expand.grid(alpha = 0, lambda = seq(.000001,0.0001,.000001))
+  #tune = expand.grid(alpha = 0, lambda = seq(.000001,0.0001,.000001))
   
   model = caret::train(ytrain ~., data = train_data,
                        method = "glmnet",
+                       weights = weight,
                        metric="RMSE",
                        allowParallel = TRUE,
                        tuneGrid = tune,
