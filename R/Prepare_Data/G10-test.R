@@ -23,7 +23,7 @@ sen = sen[,I]
 
 #Feature selection
 # selected_features = c("Landmark_genes")
-# Omics_List = Feature_Selection(selected_features)
+# Omics_List = Feature_Selection(selected_features,GE)
 # X = Omics_List[[1]]
 # index = Omics_List[[2]]
 

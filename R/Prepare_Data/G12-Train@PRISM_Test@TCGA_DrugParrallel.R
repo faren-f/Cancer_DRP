@@ -56,12 +56,19 @@ DrugLoop = function(i){
     ##################
     X = GE
     X_TCGA = GE_TCGA
+    ###################
     Xtrain = X[!is.na(sen_PRISM[,i]),]
     ytrain = sen_PRISM[!is.na(sen_PRISM[,i]),i]
     
+    # badSamples = readRDS("All_Results/XI_Normalized_20%_180&139.rds")
+    # ytrain = ytrain[!(rownames(Xtrain) %in% intersect(badSamples,rownames(Xtrain)))]
+    # Xtrain = Xtrain[!(rownames(Xtrain) %in% intersect(badSamples,rownames(Xtrain))),]
+    
+    
     Xtest = X_TCGA[!is.na(res_TCGA[,i]),]
     ytest = res_TCGA[!is.na(res_TCGA[,i]),i]
-    
+  
+  
     length(ytest)
     if(length(ytest)>10){
       
@@ -73,8 +80,8 @@ DrugLoop = function(i){
       Xtest = X_Normalization[[2]]
       
       source("F15-Feature_Selection_PRISM@TCGA.R")
-      selected_features = c("TF_decoupleR","progeny")
-      Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+      selected_features = c("Landmark_genes")
+      Omics_List = Feature_Selection_PRISM_TCGA(selected_features,Xtrain = Xtrain ,Xtest = Xtest)
       Xtrain = Omics_List[[1]]
       index = Omics_List[[2]]
       Xtest = Omics_List[[3]]

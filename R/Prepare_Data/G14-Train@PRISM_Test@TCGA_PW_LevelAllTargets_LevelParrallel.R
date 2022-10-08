@@ -12,8 +12,6 @@ sen_PRISM = readRDS("Processed_data/S23/sensitivity_matrix_PRISM_with@TCGA@drugs
 res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
 #res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
 sen_PRISM = sen_PRISM[,-low_sample_drugs]
-saveRDS(sen_PRISM,"Processed_data/Other/Sen_PRISM_24_Drugs.rds")
-
 res_TCGA = res_TCGA[,-low_sample_drugs]
 
 GE = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
@@ -27,7 +25,7 @@ GE = GE[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 16
+d = 5
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
@@ -62,7 +60,6 @@ LevelLoop = function(i){
     #X_TCGA = GE_TCGA
     Xtrain = X[!is.na(sen_PRISM[,d]),]
     ytrain = sen_PRISM[!is.na(sen_PRISM[,d]),d]
-    hist(ytrain)
     
     Xtest = X_TCGA[!is.na(res_TCGA[,d]),]
     ytest = res_TCGA[!is.na(res_TCGA[,d]),d]
@@ -77,18 +74,9 @@ LevelLoop = function(i){
       Xtrain = X_Normalization[[1]]
       Xtest = X_Normalization[[2]]
       N_genes = ncol(Xtrain)
-      
-      sample = sample.split(ytrain, SplitRatio = .8)
-      
-      Xtrain_train = subset(Xtrain, sample == TRUE)
-      Xtrain_test  = subset(Xtrain, sample == FALSE)
-      ytrain_train = subset(ytrain, sample == TRUE)
-      ytrain_test  = subset(ytrain, sample == FALSE)
-      
-    
       #source("F15-Feature_Selection_PRISM@TCGA.R")
       #selected_features = c("TF_decoupleR","progeny")
-      #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+      #Omics_List = Feature_Selection_PRISM_TCGA(selected_features,GE = Xtrain ,GE_test = Xtest)
       #Xtrain = Omics_List[[1]]
       #index = Omics_List[[2]]
       #Xtest = Omics_List[[3]]
@@ -105,7 +93,6 @@ LevelLoop = function(i){
       #y_pred_Ridge = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
       y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
       #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-      y_pred_Ridge_PRISM = Ridge(ytrain = ytrain_train ,Xtrain = Xtrain_train, Xtest = Xtrain_test)
       
       # Evaluation
       corr_Ridge = cor(ytest,y_pred_Ridge)
@@ -115,10 +102,6 @@ LevelLoop = function(i){
       #corr_Lasso = cor(ytest,y_pred_Lasso)
       #corr_Ridge = cor(ytest , y_pred_Ridge)
       #corr_Ridge = cor(ytest , y_pred_Ridge)
-      
-      corr_Ridge_PRISM = cor(ytrain_test,y_pred_Ridge_PRISM)
-      plot(ytrain_test,y_pred_Ridge_PRISM,xlim = c(0,1.7),ylim = c(0,1.7))
-      
       
       ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value
       Ranksum = wilcox.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative ="greater")$p.value

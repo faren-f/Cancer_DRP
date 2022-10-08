@@ -22,5 +22,7 @@ TF = dorothea::run_viper(X, dorothea_hs_pancancer,
 TF = t(TF)
 
 saveRDS(TF,"Processed_data/S14/DoRothEA_TF.rds")
+# saveRDS(TF,"Processed_data/S14/DoRothEA_GE_PRISM.rds")
+# saveRDS(TF,"Processed_data/S14/DoRothEA_GE_TCGA.rds")
 
 

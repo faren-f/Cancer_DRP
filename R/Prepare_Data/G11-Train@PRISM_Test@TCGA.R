@@ -57,7 +57,7 @@ for (i in 1:N_drug){
 
     source("F15-Feature_Selection_PRISM@TCGA.R")
     selected_features = c("Landmark_genes")
-    Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+    Omics_List = Feature_Selection_PRISM_TCGA(selected_features,GE = Xtrain ,GE_test = Xtest)
     Xtrain = Omics_List[[1]]
     index = Omics_List[[2]]
     Xtest = Omics_List[[3]]

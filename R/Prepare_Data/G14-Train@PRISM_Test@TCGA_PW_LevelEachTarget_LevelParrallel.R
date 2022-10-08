@@ -25,7 +25,7 @@ GE = GE[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 3
+d = 5
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
@@ -78,7 +78,7 @@ LevelLoop = function(i){
             N_genes = ncol(Xtrain)
             #source("F15-Feature_Selection_PRISM@TCGA.R")
             #selected_features = c("TF_decoupleR","progeny")
-            #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
+            #Omics_List = Feature_Selection_PRISM_TCGA(selected_features,GE = Xtrain ,GE_test = Xtest)
             #Xtrain = Omics_List[[1]]
             #index = Omics_List[[2]]
             #Xtest = Omics_List[[3]]

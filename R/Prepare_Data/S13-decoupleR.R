@@ -19,9 +19,8 @@ dorothea = get_dorothea(organism = "human", levels = c("A","B","C"))
 
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-X = readRDS("Processed_Data/S1/expresion_matrix.rds")
-X = t(X)
-method = "wmean"
+#X = readRDS("Processed_Data/S1/expresion_matrix.rds")
+X = t(GE_PRISM)
 
 decoupleR_DR = function(X, dorothea, method){
   
@@ -30,7 +29,8 @@ decoupleR_DR = function(X, dorothea, method){
       mat = X,
       network = dorothea,
       minsize=5,
-    )}
+    )
+    }
   
   else if (method == "fgsea"){
     X_tf = run_fgsea(
@@ -39,7 +39,8 @@ decoupleR_DR = function(X, dorothea, method){
       times = 100,
       nproc = 4,
       minsize = 5
-    )}
+    )
+    }
     
   else if (method == "gsva"){
     X_tf = run_gsva(
@@ -164,23 +165,29 @@ decoupleR_DR = function(X, dorothea, method){
     )
     X_tf = run_consensus(results)
   }
-  return(X_tf)
+  
+  
+  X_tf = data.frame(X_tf)
+  X_TF = matrix(0,length(unique(X_tf$condition)), length(unique(X_tf$source)))
+  rownames(X_TF) = unique(X_tf$condition) 
+  colnames(X_TF) = unique(X_tf$source) 
+  
+  for (i in rownames(X_TF)){
+    for (j in colnames(X_TF)){
+      
+      if(method == "consensus"){
+        X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,5]
+        
+      }else{
+        X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,4]
+      }
+    }
+  }
+  return(X_TF)
 }
+X_TF = decoupleR_DR(X, dorothea, method = "mlm")
 
-
-X_tf = data.frame(X_tf)
-X_TF = matrix(0,length(unique(X_tf$condition)), length(unique(X_tf$source)))
-rownames(X_TF) = unique(X_tf$condition) 
-colnames(X_TF) = unique(X_tf$source) 
-
-for (i in rownames(X_TF)){
-  for (j in colnames(X_TF))
-      X_TF[i,j] = X_tf[X_tf$condition == i & X_tf$source == j,4]
-}
-
-X_TF = t(X_TF)
-
-X_TF = decoupleR_DR(X, dorothea, method)
-
-saveRDS(X_TF,"Processed_data/Step13/TF_wmean.rds")
-t = readRDS("Processed_data/Step13/TF_wmean.rds")
+#saveRDS(X_TF,"Processed_data/Step13/TF_wmean.rds")
+saveRDS(X_TF,"Processed_data/S13/Genes_in_PRISM&TCGA/mlm_PRISM.rds")
+# m = apply(X_TF,2,mean)
+# hist(m)

@@ -32,7 +32,15 @@ for(i in 1:ncol(sample_tissue_one_hot)){
   Tissue_Sen[i,] = apply(sen[Cellline_Tissue[,1] %in% i,],2,sum,na.rm = TRUE)
 }
 
+# Similarities on tissues using single drug 
+Dist = dist(Tissue_Sen[,4])
+Tree = hclust(Dist,method="ward.D")
+plot(Tree)
+k=3
+clusters = cutree(Tree, k=k)
+table(clusters)
 
+# Similarities on tissues using all drugs 
 dists = as.dist(1-cor(t(Tissue_Sen)))
 Tree = hclust(dists,method="ward.D")
 plot(Tree)
@@ -41,6 +49,13 @@ clusters = cutree(Tree, k=k)
 table(clusters)
 
 
+# Save data
+saveRDS(clusters,"Processed_data/S29/Tissue_Clusters.rds")
+saveRDS(sen,"Processed_data/S29/Drug_sensitivity_PRISM_reduced2Tissues.rds")
+saveRDS(Cellline_Tissue,"Processed_data/S29/Cellline_Tissue.rds")
+
+
+# Plot data
 col.pal = RColorBrewer::brewer.pal(9, "Reds")
 pheatmap::pheatmap(dists,show_rownames=F, show_colnames=F, treeheight_row = 0, 
                    clustering_method = "ward.D", cutree_cols=k)

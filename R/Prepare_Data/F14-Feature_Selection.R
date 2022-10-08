@@ -8,21 +8,10 @@
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 conv_table = readRDS("Processed_data/S7/biomart_conversion_table.rds")
 
-GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
-
-
-### for cisplatin
-# GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
-# cisplatin_genes = readRDS("Processed_data/S26/cisplatin_gene_pathways.rds")
-# I = intersect(colnames(GE),cisplatin_genes$hgnc_symbol)
-#GE = GE[,a]
-##########
-
-
 source("F9-decoupleR.R")
 source("F5-Progeny.R")
 
-Feature_Selection = function(selected_features){
+Feature_Selection = function(selected_features,GE){
   Omics = list()
   if (prod(selected_features == "")){
     writeLines("selected_features is empty!\nEnter your desired features")

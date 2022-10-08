@@ -57,8 +57,8 @@ DrugLoop = function(i){
     X_TCGA = GE_TCGA[,I]
     index = rep(1,ncol(X))
   ##################
-  #X = GE
-  #X_TCGA = GE_TCGA
+  # X = GE
+  # X_TCGA = GE_TCGA
   Xtrain = X[!is.na(sen_PRISM[,i]),]
   ytrain = sen_PRISM[!is.na(sen_PRISM[,i]),i]
   
@@ -67,7 +67,7 @@ DrugLoop = function(i){
   
   length(ytest)
   if(length(ytest)>10){
-    
+    source("F18-Combat_Normalization.R")
     #X_Normalization = Rank(Xtrain,Xtest)
     #X_Normalization = Rank(Xtrain,Xtest)
     X_Normalization = Combat_Scale(Xtrain,Xtest)
@@ -75,12 +75,12 @@ DrugLoop = function(i){
     Xtrain = X_Normalization[[1]]
     Xtest = X_Normalization[[2]]
     
-    #source("F15-Feature_Selection_PRISM@TCGA.R")
-    #selected_features = c("TF_decoupleR","progeny")
-    #Omics_List = Feature_Selection(selected_features,GE = Xtrain ,GE_test = Xtest)
-    #Xtrain = Omics_List[[1]]
-    #index = Omics_List[[2]]
-    #Xtest = Omics_List[[3]]
+    # source("F15-Feature_Selection_PRISM@TCGA.R")
+    # selected_features = c("Landmark_genes")
+    # Omics_List = Feature_Selection_PRISM_TCGA(selected_features,GE = Xtrain ,GE_test = Xtest)
+    # Xtrain = Omics_List[[1]]
+    # index = Omics_List[[2]]
+    # Xtest = Omics_List[[3]]
     
     # Ytrain normalization
     # Mean_ytrain = mean(ytrain)

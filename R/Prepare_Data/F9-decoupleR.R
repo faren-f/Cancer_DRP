@@ -29,7 +29,8 @@ decoupleR = function(X, method){
       times = 100,
       nproc = 4,
       minsize = 5
-    )}
+    )
+    }
   
   else if (method == "gsva"){
     X_tf = run_gsva(
