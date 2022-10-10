@@ -27,7 +27,7 @@ Ridge = function(ytrain, Xtrain, Xtest, weight = NULL){
   
   model = caret::train(ytrain ~., data = train_data,
                        method = "glmnet",
-                       weights = NULL,
+                       weights = weight,
                        metric="RMSE",
                        allowParallel = TRUE,
                        tuneGrid = tune,

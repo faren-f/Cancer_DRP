@@ -24,8 +24,6 @@ clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
 
 DrugLoop = function(i){
   
-  print(paste0("The drug is: ", as.character(i)))
-
   #Drug Pathway feature selection
   Result_Level = list()
   for (j in 1:N_Level){

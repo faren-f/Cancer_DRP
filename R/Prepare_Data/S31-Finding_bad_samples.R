@@ -30,7 +30,7 @@ N_drug = ncol(sen)
 Results = c()
 #i=16
 
-for (i in 10){
+for (i in 16){
   print(paste0("The drug number is: ", as.character(i)))
   
   X = omics[!is.na(sen[,i]),]
@@ -86,24 +86,22 @@ for (i in 10){
   
   RepLoop = function(j){
     
-    # sample1 = sample.split(y, SplitRatio = .9)
+    # sample1 = sample.split(y, SplitRatio = .8)
     # 
     # X = subset(X, sample1 == TRUE)
     # y = subset(y, sample1 == TRUE)
-    #I = c(6,122,156,216,315,318,384)
-    # I = c(6,26,29,43,47,53,66,74,79,81,84,105,116,122,156,174,202,208,224,238,256,260,
-    #       283,311,337,384)
+    
+    
     # I = readRDS("All_Results/I.rds")
     
+
+    badSamples1 = readRDS("All_Results/XI_Normalized_20%_D18_90@290.rds")
+    badSamples2 = readRDS("All_Results/XI_Normalized_20%_180&139.rds")
+    badSamples = intersect(badSamples1,badSamples2)
     
-    badSamples = readRDS("All_Results/XI_Normalized_20%_180&139.rds")
     y = y[!(rownames(X) %in% intersect(badSamples,rownames(X)))]
     X = X[!(rownames(X) %in% intersect(badSamples,rownames(X))),]
 
-    
-
-    #X = X[-badSamples,]
-    #y = y[-badSamples]
     
     sample = sample.split(y, SplitRatio = .8)
 
@@ -174,10 +172,11 @@ stopCluster(cl)
 #saveRDS(Result, "All_Results/Result_1000run_test_train.rds")
 #saveRDS(Result, "All_Results/Result_1000run_Normalized_20%.rds")
 # saveRDS(Result, "All_Results/Result_1000run_Normalized_10%.rds")
+#saveRDS(Result, "All_Results/Result_1000run_Normalized_20%_D18.rds")
 
 
-# Result = readRDS("All_Results/Result_1000run_Normalized_20%.rds")
-# ResultS1 = Result[,1:388]
+# Result = readRDS("All_Results/Result_1000run_Normalized_20%_D18.rds")
+# ResultS1 = Result[,1:418]
 # 
 # Result_good_S1 = ResultS1[which(Result[,1]>0.1),]
 # S1_good = data.frame(apply(Result_good_S1[,-1],2,sum))
@@ -185,7 +184,7 @@ stopCluster(cl)
 # abline(v = 180, col = "red")
 # good_samples_good = which(S1_good>40)
 # rownames(X)[good_samples_good]
-# bad_samples_good = which(S1_good<180)
+# bad_samples_good = which(S1_good<90)
 # X_bad_samples_good = rownames(X)[bad_samples_good]
 # 
 # Result_bad_S1 = ResultS1[which(Result[,1]<(-0.1)),]
@@ -195,12 +194,12 @@ stopCluster(cl)
 # 
 # good_samples_bad = which(S1_bad<365)
 # rownames(X)[good_samples_bad]
-# bad_samples_bad = which(S1_bad>139)
+# bad_samples_bad = which(S1_bad>290)
 # X_bad_samples_bad = rownames(X)[bad_samples_bad]
 # I = c(bad_samples_bad,bad_samples_good)
 # X_I = c(X_bad_samples_bad,X_bad_samples_good)
 # 
-# saveRDS(X_I,"All_Results/XI_Normalized_20%_180&139.rds")
+# saveRDS(X_I,"All_Results/XI_Normalized_20%_D18_90@290.rds")
 
 
 # I = intersect(good_samples_good,good_samples_bad)
@@ -224,16 +223,16 @@ stopCluster(cl)
 # plot(pc[,1],pc[,2], pch = shape, col = color)
 # 
 
-# Sample_Tissue = readRDS("Processed_data/S19/sample_tissue_types.rds")
+Sample_Tissue = readRDS("Processed_data/S19/sample_tissue_types.rds")
+
+cellline_Tissue = matrix(0,nrow(Sample_Tissue),2)
+rownames(cellline_Tissue) = rownames(Sample_Tissue)
+cellline_Tissue[,1] = rownames(Sample_Tissue)
+for(s in 1:ncol(Sample_Tissue)){
+  cellline_Tissue[which(Sample_Tissue[,s]==1),2] = colnames(Sample_Tissue)[s]
+}
 # 
-# cellline_Tissue = matrix(0,nrow(Sample_Tissue),2)
-# rownames(cellline_Tissue) = rownames(Sample_Tissue)
-# cellline_Tissue[,1] = rownames(Sample_Tissue)
-# for(s in 1:ncol(Sample_Tissue)){
-#   cellline_Tissue[which(Sample_Tissue[,s]==1),2] = colnames(Sample_Tissue)[s]
-# }
-# 
-# cellline_Tissue_bad = cellline_Tissue[badSamples,]
+cellline_Tissue_bad = cellline_Tissue[badSamples,]
 # cellline_Tissue_bad = cellline_Tissue[X_I,]
 # 
 # ResultS = Result[,389:ncol(Result)]

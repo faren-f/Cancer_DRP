@@ -5,22 +5,16 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
+res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 
-low_sample_drugs = c(1,3,4,5,6,7,12,13,14,19,20,21,22,23,24,25,28,29,31,33,36,37
-                     ,39,40,41,42,43,45,47,49,51,52,56,57,58)
-sen_PRISM = readRDS("Processed_data/S23/sensitivity_matrix_PRISM_with@TCGA@drugs.rds")
-res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
-#res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
-sen_PRISM = sen_PRISM[,-low_sample_drugs]
-res_TCGA = res_TCGA[,-low_sample_drugs]
-
-GE = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
+GE_PRISM = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
 # Remove genes whose Q3 is zero
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
 GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
-GE = GE[,-which(q3_genes==0)]
+GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
@@ -28,7 +22,7 @@ drugs = data.frame(colnames(sen_PRISM))
 d = 5
 drug = drugs[d,1]
 
-clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
+clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA",
                     "drug","d"))
 clusterEvalQ(cl, c(source("F7-RandomForest.R"),
                    source("F6-ENet.R"),source("F8-MLP.R"),
@@ -52,8 +46,8 @@ LevelLoop = function(i){
     for(j in names(pathway_gene_set)){
       
       if(!is.null(pathway_gene_set[[j]])){
-        I = intersect(colnames(GE),pathway_gene_set[[j]])
-        X = GE[,I]
+        I = intersect(colnames(GE_PRISM),pathway_gene_set[[j]])
+        X = GE_PRISM[,I]
         X_TCGA = GE_TCGA[,I]
         if(!is.null(ncol(X))){
           index = rep(1,ncol(X))

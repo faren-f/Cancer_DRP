@@ -4,40 +4,33 @@ library(parallel)
 no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
-TCGA_good_drugs = c("bicalutamide", "docetaxel", "etoposide", "paclitaxel", "leucovorin", 
-                    "dacarbazine", "methotrexate", "ifosfamide", "gemcitabine", 
-                    "vincristine", "cisplatin","vinblastine")
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-#sen = readRDS("All_Results/sen_PRISM_good_drugs.rds")
-sen = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
-#TCGA_PRISM_drugs_all = readRDS("Processed_data/S21/Drugs_TCGA@PRISM.rds")
-TCGA_PRISM_drugs_sig_samples = readRDS("Processed_data/Other/PRISM_TCGA_drugs.rds")
+sen = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
+GE = readRDS("Processed_Data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 
-which(colnames(sen) %in% TCGA_PRISM_drugs_sig_samples)
-I =intersect(colnames(sen),TCGA_PRISM_drugs_sig_samples)
-sen = sen[,I]
 
 source("F14-Feature_Selection.R")
 selected_features = c("Landmark_genes")
-Omics_List = Feature_Selection(selected_features)
+Omics_List = Feature_Selection(selected_features,GE)
 omics = Omics_List[[1]]
 index = Omics_List[[2]]
 
 N_drug = ncol(sen)
 Results = c()
-#4,5,14,16,17,31,39,48,75,78
 for (i in 5){
   print(paste0("The drug number is: ", as.character(i)))
   
   X = omics[!is.na(sen[,i]),]
   y = sen[!is.na(sen[,i]),i]
+  #boxplot(y)
+  
+  # U = 1.5*IQR(y)+median(y)
+  # L = median(y)-1.5*IQR(y)
+  # X = X[y<U & y>L,]
+  # y = y[y<U & y>L]
+  
   
   X = t(scale(t(X)))
-  
-  # Ytrain normalization
-  #Mean_y = mean(y)
-  #STD_y = sd(y)
-  #y = (y-Mean_y)/STD_y
   
   
   clusterExport(cl, c("X","y","i","index"))
@@ -54,29 +47,30 @@ for (i in 5){
     ytrain = subset(y, sample == TRUE)
     ytest  = subset(y, sample == FALSE)
     
-    a = hist(ytrain)
-    InvCount = 1/a[["counts"]]
+    # a = hist(ytrain)
+    # InvCount = 1/a[["counts"]]
+    # 
+    # W = rep(0,length(ytrain))
+    # b = a$breaks
+    # for(l in 1:length(ytrain)){
+    #   for(k in 2:length(b)){
+    #     if((b[k-1] < ytrain[l]) & (ytrain[l] < b[k])){
+    #     W[l] = InvCount[k-1]
+    #     }
+    #   }
+    # }
+    # hist(W)
     
-    W = rep(0,length(ytrain))
-    b = round(a$breaks,1)
-    for(l in 1:length(ytrain)){
-      for(k in 2:length(b)){
-        if((b[k-1] < ytrain[l]) & (ytrain[l] < b[k])){
-        W[l] = InvCount[k-1]
-        }
-      }
-    }
-    hist(W)
-    
-    W = rep(1,length(ytrain))
+    #W = rep(1,length(ytrain))
     
     # Models
     #y_pred_SGL = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)
     #y_pred_RF = RandomForest(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     #y_pred_ENet = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
     #y_pred_Lasso = Lasso(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-    y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest, weight = W)
+    #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest, weight = W)
     #y_pred_MLP = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+
     
     
     # Evaluation
@@ -86,11 +80,6 @@ for (i in 5){
     #corr_Lasso = cor(ytest,y_pred_Lasso)
     corr_Ridge = cor(ytest,y_pred_Ridge,method = "pearson")
     #corr_MLP = cor(ytest,y_pred_MLP)
-    
-    
-    
-    
-    
     
     
     result = data.frame(corr_Ridge = corr_Ridge)
@@ -103,7 +92,7 @@ for (i in 5){
     return(result)
   }
   
-  N_itration = 10
+  N_itration = 1
   result = parLapply(cl, sapply(1:N_itration, list), RepLoop) 
   
   Result = data.frame()
@@ -111,35 +100,16 @@ for (i in 5){
     Result = rbind(Result, result[[k]])
   }
   
-  
   Result_mean = apply(Result, 2, mean)
-  Result_sd = apply(Result, 2, sd)
+  #Result_sd = apply(Result, 2, sd)
   print(Result_mean)
-  print(Result_sd)
+  #print(Result_sd)
   
   
-  Results = rbind(Results, c(Result_mean, Result_sd))
+  Results = rbind(Results, Result_mean)
   
 }
 stopCluster(cl)
-#c = colnames(sen)
-#rownames(Results) = c[order_drugs[3:20,]]
-#saveRDS(Results,"All_Results/.rds")
-#all = readRDS("All_Results/SGL_RF@L1000_TF@12run.rds")
-#a = data.frame(colnames(sen))
-
-#plot(ytest,y_pred_Ridge)
 
 
-
-
-# plot(ytest)
-# 
-# s = colnames(sen)[which(Results[,1]>0.2)]
-# intersect(s, TCGA_good_drugs)
-
-#C = c("VILL","FLOT1","VSIG2","SPAG7","CAMTA2")
-#intersect(C, colnames(X))
-
-#drug_targets = readRDS("Processed_data/S1/drug_targets.rds")
 
