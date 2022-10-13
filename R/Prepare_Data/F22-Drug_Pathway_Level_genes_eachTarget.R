@@ -45,11 +45,3 @@ Drug_Pathway_gene_set_eachTarget = function(drug, level){
 
 
 
-
-
-
-
-
-
-
-

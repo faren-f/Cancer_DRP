@@ -25,7 +25,7 @@ GE = GE[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 5
+d = 4
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE","GE_TCGA","sen_PRISM","res_TCGA",
@@ -58,8 +58,8 @@ LevelLoop = function(i){
         if(!is.null(ncol(X))){
           index = rep(1,ncol(X))
           ##################
-          X = GE
-          X_TCGA = GE_TCGA
+          #X = GE
+          #X_TCGA = GE_TCGA
           Xtrain = X[!is.na(sen_PRISM[,d]),]
           ytrain = sen_PRISM[!is.na(sen_PRISM[,d]),d]
           
@@ -105,17 +105,16 @@ LevelLoop = function(i){
             #y_pred_Ridge = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
             #y_pred_Ridge = MLP(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
             
-            y_pred_Ridge_P = Ridge(ytrain = ytrain_train ,Xtrain = Xtrain_train, 
+            y_pred_Ridge = Ridge(ytrain = ytrain_train ,Xtrain = Xtrain_train, 
                                  Xtest = Xtrain_test)
             
             # y_pred_Ridge_P = MLP(ytrain = ytrain_train ,Xtrain = Xtrain_train, 
             #                        Xtest = Xtrain_test)
              
             # Evaluation
-            corr_Ridge = cor(ytest,y_pred_Ridge)
-            corr_Ridge_P = cor(ytrain_test,y_pred_Ridge_P)
-            plot(ytrain_test,y_pred_Ridge_P,ylim = c(0,1.8),xlim = c(0,1.8))
-            plot(ytest,y_pred_Ridge)
+            corr_Ridge = cor(ytrain_test,y_pred_Ridge)
+            #plot(ytrain_test,y_pred_Ridge,ylim = c(0,1.8),xlim = c(0,1.8))
+            #plot(ytest,y_pred_Ridge)
             
             #print(corr_Ridge)
             #corr_RF = cor(ytest,y_pred_RF)
@@ -124,8 +123,8 @@ LevelLoop = function(i){
             #corr_Ridge = cor(ytest , y_pred_Ridge)
             #corr_Ridge = cor(ytest , y_pred_Ridge)
             
-            ttest = t.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative="greater")$p.value
-            Ranksum = wilcox.test(y_pred_Ridge[ytest==1], y_pred_Ridge[ytest==2], alternative ="greater")$p.value
+            #ttest = t.test(y_pred_Ridge[ytrain_test==1], y_pred_Ridge[ytrain_test==2], alternative="greater")$p.value
+            #Ranksum = wilcox.test(y_pred_Ridge[ytrain_test==1], y_pred_Ridge[ytrain_test==2], alternative ="greater")$p.value
             
           }else{
             N_genes = 0

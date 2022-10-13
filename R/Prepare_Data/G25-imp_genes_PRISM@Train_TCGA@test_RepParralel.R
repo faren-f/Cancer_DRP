@@ -66,6 +66,6 @@ Ranksum = wilcox.test(y_pred[ytest==1], y_pred[ytest==2], alternative ="greater"
 Result = data.frame(corr = corr, ttest=ttest, Ranksum = Ranksum)
 print(Result)
 
-saveRDS(Result,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_PRISM.rds")
-saveRDS(Order_Beta,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_PRISM.rds")
+#saveRDS(Result,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_PRISM_WholeGenes.rds")
+#saveRDS(Order_Beta,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_PRISM_WholeGenes.rds")
 

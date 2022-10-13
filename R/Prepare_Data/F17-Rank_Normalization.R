@@ -6,6 +6,9 @@
 # Description: This function receives train and test data and use 
 # rank normalization to normalize them
 
+Xtrain = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
+Xtest = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
+
 Rank = function(Xtrain,Xtest){
   
   X_tr = matrix(0,nrow(Xtrain),ncol(Xtrain))

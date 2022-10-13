@@ -1,5 +1,6 @@
 rm(list=ls())
 
+library(ggplot2)
 library(parallel)
 no_cores = detectCores()
 cl = makeCluster(no_cores-2)
@@ -19,7 +20,7 @@ GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #saveRDS(drugs,"Processed_data/Other/24_drugs.rds")
-d = 5
+d = 24
 drug = drugs[d,1]
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA",
@@ -154,17 +155,17 @@ df = data.frame(df)
 df$p_val = as.numeric(df$p_val)
 df$level = as.numeric(df$level)
 
-# plt = ggplot(df) +
-#   geom_line(aes(x = level, y = p_val, color = target), size = .5) + 
-#   geom_point(aes(x = level, y = p_val, color = target), size = 1) +
-#   theme_classic(base_size = 10) + theme(legend.position = "right") +
-#   geom_hline(yintercept = -log10(0.05),linetype = "dashed")+
-#   labs(title= drug, x ="Level", y = "-log(P-value)")+
-#   theme(plot.title = element_text(hjust = 0.5))
-# 
-# 
-# pdf(paste0("Figures/FS/Drug_pathway/", drug,".pdf"), height = 4, width = 5)
-# plt
-# dev.off()
+plt = ggplot(df) +
+  geom_line(aes(x = level, y = p_val, color = target), size = .5) +
+  geom_point(aes(x = level, y = p_val, color = target), size = 1) +
+  theme_classic(base_size = 10) + theme(legend.position = "right") +
+  geom_hline(yintercept = -log10(0.05),linetype = "dashed")+
+  labs(title= drug, x ="Level", y = "-log(P-value)")+
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+pdf(paste0("Figures/FS/Drug_pathway/", drug,"_R2.pdf"), height = 4, width = 5)
+plt
+dev.off()
 
 

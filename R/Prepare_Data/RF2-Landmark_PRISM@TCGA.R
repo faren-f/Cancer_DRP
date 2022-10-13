@@ -72,3 +72,6 @@ print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
 
+boxplot(y_pred[ytest==1],y_pred[ytest==2])
+
+

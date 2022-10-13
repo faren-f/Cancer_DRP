@@ -35,7 +35,7 @@ N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 Results = c()
 
-for (i in 1:N_drug){
+for (i in 5){
   
   print(paste0("The drug number is: ", as.character(i)))
   
@@ -57,15 +57,14 @@ for (i in 1:N_drug){
 
     source("F15-Feature_Selection_PRISM@TCGA.R")
     selected_features = c("Landmark_genes")
-    Omics_List = Feature_Selection_PRISM_TCGA(selected_features,GE = Xtrain ,GE_test = Xtest)
+    Omics_List = Feature_Selection_PRISM_TCGA(selected_features,Xtrain = Xtrain ,Xtest = Xtest)
     Xtrain = Omics_List[[1]]
     index = Omics_List[[2]]
     Xtest = Omics_List[[3]]
     
     # Ytrain normalization
-    #Mean_ytrain = mean(ytrain)
-    #STD_ytrain = sd(ytrain)
-    #ytrain = (ytrain-Mean_ytrain)/STD_ytrain
+    ytrain = scale(ytrain)
+    ytrain = ytrain[,1]
     
     # Models
     #y_pred_Ridge = My_SGL(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest,index = index)

@@ -138,6 +138,6 @@ order(RankSum_Beta)[1:20]
 #saveRDS(Result,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_TCGA.rds")
 #saveRDS(Order_Beta_all,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_TCGA.rds")
 
-saveRDS(Result,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_TCGA_WholeGenes.rds")
-saveRDS(Order_Beta_all,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_TCGA_WholeGenes.rds")
+#saveRDS(Result,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_TCGA_WholeGenes.rds")
+#saveRDS(Order_Beta_all,"Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_TCGA_WholeGenes.rds")
 

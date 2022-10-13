@@ -1,20 +1,22 @@
+rm(list=ls())
 
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 GE_PRISM = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
 
 #Result_PRISM = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_PRISM.rds")
-Order_Beta_PRISM = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_PRISM.rds")
+Order_Beta_PRISM = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_PRISM_WholeGenes.rds")
 
 
 #Result_TCGA = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Result_TCGA.rds")
-Order_Beta_TCGA = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_TCGA.rds")
+Order_Beta_TCGA = readRDS("Final_Result/imp_genes_PRISM&TCGA/Docetaxel/Order_Beta_TCGA_WholeGenes.rds")
 RankSum_Beta = apply(Order_Beta_TCGA,1,sum)
 plot(sort(RankSum_Beta), pch=20)
 
 len_intersect = c()
-for(i in seq(10,500,by = 10)){
+for(i in seq(100,3000,by = 100)){
   
   Order_PRISM = Order_Beta_PRISM[1:i]
   Order_TCGA = order(RankSum_Beta)[1:i]
