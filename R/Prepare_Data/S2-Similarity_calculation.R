@@ -127,7 +127,7 @@ CID_Name_Smile = CID_Name_Smile[colnames(sen),]
 Smiles =  CID_Name_Smile[,3]
 molecule <- parse.smiles(Smiles)
 Fingerprints = lapply(molecule, get.fingerprint, type='circular')
-saveRDS(Fingerprints,"Processed_Data/Step2/Fingerprints.rds")  
+saveRDS(Fingerprints,"Processed_Data/S2/Fingerprints.rds")  
 
 Fingerprints_sim = fingerprint::fp.sim.matrix(Fingerprints, method='tanimoto')
 rownames (Fingerprints_sim) =  CID_Name_Smile[,2]
@@ -141,4 +141,7 @@ Fingerprints_dist = 1-Fingerprints_sim
 pheatmap::pheatmap(Fingerprints_dist)
 
 
+Fingerprints_sim = readRDS("Processed_Data/S2/Fingerprints_sim.rds")
+hist(Fingerprints_sim)
+max(Fingerprints_sim)
 
