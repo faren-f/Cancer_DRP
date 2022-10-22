@@ -5,14 +5,22 @@ sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
 WholeGenes = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF1_WholeGenes.rds")
 WholeGenes = WholeGenes$Ranksum
+
 Landmark = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF2-Landmark.rds")
 Landmark = Landmark$Ranksum
+
 DoRothEA = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF3-DoRothEA.rds")
 DoRothEA = DoRothEA$Ranksum
+
 progeny = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF7-progeny.rds")
 progeny = progeny$Ranksum
+
 Drug_Pathways = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW.rds")
 Drug_Pathways = Drug_Pathways$Ranksum
+
+OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
+OncoKB = OncoKB$Ranksum
+
 
 # PW_ranksum = c()
 # for(i in names(PW)){

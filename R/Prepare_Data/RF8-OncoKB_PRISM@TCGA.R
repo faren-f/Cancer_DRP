@@ -35,7 +35,7 @@ DrugLoop = function(i){
   Xtest = X_Normalization[[2]]
   
   source("F15-Feature_Selection_PRISM@TCGA.R")
-  selected_features = c("Landmark_genes")
+  selected_features = c("OncoKB")
   Omics_List = Feature_Selection_PRISM_TCGA(selected_features, Xtrain=Xtrain, Xtest=Xtest)
   Xtrain = Omics_List[[1]]
   index = Omics_List[[2]]
@@ -67,11 +67,10 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF2-Landmark.rds")
+saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
 
-#boxplot(y_pred[ytest==1],y_pred[ytest==2])
 
 

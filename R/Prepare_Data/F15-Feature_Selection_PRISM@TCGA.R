@@ -66,6 +66,27 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     index = rep(1,ncol(omics_train))
     Omics = list(omics_train,index,omics_test)
     
+  }else if (prod(selected_features == "OncoKB")){
+    OncoKB_genes = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    I_G = intersect(OncoKB_genes,colnames(Xtest))
+    
+    omics_train = Xtrain[,I_G]
+    omics_test = Xtest[,I_G]
+    
+    index = rep(1,ncol(omics_train))
+    Omics = list(omics_train,index,omics_test)
+    
+  }else if (prod(selected_features == "OncoKB_oncogenes")){
+    OncoKB_oncogenes = readRDS("Processed_Data/S32/OncoKB_oncogenes.rds")
+    I_G = intersect(OncoKB_oncogenes,colnames(Xtest))
+    
+    omics_train = Xtrain[,I_G]
+    omics_test = Xtest[,I_G]
+    
+    index = rep(1,ncol(omics_train))
+    Omics = list(omics_train,index,omics_test)
+    
+    
   }else if (prod(selected_features == c("Landmark_genes","TF_DoRothEA"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
     I_G = intersect(l1000_genes,colnames(Xtest))
