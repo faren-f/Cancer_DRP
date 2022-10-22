@@ -76,6 +76,32 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     index = rep(1,ncol(omics_train))
     Omics = list(omics_train,index,omics_test)
     
+  }else if (prod(selected_features == c("Landmark_OncoKB_genes"))){
+    l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
+    OncoKB = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    Landmark_OncoKB_genes = intersect(OncoKB, l1000_genes)
+
+    I_G = intersect(Landmark_OncoKB_genes,colnames(Xtest))
+    
+    omics_train = Xtrain[,I_G]
+    omics_test = Xtest[,I_G]
+    
+    index = rep(1,ncol(omics_train))
+    Omics = list(omics_train,index,omics_test)
+    
+  }else if (prod(selected_features == c("Landmark_genes","OncoKB"))){
+    l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
+    OncoKB = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    Landmark_OncoKB_genes = c(OncoKB, l1000_genes)
+    Landmark_OncoKB_genes = Landmark_OncoKB_genes[!duplicated(Landmark_OncoKB_genes)] 
+    I_G = intersect(Landmark_OncoKB_genes,colnames(Xtest))
+    
+    omics_train = Xtrain[,I_G]
+    omics_test = Xtest[,I_G]
+    
+    index = rep(1,ncol(omics_train))
+    Omics = list(omics_train,index,omics_test)
+        
   }else if (prod(selected_features == "OncoKB_oncogenes")){
     OncoKB_oncogenes = readRDS("Processed_Data/S32/OncoKB_oncogenes.rds")
     I_G = intersect(OncoKB_oncogenes,colnames(Xtest))
@@ -262,5 +288,3 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
   }
   return(Omics)
 }
-
-
