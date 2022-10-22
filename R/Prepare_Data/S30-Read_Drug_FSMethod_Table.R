@@ -21,11 +21,16 @@ Drug_Pathways = Drug_Pathways$Ranksum
 OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
 OncoKB = OncoKB$Ranksum
 
-intersect_Landmark_OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF13-Landmark_OncoKB_genes.rds")
-intersect_Landmark_OncoKB = intersect_Landmark_OncoKB$Ranksum
+CancerGenes_GDSC = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF15-CancerGenes.rds")
+CancerGenes_GDSC = CancerGenes_GDSC$Ranksum
 
-Landmark_OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF14-Landmark&OncoKB_genes.rds")
-Landmark_OncoKB = Landmark_OncoKB$Ranksum
+
+
+# intersect_Landmark_OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF13-Landmark_OncoKB_genes.rds")
+# intersect_Landmark_OncoKB = intersect_Landmark_OncoKB$Ranksum
+# 
+# Landmark_OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF14-Landmark&OncoKB_genes.rds")
+# Landmark_OncoKB = Landmark_OncoKB$Ranksum
 
 
 # PW_ranksum = c()
@@ -35,7 +40,7 @@ Landmark_OncoKB = Landmark_OncoKB$Ranksum
 
 Drug_Pathways = rep(1,24)
 Drug_Pathways[c(5,8,11,17,21)] = 0
-Drug_FSMethods = cbind(WholeGenes, Landmark, DoRothEA, progeny, Drug_Pathways, OncoKB)
+Drug_FSMethods = cbind(WholeGenes,Landmark,DoRothEA,progeny,Drug_Pathways,OncoKB,CancerGenes_GDSC)
 rownames(Drug_FSMethods) = colnames(sen_PRISM)
 Drug_FSMethods = Drug_FSMethods[-c(3,10,12,14),]  
   

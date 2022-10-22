@@ -4,7 +4,7 @@
 #                   Email: faren.firoozbakht@gmail.com
 
 # Description: This script receives OncoKB gene list from https://www.oncokb.org
-# and find the expresion of that genes in transcriptome data available in PRISM
+# and find 1066 unique OncoKB genes
 
 rm(list=ls())
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
