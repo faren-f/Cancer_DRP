@@ -48,8 +48,8 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     Omics = list(omics_train,index)    
     
   }else if (prod(selected_features == "TF_decoupleR")){
-    omics_train = decoupleR(X = Xtrain, method = "gsva")
-    omics_test = decoupleR(X = Xtest, method = "gsva")
+    omics_train = decoupleR(X = Xtrain, method = "mdt")
+    omics_test = decoupleR(X = Xtest, method = "mdt")
     
     index = rep(1,ncol(omics_train))
     Omics = list(omics_train,index,omics_test)
