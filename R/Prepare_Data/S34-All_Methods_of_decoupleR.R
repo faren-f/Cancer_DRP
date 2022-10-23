@@ -15,9 +15,9 @@ selected_features = c("TF_decoupleR")
 Omics_List = Feature_Selection_PRISM_TCGA(selected_features, 
                                           Xtrain=GE_PRISM, 
                                           Xtest=GE_TCGA)
-# Xtrain = Omics_List[[1]]
-# index = Omics_List[[2]]
-# Xtest = Omics_List[[3]]
+Xtrain = Omics_List[[1]]
+index = Omics_List[[2]]
+Xtest = Omics_List[[3]]
 
-saveRDS(Omics_List, "Processed_data/S34/mdt.rds")
+saveRDS(Omics_List, "Processed_data/S34/ulm.rds")
 

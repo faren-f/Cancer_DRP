@@ -75,8 +75,9 @@ decoupleR = function(X, method){
       n_up = ceiling(0.05 * nrow(mat)),
       n_bottom = 0,
       n_background = 20000,
-      minsize = 4
-    )}
+      minsize = 5
+    )
+    }
   
   else if (method == "udt"){
     X_tf = run_udt(
