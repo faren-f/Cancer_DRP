@@ -5,10 +5,22 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-Omics_List = readRDS("Processed_data/S34/viper.rds")
+#Omics_List = readRDS("Processed_data/S34/")
 
-dR_PRISM = Omics_List[[1]]
-dR_TCGA = Omics_List[[3]]
+# From R
+# dR_PRISM = Omics_List[[1]]
+# dR_TCGA = Omics_List[[3]]
+# 
+# From Python
+dR_PRISM = read.table("Processed_data/S34/wsum4_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+dR_TCGA = read.table("Processed_data/S34/wsum4_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
+
+
+q3_genes = apply(dR_TCGA,2,quantile,prob=0.75)
+if(sum(q3_genes==0)>0){
+  dR_TCGA = dR_TCGA[,-which(q3_genes==0)]
+  dR_PRISM = dR_PRISM[,-which(q3_genes==0)]
+}
 
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
@@ -18,6 +30,7 @@ clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
 
 DrugLoop = function(i){
   
+  #for( i in 1:24){
   print(paste0("The drug number is: ", as.character(i)))
   
   Xtrain = dR_PRISM[!is.na(sen_PRISM[,i]),]
@@ -58,7 +71,7 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF5-TF_decoupleR.rds")
+saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum4.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))

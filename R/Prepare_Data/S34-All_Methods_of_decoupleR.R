@@ -9,6 +9,9 @@ GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
 GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
 GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+
+#write.csv(GE_PRISM,"~/Desktop/Cancer_DRP/Python/decouple_R/Raw_data/Data_from_R/GE_PRISM.csv")
+#write.csv(GE_TCGA,"~/Desktop/Cancer_DRP/Python/decouple_R/Raw_data/Data_from_R/GE_TCGA.csv")
   
 source("F15-Feature_Selection_PRISM@TCGA.R")
 selected_features = c("TF_decoupleR")
