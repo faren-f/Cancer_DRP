@@ -8,9 +8,12 @@ dorothea = dc.get_dorothea(organism='human', levels=['A','B','C'])
 # all the methods in decouple r that we can get TFs from them
 dc.show_methods()
 
-path = 'Raw_data/expresion_matrix.csv'
-GE = pd.read_csv(path, sep = ',')
+path = 'Raw_data/Data_from_R/GE_PRISM.csv'
+#path = 'Raw_data/expresion_matrix.csv'
+
+GE = pd.read_csv(path, sep = ',', header = 0, index_col=0)
 GE.head()
+
 #sns.heatmap(GE, cmap='viridis')
 #plt.show()
 
@@ -66,6 +69,13 @@ tf_acts_wmean_2 = tf_acts_wmean[1]
 tf_acts_wmean_3 = tf_acts_wmean[2]
 tf_acts_wmean_4 = tf_acts_wmean[3]
 
+tf_acts_wsum  = dc.run_wsum(mat=GE, net=dorothea, source='source', 
+                                    target='target', min_n=5)
+tf_acts_wsum_1 = tf_acts_wsum[0]
+tf_acts_wsum_2 = tf_acts_wsum[1]
+tf_acts_wsum_3 = tf_acts_wsum[2]
+tf_acts_wsum_4 = tf_acts_wsum[3]
+
 
 
 tf_acts_viper = dc.run_viper(mat=GE, net=dorothea, source='source', 
@@ -86,7 +96,7 @@ tf_acts_udt = dc.run_udt(mat=GE, net=dorothea, source='source',
 
 
 
-tf_acts_gsea_3.to_csv("Saved_data/TF_gsea_3.csv", sep=',', columns=None,header=True)
+tf_acts_wsum_1.to_csv("Saved_data/wsum_1.csv", sep=',', columns=None,header=True)
 
 
 

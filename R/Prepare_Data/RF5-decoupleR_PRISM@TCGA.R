@@ -5,7 +5,7 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-Omics_List = readRDS("Processed_data/S34/ulm.rds")
+Omics_List = readRDS("Processed_data/S34/viper.rds")
 
 dR_PRISM = Omics_List[[1]]
 dR_TCGA = Omics_List[[3]]
