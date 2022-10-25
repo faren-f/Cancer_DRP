@@ -9,10 +9,10 @@ library(rcdk)
 
 # Read_Data ---------------------------------------------------------------
 
-expr = readRDS("Processed_Data/Step1/expresion_matrix.rds")
+expr = readRDS("Processed_Data/S1/expresion_matrix.rds")
 
-sen = readRDS("Processed_Data/Step1/sensitivity_matrix.rds")
-response = read.csv("Raw_data/PRISM_Raw_data/Secondary/secondary-screen-dose-response-curve-parameters.csv")
+sen = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
+response = read.csv("Raw_data/PRISM/Secondary/secondary-screen-dose-response-curve-parameters.csv")
 
 
 # Similarity calculation --------------------------------------------------
@@ -73,7 +73,7 @@ plot(concat_sample_sim_exp, concat_sample_sim_sen, cex=.005, pch=20,
 #CID_Name = cbind(CID_Name[,2],CID_Name[,1])
 #colnames(CID_Name) = c("CID","Name")
 #saveRDS(CID_Name,"Processed_Data/Step2/CID_Name.rds")
-CID_Name = readRDS("Processed_Data/Step2/CID_Name.rds")
+CID_Name = readRDS("Processed_Data/S2/CID_Name.rds")
 
 # CID_Smile_PubChem -------------------------------------------------------
 ######CID_Smile is downloaded from https://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Extras/

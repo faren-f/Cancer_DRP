@@ -16,6 +16,8 @@ q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
 GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
 GE = GE[,-which(q3_genes==0)]
 
+#saveRDS(GE,"Processed_data/Other/GE_PRISM_CommonGeneswith_TCGA.rds")
+
 N_drug = ncol(sen_PRISM)
 drugs = data.frame(colnames(sen_PRISM))
 #Remove:3,10,12,14
