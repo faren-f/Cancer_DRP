@@ -1,17 +1,17 @@
 rm(list=ls())
-setwd("~/Desktop/Codes/Cancer_DRP/R")
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 # Library -----------------------------------------------------------------
 library(igraph)
 
 # Read_Data ---------------------------------------------------------------
-GE = readRDS("Data/Processed_Data/expresion_matrix.rds")
+GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 #GE_norm = readRDS("Data/Processed_Data/expresion_normalized_matrix.rds")
 
-drug_sensitivity = readRDS("Data/Processed_Data/sensitivity_matrix.rds")
+drug_sensitivity = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 
-write.table(drug_sensitivity, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/sensitivity_matrix.csv",
-            row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+# write.table(drug_sensitivity, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/sensitivity_matrix.csv",
+#             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 
 #sen = read.csv("sensitivity_matrix.csv")
 # Similarity calculation ------------------------------------------------------------
@@ -24,8 +24,8 @@ write.table(drug_sensitivity, file = "Data/Processed_Data_For_Python/Create_cell
 # thr_var_GE = 0.8
 # abline(v = thr_var_GE, col = "red")
 # GE = GE[,var_GE > thr_var_GE]
- write.table(GE, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/gene_expresion_highVar.csv",
-             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+# write.table(GE, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/gene_expresion_highVar.csv",
+#             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 
 # Normalization Gene Expresion
 #GE = apply(GE,2, function(x){return((x-min(x))/(max(x)-min(x)))})
@@ -63,7 +63,7 @@ node_attr_cellline = GE
 
 #'@Finding_binarized_FingerPrints(node_attr_drug)
 
-Fingerprints = readRDS("Data/Processed_Data/Fingerprints.rds")  
+Fingerprints = readRDS("Processed_Data/S2/Fingerprints.rds")  
 
 FP = matrix(0, length(Fingerprints), 1024)
 for (i in 1:length(Fingerprints)){
@@ -76,7 +76,7 @@ node_attr_drug = FP
 #'@Drug_Drug_Similarity
 
 ## Distribution of drug-drug similarity matrix
-sim_FP = readRDS("Data/Processed_Data/Fingerprints_sim.rds") 
+sim_FP = readRDS("Processed_Data/S2/Fingerprints_sim.rds") 
 
 hist(sim_FP,150)
 thr_binarize = 0.12
@@ -132,22 +132,22 @@ for (i in 1:nrow(sen)){
 # Save_Data ---------------------------------------------------------------
 
 #'@Save_data_cell_line
-write.table(node_attr_cellline, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/node_attr_cellline.csv",
+write.table(node_attr_cellline, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/node_attr_cellline.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
-write.table(edge_index_cellline, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_cellline.csv",
+write.table(edge_index_cellline, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_cellline.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 
 
 #'@Save_data_drug
-write.table(node_attr_drug, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/node_attr_drug.csv",
+write.table(node_attr_drug, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/node_attr_drug.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
-write.table(edge_index_drug, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_drug.csv",
+write.table(edge_index_drug, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_drug.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 
 
 #'@Save_data_cellline_drug
-write.table(edge_index_cellline_drug, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_cellline_drug.csv",
+write.table(edge_index_cellline_drug, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_index_cellline_drug.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
-write.table(edge_lable_cellline_drug, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_lable_cellline_drug.csv",
+write.table(edge_lable_cellline_drug, file = "Processed_Data_For_Python/Create_cellline_drug_net/Regression/edge_lable_cellline_drug.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 

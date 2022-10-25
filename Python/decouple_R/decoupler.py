@@ -8,7 +8,7 @@ dorothea = dc.get_dorothea(organism='human', levels=['A','B','C'])
 # all the methods in decouple r that we can get TFs from them
 dc.show_methods()
 
-path = 'Raw_data/Data_from_R/GE_PRISM.csv'
+path = 'Raw_data/Data_from_R/GE_TCGA.csv'
 #path = 'Raw_data/expresion_matrix.csv'
 
 GE = pd.read_csv(path, sep = ',', header = 0, index_col=0)
@@ -49,8 +49,7 @@ tf_acts_mlm_1 = tf_acts_mlm[0]
 tf_acts_mlm_2 = tf_acts_mlm[1]
 
 
-tf_acts_ora = dc.run_ora(mat=GE, net=dorothea, source='source', 
-                                    target='target', min_n=5)
+tf_acts_ora = dc.run_ora(mat=GE, net=dorothea, source='source', target='target', min_n=5)
 
 tf_acts_ora_1 = tf_acts_ora[0]
 tf_acts_ora_2 = tf_acts_ora[1]
@@ -96,7 +95,7 @@ tf_acts_udt = dc.run_udt(mat=GE, net=dorothea, source='source',
 
 
 
-tf_acts_wsum_1.to_csv("Saved_data/wsum_1.csv", sep=',', columns=None,header=True)
+tf_acts_wsum_4.to_csv("Saved_data/wsum4_TCGA.csv", sep=',', columns=None,header=True)
 
 
 

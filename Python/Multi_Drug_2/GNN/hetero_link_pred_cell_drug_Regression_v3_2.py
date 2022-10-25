@@ -1,6 +1,6 @@
 #branch:Loss_NA
-import os
-os.chdir("Desktop/Codes/Cancer_DRP/Python/GNN")
+#import os
+#os.chdir("Desktop/Codes/Cancer_DRP/Python/GNN")
 
 import torch
 import numpy as np
