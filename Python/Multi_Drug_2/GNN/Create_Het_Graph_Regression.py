@@ -8,7 +8,7 @@ from torch_geometric.data import HeteroData
 class MyGraphDataset():
     def __init__(self, root):
                 
-        path = os.path.join(root, 'node_attr_cellline_TF_gsea_row1.csv')
+        path = os.path.join(root, 'node_attr_cellline.csv')
         node_attr_cellline = pd.read_csv(path, header = None, sep = ',' )
         
         path = os.path.join(root, 'edge_index_cellline.csv')
@@ -26,6 +26,8 @@ class MyGraphDataset():
         path = os.path.join(root, 'edge_lable_cellline_drug.csv')
         edge_lable_cellline_drug = pd.read_csv(path, header = None, sep= ',')
         
+        path = os.path.join(root, 'edge_lable_cellline_drug.csv')
+        edge_weight = pd.read_csv(path, header = None, sep= ',')
         
         
         node_attr_cellline = np.array(node_attr_cellline)
@@ -45,6 +47,9 @@ class MyGraphDataset():
         
         edge_lable_cellline_drug = np.array(edge_lable_cellline_drug)
         self.edge_lable_cellline_drug = torch.tensor(edge_lable_cellline_drug, dtype=torch.float)
+        
+        edge_weight = np.array(edge_weight)
+        self.edge_weight = torch.tensor(edge_weight, dtype=torch.float)
         
         
         
@@ -70,6 +75,7 @@ class MyGraphDataset():
 
         data['cellline', 'sen', 'drug'].edge_label =  torch.squeeze(self.edge_lable_cellline_drug) # [num_edges_cites]
 
+        data['cellline', 'sen', 'drug'].edge_weight =  torch.squeeze(self.edge_weight) 
 
 
         data['cellline', 'sim_GE', 'cellline'].edge_index = self.edge_index_cellline # [2, num_edges_writes]

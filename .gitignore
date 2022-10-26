@@ -52,3 +52,4 @@ R/Prepare_Data/.Rhistory
 *.tsv
 R/Main/Raw_data/Drug_Feature/CID-SMILES
 R/Main/Processed_data/.Rhistory
+R/Prepare_Data/.Rhistory
