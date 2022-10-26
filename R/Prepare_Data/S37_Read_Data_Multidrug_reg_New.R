@@ -7,13 +7,13 @@ library(igraph)
 # Read_Data ---------------------------------------------------------------
 #GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 GE = readRDS("Processed_data/Other/GE_PRISM_CommonGeneswith_TCGA.rds")
-
+l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
+GE = GE[,colnames(GE)%in%l1000_genes]
 drug_sensitivity = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 #drug_sensitivity = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
 #write.table(drug_sensitivity, file = "Data/Processed_Data_For_Python/Create_cellline_drug_net/Regression/sensitivity_matrix.csv",
 #           row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
-
 
 # Similarity calculation ------------------------------------------------------------
 
@@ -107,7 +107,14 @@ node_attr_drug = FP
 
 #'@edge_index_cellline_drug
 
-sen = drug_sensitivity
+sensitivity = apply(drug_sensitivity,2, function(x){
+  m = mean(x, na.rm = TRUE)
+  s = sd(x, na.rm = TRUE)
+  x = (x-m)/s
+  return(x)})
+
+#sensitivity = t(sensitivity)
+sen = sensitivity
 
 ## Assign Node numbers to sen $ sen_na matrices
 
@@ -124,12 +131,32 @@ for (i in 1:nrow(sen)){
   edge_index_cellline_drug = cbind(edge_index_cellline_drug,edge_i_res) 
   edge_lable_cellline_drug = c(edge_lable_cellline_drug,sen[i,ind1])
 }
+hist(edge_lable_cellline_drug)
+edge_lable = edge_lable_cellline_drug
+q1 = quantile(edge_lable,prob=0.05)
+q3 = quantile(edge_lable,prob=0.95)
+
+edge_lable = (edge_lable-q1)/(q3-q1)
+#edge_lable_cellline_drug = edge_lable
+#hist(edge_lable, 100)
+edge_lable[edge_lable>1] = 1
+edge_lable[edge_lable<0] = 0
+
+#hist(edge_lable, 100)
+
+edge_weight_cellline_drug = 1-edge_lable
+#edge_weight_cellline_drug = rep(1, length(edge_lable))
+#hist(edge_weight_cellline_drug, 100)
 
 # Normalization
 #edge_lable_cellline_drug = scale(edge_lable_cellline_drug)
 #edge_lable_cellline_drug = (edge_lable_cellline_drug-min(edge_lable_cellline_drug))/
 #(max(edge_lable_cellline_drug)-min(edge_lable_cellline_drug))
 #hist(edge_lable_cellline_drug,30)
+
+# Celllines-Drugs that are NA
+Na_sen = ifelse(apply(sensitivity,2,function(x){return(is.na(x))}),0,1)
+
 # Save_Data ---------------------------------------------------------------
 
 #'@Save_data_cell_line
@@ -151,4 +178,15 @@ write.table(edge_index_cellline_drug, file = "Processed_Data/S37-P/edge_index_ce
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
 write.table(edge_lable_cellline_drug, file = "Processed_Data/S37-P/edge_lable_cellline_drug.csv",
             row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+write.table(edge_weight_cellline_drug, file = "Processed_Data/S37-P/edge_weight_cellline_drug.csv",
+            row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+
+write.table(Na_sen, file = "Processed_Data/S37-P/Na_sen.csv",
+            row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+
+write.table(sensitivity, file = "Processed_Data/S37-P/drug_sensitivity.csv",
+            row.names = FALSE, col.names = FALSE, quote = FALSE, sep = ",")
+
+
+
 

@@ -5,7 +5,7 @@ from torch.nn import Linear
 
 import torch_geometric.transforms as T
 #from torch_geometric.transforms import RandomLinkSplit
-from RandomLinkSplit_Modified import RandomLinkSplit
+from RandomLinkSplit_modified_NewNode import RandomLinkSplit
 
 from Create_Het_Graph_Regression import MyGraphDataset
 from torch_geometric.nn import SAGEConv, to_hetero, LEConv, GraphConv
@@ -21,7 +21,6 @@ print(dataset.data.node_types)
 data = dataset.data
 
 
-
 parser = argparse.ArgumentParser()
 parser.add_argument('--use_weighted_loss', action='store_true',
                     help='Whether to use weighted MSE loss.')
@@ -33,13 +32,14 @@ data = T.ToUndirected()(data)
 del data['drug', 'rev_sen', 'cellline'].edge_label  # Remove "reverse" label.
 
 # Perform a link-level split into training, validation, and test edges:
-train_data, val_data, test_data = RandomLinkSplit(
+splitdata = RandomLinkSplit(
     num_val=0.1,
     num_test=0.1,
     neg_sampling_ratio=0,
     edge_types=[('cellline', 'sen', 'drug')],
-    rev_edge_types=[('drug', 'rev_sen', 'cellline')],
-)(data)
+    rev_edge_types=[('drug', 'rev_sen', 'cellline')])
+    
+train_data, val_data, test_data = splitdata(data) 
 
 
 # We have an unbalanced dataset with many labels for rating 3 and 4, and very
@@ -59,14 +59,14 @@ def weighted_mse_loss(pred, target, weight=None):
 class GNNEncoder(torch.nn.Module):
     def __init__(self, hidden_channels, out_channels):
         super().__init__()
-        self.conv1 = GraphConv((-1, -1), hidden_channels)
+        self.conv1 = LEConv((-1, -1), hidden_channels)
         #self.conv2 = SAGEConv((-1, -1), hidden_channels)
-        self.conv2 = GraphConv((-1, -1), out_channels)
+        self.conv2 = LEConv((-1, -1), out_channels)
 
-    def forward(self, x, edge_index):
-        x = self.conv1(x, edge_index).relu()
+    def forward(self, x, edge_index, edge_weight):
+        x = self.conv1(x, edge_index, edge_weight).relu()
         #x = self.conv2(x, edge_index).relu()
-        x = self.conv2(x, edge_index)
+        x = self.conv2(x, edge_index, edge_weight)
 
         return x
 
@@ -93,14 +93,19 @@ class Model(torch.nn.Module):
         self.encoder = to_hetero(self.encoder, data.metadata(), aggr='mean')
         self.decoder = EdgeDecoder(hidden_channels)
 
-    def forward(self, x_dict, edge_index_dict, edge_label_index):
-        z_dict = self.encoder(x_dict, edge_index_dict)
+    def forward(self, x_dict, edge_index_dict, edge_weight_dict, edge_label_index):
+        z_dict = self.encoder(x_dict, edge_index_dict, edge_weight_dict)
         return self.decoder(z_dict, edge_label_index)
     
-    def forward_encoder(self, x_dict, edge_index_dict):
-        z_dict = self.encoder(x_dict, edge_index_dict)
+    def forward_encoder(self, x_dict, edge_index_dict, edge_weight_dict):
+        z_dict = self.encoder(x_dict, edge_index_dict, edge_weight_dict)
         return z_dict
 # main:
+
+Test_nodes = splitdata.test_nodes.numpy()
+sen = dataset.sen
+sen_Test = sen[Test_nodes,] 
+
 
 model = Model(hidden_channels=100)
 
@@ -108,15 +113,16 @@ model = Model(hidden_channels=100)
 # Due to lazy initialization, we need to run one model step so the number
 # of parameters can be inferred:
 with torch.no_grad():
-    model.encoder(train_data.x_dict, train_data.edge_index_dict)
+    model.encoder(train_data.x_dict, train_data.edge_index_dict, train_data.edge_weight_dict)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=0.00007)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.0007)
 
 
 def train():
     model.train()
     optimizer.zero_grad()
     pred = model(train_data.x_dict, train_data.edge_index_dict,
+                 train_data.edge_weight_dict,
                  train_data['cellline', 'sen', 'drug'].edge_label_index)
     target = train_data['cellline', 'sen', 'drug'].edge_label
     
@@ -127,29 +133,59 @@ def train():
 
 
 @torch.no_grad()
-def test(d):
+def test(d,sen,sen_Test):
     model.eval()
-    pred = model(d.x_dict, d.edge_index_dict,
+    pred = model(d.x_dict, d.edge_index_dict, d.edge_weight_dict,
                  d['cellline', 'sen', 'drug'].edge_label_index)
-    target = d['cellline', 'sen', 'drug'].edge_label.float()
-    # rmse = F.mse_loss(pred, target).sqrt()
-    cor = np.corrcoef(pred, target)[0,1]
-    loss_test = weighted_mse_loss(pred, target, weight)
+    
+    
+    prediction = np.zeros([Test_nodes.shape[0],sen.shape[1]])
+    
+    for t in range(0,Test_nodes.shape[0]):
+        
+        N = sen.shape[1] - sum(np.isnan(sen_Test[t,:]))
+        Ind_nan = np.where(np.isnan(sen_Test[t,:]))
+        Pred = pred[0:N].detach().numpy()
+        prediction[t,Ind_nan] = np.nan
+        prediction[t,~np.isnan(prediction[t,])] = Pred
+        pred = pred[N::]
+        
+    cor = np.array([ ])
+    #loss_test = np.array([ ])    
+    for j in range(0, sen_Test.shape[1]):
+        Target = sen_Test[~np.isnan(sen_Test[:,j]),j]
+        pred = prediction[~np.isnan(prediction[:,j]),j]
+        #Target = sen_Test[j, ~np.isnan(sen_Test[j,:])]
+        #pred = prediction[j, ~np.isnan(prediction[j,:])]
+        cor = np.append(cor, np.corrcoef(pred, Target)[0,1])
+     
+    return (np.nanmean(cor))  
+        
+              
+#loss_test = np.append(loss_test, weighted_mse_loss(Pred, Target, weight))
+# print(cor[t])
 
-    return float(cor)    
+#target = d['cellline', 'sen', 'drug'].edge_label.float()
+#rmse = F.mse_loss(pred, target).sqrt()
+#cor = np.corrcoef(pred, target)[0,1]
+#loss_test = weighted_mse_loss(pred, target, weight)
+
+
 
 @torch.no_grad()
 def embbeding(d):
     model.eval()
-    z = model.forward_encoder(d.x_dict, d.edge_index_dict)
+    z = model.forward_encoder(d.x_dict, d.edge_index_dict, d.edge_weight_dict)
     return (z)  
  
 
-for epoch in range(1, 60):
+for epoch in range(1, 150):
     loss = train()
-    train_corr = test(train_data)
-    val_corr = test(val_data) 
-    test_corr = test(test_data)
+    #train_corr = test(train_data)
+    train_corr = 0
+    #val_corr = test(val_data, sen, sen_Test) 
+    val_corr = 0
+    test_corr = test(test_data, sen, sen_Test)
     print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_corr:.4f}, '
           f'Val: {val_corr:.4f}, Test: {test_corr:.4f}')        
 
@@ -160,3 +196,7 @@ for epoch in range(1, 60):
 
 #savetxt('Saved_data/RGCN/Embedding_cellline.csv', Embedding_cellline,delimiter=',')
 #savetxt('Saved_data/RGCN/Embedding_drug.csv', Embedding_drug,delimiter=',') 
+
+
+
+

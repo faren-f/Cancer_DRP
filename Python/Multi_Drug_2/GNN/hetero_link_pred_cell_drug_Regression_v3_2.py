@@ -9,6 +9,7 @@ import torch_geometric.transforms as T
 from torch_geometric.nn import SAGEConv, to_hetero, GraphConv
 #from numpy import savetxt
 from RandomLinkSplit_modified_NewNode import RandomLinkSplit
+
 from Create_Het_Graph_Regression import MyGraphDataset
 
 # load the dataset
@@ -30,7 +31,7 @@ splitdata = RandomLinkSplit(
     num_val=0.1,
     num_test=0.1,
     is_undirected = False,
-    neg_sampling_ratio=0,
+    neg_sampling_ratio=.1,
     edge_types=[('cellline', 'sen', 'drug')],
     rev_edge_types=[('drug', 'rev_sen', 'cellline')])
 train_data, val_data, test_data = splitdata(data)
@@ -72,8 +73,8 @@ class Model(torch.nn.Module):
         z_dict = self.encoder(x_dict, edge_index_dict, edge_weight_dict)
         row1, row2 = edge_label_index
         inner_product = (z_dict['cellline'][row1] * z_dict['drug'][row2]).sum(dim=-1)  # dot product 
-        #sigmoid_inner_product = self.sigmoid(inner_product)
-        return inner_product
+        sigmoid_inner_product = self.sigmoid(inner_product)
+        return sigmoid_inner_product
     # This function gives the embedding space that we need for interpretation
     def forward_encoder(self, x_dict, edge_index_dict, edge_weight_dict):
         z_dict = self.encoder(x_dict, edge_index_dict, edge_weight_dict)

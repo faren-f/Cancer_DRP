@@ -150,41 +150,23 @@ class RandomLinkSplit(BaseTransform):
                 perm = perm[torch.randperm(perm.size(0), device=perm.device)]
             else:
                 device = edge_index.device
-                #perm = torch.randperm(edge_index.size(1), device=device)
-                perm = torch.randperm(data['cellline'].x.shape[0], device=device)
+                perm = torch.randperm(edge_index.size(1), device=device)
 
+            num_val = self.num_val
+            if isinstance(num_val, float):
+                num_val = int(num_val * perm.numel())
+            num_test = self.num_test
+            if isinstance(num_test, float):
+                num_test = int(num_test * perm.numel())
 
-            num_val_sample = self.num_val
-            if isinstance(num_val_sample, float):
-                num_val_sample = int(num_val_sample * perm.numel())
-            num_test_sample = self.num_test
-            if isinstance(num_test_sample, float):
-                num_test_sample = int(num_test_sample * perm.numel())
-
-            num_train_sample = perm.numel() - num_val_sample - num_test_sample
-            if num_train_sample <= 0:
+            num_train = perm.numel() - num_val - num_test
+            if num_train <= 0:
                 raise ValueError("Insufficient number of edges for training")
 
-            train_nodes = perm[:num_train_sample]
-            val_nodes = perm[num_train_sample:num_train_sample + num_val_sample]
-            test_nodes = perm[num_train_sample + num_val_sample:]
-            train_val_nodes = perm[:num_train_sample + num_val_sample]
-            
-            
-            I = [np.where(edge_index[0,:] == train_nodes[i])[0].tolist() for i in range(len(train_nodes))]
-            train_edges = sum(I,[])
-            
-            I = [np.where(edge_index[0,:] == val_nodes[i])[0].tolist() for i in range(len(val_nodes))]
-            val_edges = sum(I,[])
-            
-            I = [np.where(edge_index[0,:] == test_nodes[i])[0].tolist() for i in range(len(test_nodes))]
-            test_edges = sum(I,[])
-            
-            train_val_edges = train_edges + val_edges
-            
-            
-            
-            
+            train_edges = perm[:num_train]
+            val_edges = perm[num_train:num_train + num_val]
+            test_edges = perm[num_train + num_val:]
+            train_val_edges = perm[:num_train + num_val]
 
             num_disjoint = self.disjoint_train_ratio
             if isinstance(num_disjoint, float):
@@ -279,12 +261,15 @@ class RandomLinkSplit(BaseTransform):
 
         if hasattr(store, self.key):
             edge_label = store[self.key]
-            assert edge_label.dtype == torch.long
+            #assert edge_label.dtype == torch.long
             assert edge_label.size(0) == store.edge_index.size(1)
             edge_label = edge_label[index]
             # Increment labels by one. Note that there is no need to increment
             # in case no negative edges are added.
             if self.neg_sampling_ratio > 0:
+            #if self.neg_edge_index.numel() > 0:
+                #assert edge_label.dtype == torch.long
+                #assert edge_label.size(0) == store.edge_index.size(1)
                 edge_label.add_(1)
             if hasattr(out, self.key):
                 delattr(out, self.key)
@@ -314,3 +299,4 @@ class RandomLinkSplit(BaseTransform):
     def __repr__(self) -> str:
         return (f'{self.__class__.__name__}(num_val={self.num_val}, '
                 f'num_test={self.num_test})')
+

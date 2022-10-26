@@ -169,6 +169,9 @@ class RandomLinkSplit(BaseTransform):
             val_nodes = perm[num_train_nodes:num_train_nodes + num_val_nodes]
             test_nodes = perm[num_train_nodes + num_val_nodes:]
             
+            self.train_nodes = train_nodes
+            self.val_nodes = val_nodes
+            self.test_nodes = test_nodes
             
             I = [np.where(edge_index[0,:] == train_nodes[i])[0].tolist() for i in range(len(train_nodes))]
             train_edges = sum(I,[])

@@ -26,8 +26,11 @@ class MyGraphDataset():
         path = os.path.join(root, 'edge_lable_cellline_drug.csv')
         edge_lable_cellline_drug = pd.read_csv(path, header = None, sep= ',')
         
-        path = os.path.join(root, 'edge_lable_cellline_drug.csv')
+        path = os.path.join(root, 'edge_weight_cellline_drug.csv')
         edge_weight = pd.read_csv(path, header = None, sep= ',')
+        
+        path = os.path.join(root, 'drug_sensitivity.csv')
+        sen = pd.read_csv(path, header = None, sep= ',')
         
         
         node_attr_cellline = np.array(node_attr_cellline)
@@ -51,6 +54,10 @@ class MyGraphDataset():
         edge_weight = np.array(edge_weight)
         self.edge_weight = torch.tensor(edge_weight, dtype=torch.float)
         
+        #edge_attr = np.array(edge_weight)
+        #self.edge_attr = torch.tensor(edge_attr, dtype=torch.float)
+                
+        self.sen = np.array(sen)
         
         
         self.num_nodes = node_attr_cellline.shape[0]
@@ -76,6 +83,9 @@ class MyGraphDataset():
         data['cellline', 'sen', 'drug'].edge_label =  torch.squeeze(self.edge_lable_cellline_drug) # [num_edges_cites]
 
         data['cellline', 'sen', 'drug'].edge_weight =  torch.squeeze(self.edge_weight) 
+        
+        #data['cellline', 'sen', 'drug'].edge_attr =  self.edge_attr
+
 
 
         data['cellline', 'sim_GE', 'cellline'].edge_index = self.edge_index_cellline # [2, num_edges_writes]
