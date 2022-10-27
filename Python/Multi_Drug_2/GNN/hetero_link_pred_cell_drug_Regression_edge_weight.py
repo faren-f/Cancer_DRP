@@ -10,7 +10,7 @@ from RandomLinkSplit_modified_NewNode import RandomLinkSplit
 from Create_Het_Graph_Regression import MyGraphDataset
 from torch_geometric.nn import SAGEConv, to_hetero, LEConv, GraphConv
 import numpy as np
-from numpy import savetxt
+#from numpy import savetxt
 
 # load the dataset
 dataset = MyGraphDataset(root= "Raw_Data_From_R/Cellline_drug_Net/Regression")
@@ -60,13 +60,13 @@ class GNNEncoder(torch.nn.Module):
     def __init__(self, hidden_channels, out_channels):
         super().__init__()
         self.conv1 = LEConv((-1, -1), hidden_channels)
-        #self.conv2 = SAGEConv((-1, -1), hidden_channels)
-        self.conv2 = LEConv((-1, -1), out_channels)
+        #self.conv2 = LEConv((-1, -1), hidden_channels)
+        #self.conv2 = LEConv((-1, -1), out_channels)
 
     def forward(self, x, edge_index, edge_weight):
-        x = self.conv1(x, edge_index, edge_weight).relu()
-        #x = self.conv2(x, edge_index).relu()
-        x = self.conv2(x, edge_index, edge_weight)
+        x = self.conv1(x, edge_index, edge_weight)
+        #x = self.conv2(x, edge_index, edge_weight)
+        #x = self.conv3(x, edge_index, edge_weight)
 
         return x
 
@@ -75,6 +75,7 @@ class EdgeDecoder(torch.nn.Module):
     def __init__(self, hidden_channels):
         super().__init__()
         self.lin1 = Linear(2 * hidden_channels, hidden_channels)
+        #self.lin2 = Linear(hidden_channels, hidden_channels)
         self.lin2 = Linear(hidden_channels, 1)
 
     def forward(self, z_dict, edge_label_index):
@@ -82,7 +83,8 @@ class EdgeDecoder(torch.nn.Module):
         z = torch.cat([z_dict['cellline'][row1], z_dict['drug'][row2]], dim=-1)
 
         z = self.lin1(z).sigmoid()
-        z = self.lin2(z)
+        z = self.lin2(z).sigmoid()
+        #z = self.lin3(z).sigmoid()
         return z.view(-1)
     
 
@@ -103,8 +105,13 @@ class Model(torch.nn.Module):
 # main:
 
 Test_nodes = splitdata.test_nodes.numpy()
+Val_nodes = splitdata.val_nodes.numpy()
+Train_nodes = splitdata.train_nodes.numpy()
+
 sen = dataset.sen
 sen_Test = sen[Test_nodes,] 
+sen_Val = sen[Val_nodes,] 
+sen_Train = sen[Train_nodes,] 
 
 
 model = Model(hidden_channels=100)
@@ -133,33 +140,34 @@ def train():
 
 
 @torch.no_grad()
-def test(d,sen,sen_Test):
+def test(data,sen,sen_data):
     model.eval()
-    pred = model(d.x_dict, d.edge_index_dict, d.edge_weight_dict,
-                 d['cellline', 'sen', 'drug'].edge_label_index)
+    pred = model(data.x_dict, data.edge_index_dict, data.edge_weight_dict,
+                 data['cellline', 'sen', 'drug'].edge_label_index)
     
     
-    prediction = np.zeros([Test_nodes.shape[0],sen.shape[1]])
+    prediction = np.zeros([sen_data.shape[0],sen_data.shape[1]])
     
-    for t in range(0,Test_nodes.shape[0]):
+    for t in range(0,sen_data.shape[0]):
         
-        N = sen.shape[1] - sum(np.isnan(sen_Test[t,:]))
-        Ind_nan = np.where(np.isnan(sen_Test[t,:]))
+        N = sen.shape[1] - sum(np.isnan(sen_data[t,:]))
+        Ind_nan = np.where(np.isnan(sen_data[t,:]))
         Pred = pred[0:N].detach().numpy()
         prediction[t,Ind_nan] = np.nan
         prediction[t,~np.isnan(prediction[t,])] = Pred
         pred = pred[N::]
         
     cor = np.array([ ])
-    #loss_test = np.array([ ])    
-    for j in range(0, sen_Test.shape[1]):
-        Target = sen_Test[~np.isnan(sen_Test[:,j]),j]
+    loss = np.array([ ])    
+    for j in range(0, sen_data.shape[1]):
+        Target = sen_data[~np.isnan(sen_data[:,j]),j]
         pred = prediction[~np.isnan(prediction[:,j]),j]
-        #Target = sen_Test[j, ~np.isnan(sen_Test[j,:])]
+        #Target = sen_data[j, ~np.isnan(sen_data[j,:])]
         #pred = prediction[j, ~np.isnan(prediction[j,:])]
         cor = np.append(cor, np.corrcoef(pred, Target)[0,1])
-     
-    return (np.nanmean(cor))  
+        loss = np.append(loss, F.mse_loss(torch.tensor(pred), torch.tensor(Target)).sqrt())
+
+    return (np.nanmean(cor),float(np.nanmean(loss)))
         
               
 #loss_test = np.append(loss_test, weighted_mse_loss(Pred, Target, weight))
@@ -177,18 +185,20 @@ def embbeding(d):
     model.eval()
     z = model.forward_encoder(d.x_dict, d.edge_index_dict, d.edge_weight_dict)
     return (z)  
- 
 
-for epoch in range(1, 150):
+    
+
+for epoch in range(1, 100):
+    print(f"Epoch: {epoch+1}")
     loss = train()
-    #train_corr = test(train_data)
-    train_corr = 0
-    #val_corr = test(val_data, sen, sen_Test) 
-    val_corr = 0
-    test_corr = test(test_data, sen, sen_Test)
+    train_corr,train_loss = test(train_data, sen, sen_Train)
+    val_corr,val_loss = test(val_data, sen, sen_Val) 
+    test_corr,test_loss = test(test_data, sen, sen_Test)
     print(f'Epoch: {epoch:03d}, Loss: {loss:.4f}, Train: {train_corr:.4f}, '
-          f'Val: {val_corr:.4f}, Test: {test_corr:.4f}')        
-
+          f'Val: {val_corr:.4f}, Test: {test_corr:.4f}') 
+       
+    
+        
 
 #z = embbeding(data)
 #Embedding_cellline = z["cellline"].detach().numpy()

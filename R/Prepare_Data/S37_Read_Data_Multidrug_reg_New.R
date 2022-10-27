@@ -9,6 +9,10 @@ library(igraph)
 GE = readRDS("Processed_data/Other/GE_PRISM_CommonGeneswith_TCGA.rds")
 l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
 GE = GE[,colnames(GE)%in%l1000_genes]
+
+dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+hist(as.matrix(dR_PRISM))
+#hist(as.matrix(GE))
 drug_sensitivity = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 #drug_sensitivity = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
@@ -23,12 +27,15 @@ drug_sensitivity = readRDS("Processed_Data/S1/sensitivity_matrix.rds")
 GE = scale(GE)
 
 #'@Cell-line_Cell-line_Similarity
-
-sim_GE = abs(cor(t(GE)))
+dR_PRISM = scale(dR_PRISM)
+hist(dR_PRISM)
+#sim_GE = abs(cor(t(GE)))
+sim_GE = cor(t(dR_PRISM))
 
 ## Distribution of cell line-cell line similarity matrix
 hist(sim_GE,30)
-thr_binarize = 0.15
+#thr_binarize = 0.1
+thr_binarize = 0.2
 abline(v =thr_binarize, col = "red")
 
 ## Binarizing the cell line-cell line similarity matrix
@@ -107,13 +114,31 @@ node_attr_drug = FP
 
 #'@edge_index_cellline_drug
 
+#Normalization of drug_sensitivity
+#1) Z-Score scale
+# sensitivity = apply(drug_sensitivity,2, function(x){
+#   m = mean(x, na.rm = TRUE)
+#   s = sd(x, na.rm = TRUE)
+#   x = (x-m)/s
+#   return(x)})
+
+#2) min-max Normalization
+# sensitivity = apply(drug_sensitivity,2, function(x){
+#   Min = min(x, na.rm = TRUE)
+#   Max = max(x, na.rm = TRUE)
+#   x = (x-Min)/(Max-Min)
+#   return(x)})
+
+#3) min-max Normalization
 sensitivity = apply(drug_sensitivity,2, function(x){
-  m = mean(x, na.rm = TRUE)
-  s = sd(x, na.rm = TRUE)
-  x = (x-m)/s
+  Q1 = quantile(x, 0.1,na.rm = TRUE)
+  Q2 = quantile(x, 0.9,na.rm = TRUE)
+  x = (x-Q1)/(Q2-Q1)
   return(x)})
+#hist(sensitivity[,2])
 
 #sensitivity = t(sensitivity)
+
 sen = sensitivity
 
 ## Assign Node numbers to sen $ sen_na matrices
