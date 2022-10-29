@@ -3,9 +3,9 @@
 #                     @author: Farzaneh Firoozbakht
 #                   Email: faren.firoozbakht@gmail.com
 
-# Description: This function receives train and test data and hyper parameters 
-# of the model to compute output prediction using linear regression model 
-# regularized by L2 norm popular as Ridge regression model
+# Description: This function receives train and test data 
+# to compute output prediction using logistic regression model 
+
 
 library(glmnet)
 library(caret)

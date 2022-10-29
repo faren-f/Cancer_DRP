@@ -51,7 +51,7 @@ MLP = function(ytrain,Xtrain,Xtest){
   model %>% fit(
     Xtrain, 
     ytrain, 
-    epochs = 200, 
+    epochs = 150, 
     batch_size = 5, 
     validation_split = 0.2,
     callbacks = callbacks)
