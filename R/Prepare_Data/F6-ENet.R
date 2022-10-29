@@ -21,9 +21,9 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
   
   # tune = expand.grid(alpha = seq(.05, 2, length = 20), 
   #                     lambda = round(exp(seq(-15,-5,by = 0.1)), 7))
-  # tune = expand.grid(alpha = seq(.05, 2, length = 20),
-  #                    lambda = seq(.000001,0.0001,.000001))
-  # 
+  tune = expand.grid(alpha = seq(.05, 2, length = 20),
+                     lambda = seq(.000001,0.0001,.000001))
+
 
   model = caret::train(ytrain ~., data = train_data,
                          method = "glmnet",

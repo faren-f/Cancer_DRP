@@ -12,8 +12,8 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 # dR_TCGA = Omics_List[[3]]
 # 
 # From Python
-dR_PRISM = read.table("Processed_data/S34/wsum4_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
-dR_TCGA = read.table("Processed_data/S34/wsum4_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
+dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+dR_TCGA = read.table("Processed_data/S34/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
 
 
 q3_genes = apply(dR_TCGA,2,quantile,prob=0.75)
@@ -71,8 +71,9 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum4.rds")
+#saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum4.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
+#Result = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsea2.rds")
 

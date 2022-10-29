@@ -11,12 +11,19 @@ res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 GE_PRISM = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
+# dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+# dR_TCGA = read.table("Processed_data/S34/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
+
+
 # Remove genes whose Q3 is zero
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
-GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
-GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+if(sum(q3_genes==0)>0){
+  GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
+  GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+}
 
-Models = c("LinearcRegresion")
+
+Models = c("ElasticNet")
 #Models = c("LinearcRegresion", "RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA","Models"))
@@ -53,7 +60,7 @@ DrugLoop = function(i){
   Xtrain = Omics_List[[1]]
   index = Omics_List[[2]]
   Xtest = Omics_List[[3]]
-  
+
   # Ytrain normalization
   ytrain = scale(ytrain)
   ytrain = ytrain[,1]
