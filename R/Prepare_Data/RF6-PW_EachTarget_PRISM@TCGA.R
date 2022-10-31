@@ -97,8 +97,6 @@ Result_Drug = parLapply(cl, sapply(drugs, list), DrugLoop)
 
 stopCluster(cl)
 
-#saveRDS(Result_Drug,"Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW_EachTarget.rds")
+saveRDS(Result_Drug,"Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW_EachTarget.rds")
 
-#print(sum(Result_Drug$doxorubicin[[1]][,"Ranksum"]<0.05))
 
-Result_Drug_ = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW_EachTarget.rds")

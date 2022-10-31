@@ -68,7 +68,6 @@ DrugLoop = function(i){
   result = data.frame(corr = corr, ttest=ttest, 
                       Ranksum = Ranksum, N_genes = N_genes)
   
-  
   return(result)
 }
 
@@ -82,7 +81,7 @@ for (k in drugs){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW2.rds")
+#saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW2.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))

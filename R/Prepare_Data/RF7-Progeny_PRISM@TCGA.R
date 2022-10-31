@@ -13,8 +13,10 @@ GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
 # Remove genes whose Q3 is zero
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
-GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
-GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+if(sum(q3_genes==0)>0){
+  GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
+  GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+}
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA"))
 clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))

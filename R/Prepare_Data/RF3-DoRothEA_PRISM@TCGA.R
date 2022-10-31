@@ -13,8 +13,10 @@ GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
 # Remove genes whose Q3 is zero
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
-GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
-GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+if(sum(q3_genes==0)>0){
+  GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
+  GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
+}
 
 #GE_PRISM = readRDS("Processed_data/S14/DoRothEA_GE_PRISM.rds")
 #GE_TCGA = readRDS("Processed_data/S14/DoRothEA_GE_TCGA.rds")

@@ -11,10 +11,6 @@ res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 GE_PRISM = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
-# dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
-# dR_TCGA = read.table("Processed_data/S34/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
-
-
 # Remove genes whose Q3 is zero
 q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
 if(sum(q3_genes==0)>0){
@@ -23,8 +19,8 @@ if(sum(q3_genes==0)>0){
 }
 
 
-Models = c("ElasticNet")
-#Models = c("LinearcRegresion", "RandomForest","ElasticNet", "Lasso","Ridge","MLP")
+#Models = c("RandomForest","MLP")
+Models = c("LinearcRegresion", "RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA","Models"))
 clusterEvalQ(cl, c(source("F7-RandomForest.R"),
@@ -55,16 +51,16 @@ DrugLoop = function(i){
   Xtest = X_Normalization[[2]]
   
   source("F15-Feature_Selection_PRISM@TCGA.R")
-  selected_features = c("Landmark_genes")
+  selected_features = c("progeny")
   Omics_List = Feature_Selection_PRISM_TCGA(selected_features, Xtrain = Xtrain, Xtest = Xtest)
   Xtrain = Omics_List[[1]]
   index = Omics_List[[2]]
   Xtest = Omics_List[[3]]
-
+  
   # Ytrain normalization
   ytrain = scale(ytrain)
   ytrain = ytrain[,1]
-    
+  
   # Models
   result = c()
   for(M in Models){
@@ -82,9 +78,6 @@ DrugLoop = function(i){
 N_drug = ncol(sen_PRISM)
 result = parLapply(cl, sapply(1:N_drug, list), DrugLoop) 
 
-
-#R = unlist(result)
-
 Result = data.frame()
 for (k in 1:N_drug){
   Result = rbind(Result, result[[k]])
@@ -95,7 +88,7 @@ Result_each_Model = list()
 for(m in 1:N_Models){
   R = Result[m,]
   for(d in seq(N_Models,(N_Models*N_drug)-1,N_Models)){
-  R = rbind(R, Result[m+d,])
+    R = rbind(R, Result[m+d,])
   }
   Result_each_Model[m] = list(R)
 }
@@ -109,4 +102,5 @@ for(p in 1:N_Models){
   #print(which(Result_each_Model[[p]][2]<0.05))
 }
 
+saveRDS(Result_each_Model, "Final_Result/Train@PRISM_Test@TCGA_Models/RF27-allModels_Progeny.rds")
 
