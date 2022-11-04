@@ -9,63 +9,68 @@ WholeGenes = WholeGenes$Ranksum
 Landmark = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF2-Landmark.rds")
 Landmark = Landmark$Ranksum
 
-DoRothEA = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF3-DoRothEA.rds")
-DoRothEA = DoRothEA$Ranksum
-
-progeny = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF7-progeny.rds")
-progeny = progeny$Ranksum
-
 Drug_Pathways = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW.rds")
 Drug_Pathways = Drug_Pathways$Ranksum
 
 OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
 OncoKB = OncoKB$Ranksum
 
-CancerGenes_GDSC = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF15-CancerGenes.rds")
-CancerGenes_GDSC = CancerGenes_GDSC$Ranksum
+# DoRothEA = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF3-DoRothEA.rds")
+# DoRothEA = DoRothEA$Ranksum
 
-
-dR_aucell = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_aucell.rds")
-dR_aucell = dR_aucell$Ranksum
-
-dR_consensus = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_consensus.rds")
-dR_consensus = dR_consensus$Ranksum
-
-dR_gsva = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsva.rds")
-dR_gsva = dR_gsva$Ranksum
-
-dR_mdt = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_mdt.rds")
-dR_mdt = dR_mdt$Ranksum
-
-dR_mlm = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_mlm.rds")
-dR_mlm = dR_mlm$Ranksum
-
-dR_udt = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_udt.rds")
-dR_udt = dR_udt$Ranksum
-
-dR_ulm = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_ulm.rds")
-dR_ulm = dR_ulm$Ranksum
-
-dR_viper = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_viper.rds")
-dR_viper = dR_viper$Ranksum
+progeny = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF7-progeny.rds")
+progeny = progeny$Ranksum
 
 dR_gsea = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsea2.rds")
 dR_gsea = dR_gsea$Ranksum
 
+# CancerGenes_GDSC = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF15-CancerGenes.rds")
+# CancerGenes_GDSC = CancerGenes_GDSC$Ranksum
+# 
+# 
+# dR_aucell = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_aucell.rds")
+# dR_aucell = dR_aucell$Ranksum
+# 
+# dR_consensus = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_consensus.rds")
+# dR_consensus = dR_consensus$Ranksum
+# 
+# dR_gsva = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsva.rds")
+# dR_gsva = dR_gsva$Ranksum
+# 
+# dR_mdt = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_mdt.rds")
+# dR_mdt = dR_mdt$Ranksum
+# 
+# dR_mlm = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_mlm.rds")
+# dR_mlm = dR_mlm$Ranksum
+# 
+# dR_udt = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_udt.rds")
+# dR_udt = dR_udt$Ranksum
+# 
+# dR_ulm = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_ulm.rds")
+# dR_ulm = dR_ulm$Ranksum
+# 
+# dR_viper = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_viper.rds")
+# dR_viper = dR_viper$Ranksum
+# 
+# dR_gsea = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsea2.rds")
+# dR_gsea = dR_gsea$Ranksum
+
 #dR_ora = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5")
 #dR_ora = dR_ora$Ranksum
 
-dR_wmean = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wmean2.rds")
-dR_wmean = dR_wmean$Ranksum
+# dR_wmean = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wmean2.rds")
+# dR_wmean = dR_wmean$Ranksum
+# 
+# dR_wsum = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum2.rds")
+# dR_wsum = dR_wsum$Ranksum
 
-dR_wsum = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum2.rds")
-dR_wsum = dR_wsum$Ranksum
 
-
-
-Drug_FSMethods = cbind(WholeGenes,Landmark,DoRothEA,progeny,Drug_Pathways,OncoKB,CancerGenes_GDSC,
-                       dR_aucell,dR_consensus,dR_gsva,dR_mdt,dR_mlm,dR_udt,dR_ulm,
-                       dR_viper, dR_gsea,dR_wmean,dR_wsum)
+# Drug_FSMethods = cbind(WholeGenes,Landmark,DoRothEA,progeny,Drug_Pathways,OncoKB,CancerGenes_GDSC,
+#                        dR_aucell,dR_consensus,dR_gsva,dR_mdt,dR_mlm,dR_udt,dR_ulm,
+#                        dR_viper, dR_gsea,dR_wmean,dR_wsum)
+TF_activity = dR_gsea
+Pathway_activity = progeny
+Drug_FSMethods = cbind(WholeGenes, Landmark, Drug_Pathways, OncoKB, TF_activity,Pathway_activity)
 
 rownames(Drug_FSMethods) = colnames(sen_PRISM)
 Drug_FSMethods = Drug_FSMethods[-c(3,10,12,14),]  
