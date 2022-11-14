@@ -68,6 +68,3 @@ for (i in cellline_name){
 #saveRDS(IC50, file = "Processed_Data/S41/GDSC_sensitivity_matrix_IC50.rds")
 #saveRDS(GE, file = "Processed_Data/S41/GDSC_expresion_matrix.rds")
 
-
-
-
