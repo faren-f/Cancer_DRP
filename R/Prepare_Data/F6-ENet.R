@@ -21,7 +21,7 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
   
   # tune = expand.grid(alpha = seq(.05, 2, length = 20), 
   #                     lambda = round(exp(seq(-15,-5,by = 0.1)), 7))
-  tune = expand.grid(alpha = seq(.05, 2, length = 20),
+  tune = expand.grid(alpha = seq(.05, 1, length = 10),
                      lambda = seq(.000001,0.0001,.000001))
 
 
@@ -33,8 +33,8 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                          trControl = control)
   
   y_pred = predict(model,Xtest)
-  plot(model$results$RMSE)
-  model$bestTune
+  #plot(model$results$RMSE)
+  #model$bestTune
   return(y_pred)
   
 }
