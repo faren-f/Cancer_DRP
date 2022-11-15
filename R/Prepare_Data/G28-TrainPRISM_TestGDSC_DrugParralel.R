@@ -12,8 +12,8 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 GE_PRISM = readRDS("Processed_Data/S1/expresion_matrix.rds")
 sen_PRISM = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
 
-GE_GDSC = readRDS("Processed_Data/S41/GDSC_expresion_matrix.rds")
-sen_GDSC = readRDS("Processed_Data/S41/GDSC_sensitivity_matrix_AUC.rds")
+GE_GDSC = readRDS("Processed_Data/S39/GDSC_expresion_matrix.rds")
+sen_GDSC = readRDS("Processed_Data/S39/GDSC_sensitivity_matrix_AUC.rds")
 
 intersected_genes = intersect(colnames(GE_PRISM),colnames(GE_GDSC))
 GE_PRISM = GE_PRISM[,intersected_genes]

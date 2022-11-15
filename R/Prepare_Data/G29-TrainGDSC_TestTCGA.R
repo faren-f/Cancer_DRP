@@ -6,7 +6,7 @@ cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
-sen_GDSC = readRDS("Processed_Data/S41/GDSC_sensitivity_matrix_AUC.rds")
+sen_GDSC = readRDS("Processed_Data/S39/GDSC_sensitivity_matrix_AUC.rds")
 colnames(sen_GDSC) = tolower(colnames(sen_GDSC))
 res_TCGA = readRDS("Processed_data/S24/Drug_response_TCGA_binarized.rds")
 
@@ -14,7 +14,7 @@ intersected_drugs = intersect(colnames(sen_GDSC),colnames(res_TCGA))
 sen_GDSC = sen_GDSC[,intersected_drugs]
 res_TCGA = res_TCGA[,intersected_drugs]
 
-GE_GDSC = readRDS("Processed_Data/S41/GDSC_expresion_matrix.rds")
+GE_GDSC = readRDS("Processed_Data/S39/GDSC_expresion_matrix.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
 intersected_genes = intersect(colnames(GE_GDSC),colnames(GE_TCGA))

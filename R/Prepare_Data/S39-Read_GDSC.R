@@ -64,7 +64,7 @@ for (i in cellline_name){
     }
   }
 }
-#saveRDS(AUC, file = "Processed_Data/S41/GDSC_sensitivity_matrix_AUC.rds")
-#saveRDS(IC50, file = "Processed_Data/S41/GDSC_sensitivity_matrix_IC50.rds")
-#saveRDS(GE, file = "Processed_Data/S41/GDSC_expresion_matrix.rds")
+#saveRDS(AUC, file = "Processed_Data/S39/GDSC_sensitivity_matrix_AUC.rds")
+#saveRDS(IC50, file = "Processed_Data/S39/GDSC_sensitivity_matrix_IC50.rds")
+#saveRDS(GE, file = "Processed_Data/S39/GDSC_expresion_matrix.rds")
 
