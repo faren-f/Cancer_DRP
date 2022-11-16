@@ -3,25 +3,25 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
-WholeGenes = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF1_WholeGenes.rds")
+WholeGenes = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/ridge/RF1_WholeGenes_ridge.rds")
 WholeGenes = WholeGenes$Ranksum
 
-Landmark = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF2-Landmark.rds")
+Landmark = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF2-Landmark_Ridge.rds")
 Landmark = Landmark$Ranksum
 
-Drug_Pathways = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW.rds")
+Drug_Pathways = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/ridge/RF6-PW2_ridge.rds")
 Drug_Pathways = Drug_Pathways$Ranksum
 
-OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
-OncoKB = OncoKB$Ranksum
+#OncoKB = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/ENet/)
+#OncoKB = OncoKB$Ranksum
 
 # DoRothEA = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF3-DoRothEA.rds")
 # DoRothEA = DoRothEA$Ranksum
 
-progeny = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF7-progeny.rds")
+progeny = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/ridge/RF7-progeny_ridge.rds")
 progeny = progeny$Ranksum
 
-dR_gsea = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsea2.rds")
+dR_gsea = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/ridge/RF5-decoupleR_gsea2_ridge.rds")
 dR_gsea = dR_gsea$Ranksum
 
 # CancerGenes_GDSC = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF15-CancerGenes.rds")
@@ -70,7 +70,7 @@ dR_gsea = dR_gsea$Ranksum
 #                        dR_viper, dR_gsea,dR_wmean,dR_wsum)
 TF_activity = dR_gsea
 Pathway_activity = progeny
-Drug_FSMethods = cbind(WholeGenes, Landmark, Drug_Pathways, OncoKB, TF_activity,Pathway_activity)
+Drug_FSMethods = cbind(WholeGenes, Landmark, Drug_Pathways, TF_activity, Pathway_activity)
 
 rownames(Drug_FSMethods) = colnames(sen_PRISM)
 Drug_FSMethods = Drug_FSMethods[-c(3,10,12,14),]  
@@ -80,7 +80,7 @@ plt = pheatmap::pheatmap(t(Drug_FSMethods_binary),cluster_rows = FALSE,
                          cluster_cols = FALSE,color = c("deeppink4", "snow2"))
 
 
-pdf(paste0("Figures/FS/All_Methods/heatmap_all_FR_Methods.pdf"), height = 4, width = 5)
+pdf(paste0("Figures/FS/All_Methods/heatmap_FR_ridge.pdf"), height = 4, width = 5)
 plt
 dev.off()
 

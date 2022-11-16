@@ -14,8 +14,8 @@ OncoKB = read.table("Raw_data/OncoKB/cancerGeneList.tsv", sep = '\t', header = T
 OncoKB_genes = OncoKB$Hugo.Symbol
 OncoKB_oncogenes = OncoKB$Hugo.Symbol[OncoKB$Is.Oncogene=="Yes"]
 
-saveRDS(OncoKB_genes, "Processed_data/S32/OncoKB_genes.rds")
-saveRDS(OncoKB_oncogenes, "Processed_data/S32/OncoKB_oncogenes.rds")
+saveRDS(OncoKB_genes, "Processed_data/S31/OncoKB_genes.rds")
+saveRDS(OncoKB_oncogenes, "Processed_data/S31/OncoKB_oncogenes.rds")
 
 
 

@@ -37,7 +37,7 @@ plot(PC_after[,1], PC_after[,2], col = ifelse(batches=="clin","red","blue"),
 
 ## Save data
 
-saveRDS(GE_after,"Processed_data/S25/expresion_matrix_Combat_PRISM_with@TCGA@genes.rds")
-saveRDS(GE_TCGA_after,"Processed_data/S25/expresion_matrix_Combat_TCGA.rds")
+saveRDS(GE_after,"Processed_data/S25/GE_PRISM_AfterCombat_withTCGA.rds")
+saveRDS(GE_TCGA_after,"Processed_data/S25/GE_TCGA_AfterCombat_withPRISM.rds")
 
 

@@ -17,6 +17,6 @@ Cancer_genes_GDSC = Cancer_genes_GDSC[-1,]
 Cancer_genes_GDSC = data.frame(Cancer_genes_GDSC)
 Cancer_genes_GDSC = unique(Cancer_genes_GDSC[,1])
 Cancer_genes_GDSC = Cancer_genes_GDSC[1:470]
-saveRDS(Cancer_genes_GDSC, "Processed_data/S33/CancerGenesGDSC.rds")
+saveRDS(Cancer_genes_GDSC, "Processed_data/S32/CancerGenesGDSC.rds")
 
 

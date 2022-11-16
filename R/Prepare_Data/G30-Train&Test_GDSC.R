@@ -10,9 +10,9 @@ source("F7-RandomForest.R")
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
-GE = readRDS("Processed_Data/S39/GDSC_expresion_matrix.rds")
-sen = readRDS("Processed_Data/S39/GDSC_sensitivity_matrix_AUC.rds")
-IC50 = readRDS("Processed_Data/S39/GDSC_sensitivity_matrix_IC50.rds")
+GE = readRDS("Processed_Data/S35/GDSC_expresion_matrix.rds")
+sen = readRDS("Processed_Data/S35/GDSC_sensitivity_matrix_AUC.rds")
+IC50 = readRDS("Processed_Data/S35/GDSC_sensitivity_matrix_IC50.rds")
 drugs_GDSC = data.frame(colnames(sen))
 
 selected_features = c("Landmark_genes")

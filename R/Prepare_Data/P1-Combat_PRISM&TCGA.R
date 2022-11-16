@@ -12,7 +12,6 @@ res_TCGA = readRDS("Processed_data/S23/Drug_response_matrix_TCGA.rds")
 GE = readRDS("Processed_data/S23/expresion_matrix_PRISM_with@TCGA@genes.rds")
 GE_TCGA = readRDS("Processed_data/S23/expresion_matrix_TCGA.rds")
 
-GE_TCGA[is.na(GE_TCGA)] = 0
 r = apply(GE_TCGA,2,quantile,prob=0.75)
 GE_TCGA = GE_TCGA[,-which(r==0)]
 GE = GE[,-which(r==0)]
@@ -63,9 +62,9 @@ for (i in colnames(Tissue)){
   T_i[p] = j
 }
 Tissues = data.frame(colnames(Tissue))
-# myCol = c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(7, "Accent"))
-# plot(pc[,2],pc[,3], col = myCol[T_i],pch = 20)
-plot(pc[,2],pc[,3], col = ifelse(Tissue[,4]==1, alpha("red",.8), alpha("grey",.3)), pch = 20)
+myCol = c(RColorBrewer::brewer.pal(8, "Dark2"), RColorBrewer::brewer.pal(7, "Accent"))
+#plot(pc[,2],pc[,3], col = myCol[T_i],pch = 20)
+#plot(pc[,2],pc[,3], col = ifelse(Tissue[,4]==1, alpha("red",.8), alpha("grey",.3)), pch = 20)
 
 # plot gene expresion of Tissues with different colors for different tissues
 

@@ -16,8 +16,15 @@ q3_genes = apply(GE_TCGA,2,quantile,prob=0.75)
 GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
 GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 
+Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
+
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
+clusterEvalQ(cl, c(source("F18-Combat_Normalization.R"),
+                   source("F10-Ridge.R"),
+                   source("F7-RandomForest.R"),
+                   source("F6-ENet.R"),
+                   source("F8-MLP.R"),
+                   source("F13-Lasso.R")))
 
 DrugLoop = function(i){
   
@@ -45,7 +52,7 @@ DrugLoop = function(i){
   ytrain = scale(ytrain)
   ytrain = ytrain[,1]
   # Models
-  y_pred = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+  y_pred = MLP(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
 
   # Evaluation
   corr = cor(ytest,y_pred)
@@ -67,7 +74,7 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF1_WholeGenes.rds")
+saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF1_WholeGenes_MLP.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))

@@ -67,7 +67,7 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     Omics = list(omics_train,index,omics_test)
     
   }else if (prod(selected_features == "OncoKB")){
-    OncoKB_genes = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    OncoKB_genes = readRDS("Processed_Data/S31/OncoKB_genes.rds")
     I_G = intersect(OncoKB_genes,colnames(Xtest))
     
     omics_train = Xtrain[,I_G]
@@ -77,7 +77,7 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     Omics = list(omics_train,index,omics_test)
     
   }else if (prod(selected_features == "CancerGenes")){
-    CancerGenesGDSC = readRDS("Processed_data/S33/CancerGenesGDSC.rds")
+    CancerGenesGDSC = readRDS("Processed_data/S32/CancerGenesGDSC.rds")
     I_G = intersect(CancerGenesGDSC,colnames(Xtest))
     
     omics_train = Xtrain[,I_G]
@@ -89,7 +89,7 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     
   }else if (prod(selected_features == c("Landmark_OncoKB_genes"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-    OncoKB = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    OncoKB = readRDS("Processed_Data/S31/OncoKB_genes.rds")
     Landmark_OncoKB_genes = intersect(OncoKB, l1000_genes)
 
     I_G = intersect(Landmark_OncoKB_genes,colnames(Xtest))
@@ -102,7 +102,7 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     
   }else if (prod(selected_features == c("Landmark_genes","OncoKB"))){
     l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-    OncoKB = readRDS("Processed_Data/S32/OncoKB_genes.rds")
+    OncoKB = readRDS("Processed_Data/S31/OncoKB_genes.rds")
     Landmark_OncoKB_genes = c(OncoKB, l1000_genes)
     Landmark_OncoKB_genes = Landmark_OncoKB_genes[!duplicated(Landmark_OncoKB_genes)] 
     I_G = intersect(Landmark_OncoKB_genes,colnames(Xtest))
@@ -114,7 +114,7 @@ Feature_Selection_PRISM_TCGA = function(selected_features,Xtrain,Xtest){
     Omics = list(omics_train,index,omics_test)
         
   }else if (prod(selected_features == "OncoKB_oncogenes")){
-    OncoKB_oncogenes = readRDS("Processed_Data/S32/OncoKB_oncogenes.rds")
+    OncoKB_oncogenes = readRDS("Processed_Data/S31/OncoKB_oncogenes.rds")
     I_G = intersect(OncoKB_oncogenes,colnames(Xtest))
     
     omics_train = Xtrain[,I_G]

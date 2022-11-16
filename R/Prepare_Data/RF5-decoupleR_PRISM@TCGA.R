@@ -5,15 +5,15 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-#Omics_List = readRDS("Processed_data/S34/")
+Omics_List = readRDS("Processed_data/S33/aucell.rds")
 
 # From R
-# dR_PRISM = Omics_List[[1]]
-# dR_TCGA = Omics_List[[3]]
-# 
+dR_PRISM = Omics_List[[1]]
+dR_TCGA = Omics_List[[3]]
+
 # From Python
-dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
-dR_TCGA = read.table("Processed_data/S34/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
+#dR_PRISM = read.table("Processed_data/S33/",sep = ",",header = TRUE, row.names = 1)
+#dR_TCGA = read.table("Processed_data/S33/",sep = ",",header = TRUE, row.names = 1)
 
 
 q3_genes = apply(dR_TCGA,2,quantile,prob=0.75)
@@ -25,8 +25,15 @@ if(sum(q3_genes==0)>0){
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 
+Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
+
 clusterExport(cl, c("dR_PRISM","dR_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
+clusterEvalQ(cl, c(source("F18-Combat_Normalization.R"),
+                   source("F10-Ridge.R"),
+                   source("F7-RandomForest.R"),
+                   source("F6-ENet.R"),
+                   source("F8-MLP.R"),
+                   source("F13-Lasso.R")))
 
 DrugLoop = function(i){
   
@@ -49,7 +56,7 @@ DrugLoop = function(i){
   ytrain = ytrain[,1]
   
   # Models
-  y_pred = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+  y_pred = MLP(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
   
   # Evaluation
   corr = cor(ytest,y_pred)
@@ -71,9 +78,8 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-#saveRDS(Result,"Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_wsum4.rds")
+saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF5-decoupleR_aucell_MLP.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
-#Result = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF5-decoupleR_gsea2.rds")
 

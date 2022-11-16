@@ -22,5 +22,5 @@ Xtrain = Omics_List[[1]]
 index = Omics_List[[2]]
 Xtest = Omics_List[[3]]
 
-saveRDS(Omics_List, "Processed_data/S34/fgsea.rds")
+saveRDS(Omics_List, "Processed_data/S33/fgsea.rds")
 

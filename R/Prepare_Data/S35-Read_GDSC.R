@@ -5,7 +5,7 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen = read.table("Raw_data/GDSC1/Drug_Response/PANCANCER_IC_Mon Nov 14 10_28_56 2022.csv",
                   fill = TRUE, sep = ",",header = TRUE)
 
-GDSC = readRDS("Processed_data/S38/GDSC_PharmacoGx.rds")
+GDSC = readRDS("Processed_data/S34/GDSC_PharmacoGx.rds")
 
 CellName = phenoInfo(GDSC,"rna") 
 GeneName = featureInfo(GDSC, "rna")                               
@@ -64,7 +64,7 @@ for (i in cellline_name){
     }
   }
 }
-#saveRDS(AUC, file = "Processed_Data/S39/GDSC_sensitivity_matrix_AUC.rds")
-#saveRDS(IC50, file = "Processed_Data/S39/GDSC_sensitivity_matrix_IC50.rds")
-#saveRDS(GE, file = "Processed_Data/S39/GDSC_expresion_matrix.rds")
+#saveRDS(AUC, file = "Processed_Data/S35/GDSC_sensitivity_matrix_AUC.rds")
+#saveRDS(IC50, file = "Processed_Data/S35/GDSC_sensitivity_matrix_IC50.rds")
+#saveRDS(GE, file = "Processed_Data/S35/GDSC_expresion_matrix.rds")
 

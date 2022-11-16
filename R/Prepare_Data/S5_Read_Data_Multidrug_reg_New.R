@@ -10,7 +10,7 @@ GE = readRDS("Processed_data/Other/GE_PRISM_CommonGeneswith_TCGA.rds")
 l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
 GE = GE[,colnames(GE)%in%l1000_genes]
 
-dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+dR_PRISM = read.table("Processed_data/S33/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
 hist(as.matrix(dR_PRISM))
 #hist(as.matrix(GE))
 drug_sensitivity = readRDS("Processed_Data/S1/sensitivity_matrix.rds")

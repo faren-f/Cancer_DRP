@@ -3,7 +3,7 @@ library(PharmacoGx)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 
-GDSCv2 = readRDS("Processed_data/S38/gCSI_PharmacoGx.rds")
+GDSCv2 = readRDS("Processed_data/S34/gCSI_PharmacoGx.rds")
 
 CellName = phenoInfo(GDSCv2,"rna")                                  
 CellInfo = cellInfo(GDSCv2)                                         

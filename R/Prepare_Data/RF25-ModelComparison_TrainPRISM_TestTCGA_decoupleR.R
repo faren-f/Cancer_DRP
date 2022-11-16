@@ -8,8 +8,8 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 
-dR_PRISM = read.table("Processed_data/S34/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
-dR_TCGA = read.table("Processed_data/S34/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
+dR_PRISM = read.table("Processed_data/S33/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+dR_TCGA = read.table("Processed_data/S33/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
 
 # Remove genes whose Q3 is zero
 q3_genes = apply(dR_TCGA,2,quantile,prob=0.75)

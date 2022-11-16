@@ -7,20 +7,20 @@ availablePSets()
 
 #GDSC_v2
 GDSC_v2 = downloadPSet("GDSC_2020(v2-8.2)")
-saveRDS(GDSC_v2, "Processed_data/S38/GDSC_v2_PharmacoGx.rds")
+saveRDS(GDSC_v2, "Processed_data/S34/GDSC_v2_PharmacoGx.rds")
 
 
 #GDSC
 GDSC = downloadPSet("GDSC_2020(v1-8.2)")
-saveRDS(GDSC, "Processed_data/S38/GDSC_PharmacoGx.rds")
+saveRDS(GDSC, "Processed_data/S34/GDSC_PharmacoGx.rds")
 
 #gCSI
 gCSI = downloadPSet("gCSI_2019")
-saveRDS(gCSI, "Processed_data/S38/gCSI_PharmacoGx.rds")
+saveRDS(gCSI, "Processed_data/S34/gCSI_PharmacoGx.rds")
 
 #CTRPv2
 CTRPv2 = downloadPSet("CTRPv2_2015")
-saveRDS(CTRPv2, "Processed_data/S38/CTRPv2_PharmacoGx.rds")
+saveRDS(CTRPv2, "Processed_data/S34/CTRPv2_PharmacoGx.rds")
 
 
 
