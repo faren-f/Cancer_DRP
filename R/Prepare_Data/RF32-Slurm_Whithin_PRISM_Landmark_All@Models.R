@@ -17,6 +17,8 @@ setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 
+boxplot(GE[,1:20], names=NA, cex=.1, outline = FALSE, main="background corrected data")
+
 selected_features = c("Landmark_genes")
 Omics_List = Feature_Selection(selected_features,GE)
 GE = Omics_List[[1]]
