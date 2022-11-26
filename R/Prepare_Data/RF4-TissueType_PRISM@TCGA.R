@@ -17,7 +17,7 @@ GE_TCGA = GE_TCGA[,-which(q3_genes==0)]
 GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
+clusterEvalQ(cl, c(library(ROCR), source("F10-Ridge.R"), source("F18-Combat_Normalization.R")))
 
 DrugLoop = function(i){
   
@@ -49,11 +49,15 @@ DrugLoop = function(i){
   y_pred = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
   
   # Evaluation
+  pred = prediction(y_pred, ytest==1)
+  AUC = performance(pred, measure = "auc")
+  AUC = as.numeric(AUC@y.values)
+  
   corr = cor(ytest,y_pred)
   ttest = t.test(y_pred[ytest==1], y_pred[ytest==2], alternative="greater")$p.value
   Ranksum = wilcox.test(y_pred[ytest==1], y_pred[ytest==2], alternative ="greater")$p.value
   
-  result = data.frame(corr = corr, ttest=ttest, Ranksum = Ranksum)
+  result = data.frame(AUC = AUC, corr = corr, ttest=ttest, Ranksum = Ranksum)
   
   return(result)
 }

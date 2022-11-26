@@ -5,7 +5,7 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-Omics_List = readRDS("Processed_data/S33/aucell.rds")
+Omics_List = readRDS("Processed_data/S33/gsea2_PRISM.csv")
 
 # From R
 dR_PRISM = Omics_List[[1]]
@@ -28,7 +28,7 @@ res_TCGA = readRDS("Processed_data/Other/Res_TCGA_24_Drugs.rds")
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 clusterExport(cl, c("dR_PRISM","dR_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F18-Combat_Normalization.R"),
+clusterEvalQ(cl, c(library(ROCR), source("F18-Combat_Normalization.R"),
                    source("F10-Ridge.R"),
                    source("F7-RandomForest.R"),
                    source("F6-ENet.R"),
@@ -59,11 +59,15 @@ DrugLoop = function(i){
   y_pred = MLP(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
   
   # Evaluation
+  pred = prediction(y_pred, ytest==1)
+  AUC = performance(pred, measure = "auc")
+  AUC = as.numeric(AUC@y.values)
+  
   corr = cor(ytest,y_pred)
   ttest = t.test(y_pred[ytest==1], y_pred[ytest==2], alternative="greater")$p.value
   Ranksum = wilcox.test(y_pred[ytest==1], y_pred[ytest==2], alternative ="greater")$p.value
   
-  result = data.frame(corr = corr, ttest=ttest, Ranksum = Ranksum)
+  result = data.frame(AUC = AUC, corr = corr, ttest=ttest, Ranksum = Ranksum)
   
   return(result)
 }

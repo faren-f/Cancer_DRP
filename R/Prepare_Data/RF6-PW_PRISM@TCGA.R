@@ -19,7 +19,7 @@ GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F18-Combat_Normalization.R"),
+clusterEvalQ(cl, c(library(ROCR), source("F18-Combat_Normalization.R"),
                    source("F10-Ridge.R"),
                    source("F7-RandomForest.R"),
                    source("F6-ENet.R"),
@@ -53,25 +53,32 @@ DrugLoop = function(i){
       Xtest = X_Normalization[[2]]
       
       y_pred = MLP(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+      
+      pred = prediction(y_pred, ytest==1)
+      AUC = performance(pred, measure = "auc")
+      AUC = as.numeric(AUC@y.values)
+      
       corr = cor(ytest,y_pred)
       
       
       ttest = t.test(y_pred[ytest==1], y_pred[ytest==2], alternative="greater")$p.value
       Ranksum = wilcox.test(y_pred[ytest==1], y_pred[ytest==2], alternative ="greater")$p.value
   }else{
+    AUC = 0
     corr = 0
     ttest = 1
     Ranksum = 1
     N_genes = 0
     }
   }else{
+    AUC = 0
     corr = 0
     ttest = 1
     Ranksum = 1
     N_genes = 0
   }
 
-  result = data.frame(corr = corr, ttest=ttest, 
+  result = data.frame(AUC = AUC, corr = corr, ttest=ttest, 
                       Ranksum = Ranksum, N_genes = N_genes)
   
   return(result)

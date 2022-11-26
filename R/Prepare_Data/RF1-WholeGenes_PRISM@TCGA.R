@@ -19,7 +19,7 @@ GE_PRISM = GE_PRISM[,-which(q3_genes==0)]
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 clusterExport(cl, c("GE_PRISM","GE_TCGA","sen_PRISM","res_TCGA"))
-clusterEvalQ(cl, c(source("F18-Combat_Normalization.R"),
+clusterEvalQ(cl, c(library(ROCR), source("F18-Combat_Normalization.R"),
                    source("F10-Ridge.R"),
                    source("F7-RandomForest.R"),
                    source("F6-ENet.R"),
@@ -52,14 +52,18 @@ DrugLoop = function(i){
   ytrain = scale(ytrain)
   ytrain = ytrain[,1]
   # Models
-  y_pred = MLP(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+  y_pred = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
 
   # Evaluation
+  pred = prediction(y_pred, ytest==1)
+  AUC = performance(pred, measure = "auc")
+  AUC = as.numeric(AUC@y.values)
+  
   corr = cor(ytest,y_pred)
   ttest = t.test(y_pred[ytest==1], y_pred[ytest==2], alternative="greater")$p.value
   Ranksum = wilcox.test(y_pred[ytest==1], y_pred[ytest==2], alternative ="greater")$p.value
   
-  result = data.frame(corr = corr, ttest=ttest, Ranksum = Ranksum)
+  result = data.frame(AUC = AUC, corr = corr, ttest=ttest, Ranksum = Ranksum)
   
   return(result)
 }
@@ -74,7 +78,7 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF1_WholeGenes_MLP.rds")
+saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF1_WholeGenes_ridge.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
