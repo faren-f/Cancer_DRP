@@ -5,15 +5,15 @@ no_cores = detectCores()
 cl = makeCluster(no_cores-2)
 
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-Omics_List = readRDS("Processed_data/S33/gsea2_PRISM.csv")
+#Omics_List = readRDS("Processed_data/S33/")
 
 # From R
-dR_PRISM = Omics_List[[1]]
-dR_TCGA = Omics_List[[3]]
+#dR_PRISM = Omics_List[[1]]
+#dR_TCGA = Omics_List[[3]]
 
 # From Python
-#dR_PRISM = read.table("Processed_data/S33/",sep = ",",header = TRUE, row.names = 1)
-#dR_TCGA = read.table("Processed_data/S33/",sep = ",",header = TRUE, row.names = 1)
+dR_PRISM = read.table("Processed_data/S33/gsea2_PRISM.csv",sep = ",",header = TRUE, row.names = 1)
+dR_TCGA = read.table("Processed_data/S33/gsea2_TCGA.csv",sep = ",",header = TRUE, row.names = 1)
 
 
 q3_genes = apply(dR_TCGA,2,quantile,prob=0.75)
@@ -82,7 +82,7 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF5-decoupleR_aucell_MLP.rds")
+# saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF5-decoupleR_gsea2_MLP.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))

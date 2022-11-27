@@ -3,25 +3,25 @@ rm(list=ls())
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
-WholeGenes = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF1_WholeGenes.rds")
+WholeGenes = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF1_WholeGenes_ridge.rds")
 WholeGenes = WholeGenes$Ranksum
 
-Landmark = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF2-Landmark.rds")
+Landmark = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF2-Landmark_Ridge.rds")
 Landmark = Landmark$Ranksum
 
-DoRothEA = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF3-DoRothEA.rds")
+DoRothEA = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF3-DoRothEA_ridge.rds")
 DoRothEA = DoRothEA$Ranksum
 
-progeny = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF7-progeny.rds")
+progeny = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF7-progeny_ridge.rds")
 progeny = progeny$Ranksum
 
-Drug_Pathways = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF6-PW.rds")
+Drug_Pathways = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF6-PW_ridge.rds")
 Drug_Pathways = Drug_Pathways$Ranksum
 
-OncoKB = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF8-OncoKB.rds")
+OncoKB = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF8-OncoKB_ridge.rds")
 OncoKB = OncoKB$Ranksum
 
-CancerGenes_GDSC = readRDS("Final_Result/Train@PRISM_Test@TCGA_FS/RF15-CancerGenes.rds")
+CancerGenes_GDSC = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF15-CancerGenes_ridge.rds")
 CancerGenes_GDSC = CancerGenes_GDSC$Ranksum
 
 
@@ -38,8 +38,7 @@ CancerGenes_GDSC = CancerGenes_GDSC$Ranksum
 #   PW_ranksum = c(PW_ranksum, PW[[i]][[1]][5]) 
 # }
 
-Drug_Pathways = rep(1,24)
-Drug_Pathways[c(5,8,11,17,21)] = 0
+
 Drug_FSMethods = cbind(WholeGenes,Landmark,DoRothEA,progeny,Drug_Pathways,OncoKB,CancerGenes_GDSC)
 rownames(Drug_FSMethods) = colnames(sen_PRISM)
 Drug_FSMethods = Drug_FSMethods[-c(3,10,12,14),]  

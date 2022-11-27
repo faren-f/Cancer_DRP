@@ -54,7 +54,7 @@ DrugLoop = function(i){
   ytrain = scale(ytrain)
   ytrain = ytrain[,1]
   # Models
-  y_pred = ElasticNet(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
+  y_pred = Ridge(ytrain = ytrain ,Xtrain = Xtrain, Xtest = Xtest)
   
   # Evaluation
   pred = prediction(y_pred, ytest==1)
@@ -80,7 +80,7 @@ for (k in 1:N_drug){
 
 stopCluster(cl)
 
-saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/ENet/RF7-progeny_ENet.rds")
+#saveRDS(Result,"Final_Result/TrainPRISM&TestTCGA_FS/MLP/RF7-progeny_MLP.rds")
 print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
