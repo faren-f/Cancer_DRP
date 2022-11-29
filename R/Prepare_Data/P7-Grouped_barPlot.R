@@ -1,5 +1,6 @@
 rm(list=ls())
 
+library(ggplot2)
 setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen_PRISM = readRDS("Processed_data/Other/Sen_PRISM_24_Drugs.rds")
 
@@ -80,10 +81,19 @@ N_sig_drugs = c(WholeGenes_Ridge_ranksum,WholeGenes_Lasso_ranksum,
   TF_activity_RF_ranksum,TF_activity_MLP_ranksum)
 
 data = data.frame(FR_methods,ML_methods,N_sig_drugs)
-ggplot(data, aes(fill=FR_methods, y=N_sig_drugs, x=ML_methods)) + 
+plt = ggplot(data, aes(fill=FR_methods, y=N_sig_drugs, x=ML_methods)) + 
   geom_bar(position="dodge", stat="identity",width = 0.5, color = "black", size = 0.2)+
   scale_fill_manual(values=c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8")) + 
-  theme_minimal()
+  theme_classic()+
+  scale_x_discrete(guide = guide_axis(angle = 60))
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        #panel.background = element_blank(), axis.line = element_line(colour = "black"))
+  #theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  #theme_minimal()
+
+pdf(paste0("Figures/FS/Grouped_bar_plot/ML_FR_Number_of_sigDrugs.pdf"), height = 2.8, width = 7)
+plt
+dev.off()
 
 
 #Grouped barplot for AUC
@@ -121,7 +131,7 @@ ML_methods = factor(rep(c("Ridge","Lasso","ENet","RF","MLP"),5),
                     levels = c("Ridge","MLP","Lasso","ENet","RF"))
 FR_methods = factor(rep(c("WG","LM","PW","PA","TF"),c(5,5,5,5,5)),
                     levels = c("WG","LM","PW","PA","TF"))
-N_sig_drugs = c(WholeGenes_Ridge_AUC,WholeGenes_Lasso_AUC,
+AUC_ave = c(WholeGenes_Ridge_AUC,WholeGenes_Lasso_AUC,
                 WholeGenes_ENet_AUC,WholeGenes_RF_AUC,WholeGenes_MLP_AUC,
                 Landmark_Ridge_AUC,Landmark_Lasso_AUC,Landmark_ENet_AUC,
                 Landmark_RF_AUC,Landmark_MLP_AUC,Drug_Pathways_Ridge_AUC,
@@ -131,9 +141,13 @@ N_sig_drugs = c(WholeGenes_Ridge_AUC,WholeGenes_Lasso_AUC,
                 TF_activity_Ridge_AUC,TF_activity_Lasso_AUC,TF_activity_ENet_AUC,
                 TF_activity_RF_AUC,TF_activity_MLP_AUC)
 
-data = data.frame(FR_methods,ML_methods,N_sig_drugs)
-ggplot(data, aes(fill=FR_methods, y=N_sig_drugs, x=ML_methods)) + 
+data = data.frame(FR_methods,ML_methods,AUC_ave)
+plt = ggplot(data, aes(fill=FR_methods, y=AUC_ave, x=ML_methods)) + 
   geom_bar(position="dodge", stat="identity",width = 0.5, color = "black", size = 0.2)+
   scale_fill_manual(values=c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8")) + 
   theme_minimal()
+
+pdf(paste0("Figures/FS/Grouped_bar_plot/ML_FR_AUC_ave.pdf"), height = 2.8, width = 7)
+plt
+dev.off()
 

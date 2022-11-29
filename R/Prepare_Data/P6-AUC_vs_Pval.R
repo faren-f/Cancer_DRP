@@ -37,33 +37,7 @@ boxplot(Result_Landmark$Ranksum, Result_Wholegenes$Ranksum,
           names=NA, cex=.1, outline = FALSE)
 
 
-# Heatmap 
-
-# Ranksum
-Drug_FSMethods_ranksum = cbind(WholeGenes$Ranksum,Landmark$Ranksum,Drug_Pathways$Ranksum,
-                           Pathway_activity$Ranksum,TF_activity$Ranksum)
-rownames(Drug_FSMethods_ranksum) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum = Drug_FSMethods_ranksum[-c(3,10,12,14),]  
-
-
-Drug_FSMethods_ranksum = ifelse(Drug_FSMethods_ranksum<0.05,0,1)
-#Drug_FSMethods_ranksum[Drug_FSMethods_ranksum>0.05] = 0.06
-plt = pheatmap::pheatmap(t(Drug_FSMethods_ranksum),cluster_rows = FALSE, 
-                         cluster_cols = FALSE,color = c("red","white"))
-
-
-#AUC
-Drug_FSMethods_AUC = cbind(WholeGenes$AUC,Landmark$AUC,Drug_Pathways$AUC,
-                       Pathway_activity$AUC,TF_activity$AUC)
-rownames(Drug_FSMethods_AUC) = colnames(sen_PRISM)
-Drug_FSMethods_AUC = Drug_FSMethods_AUC[-c(3,10,12,14),]  
-
-Drug_FSMethods_AUC[Drug_FSMethods_AUC<0.5] = 0.5
-plt = pheatmap::pheatmap(t(Drug_FSMethods_AUC),cluster_rows = FALSE, 
-                         cluster_cols = FALSE, color = RColorBrewer::brewer.pal(8,"Blues"))
-
-
-pdf(paste0("Figures/FS/All_Methods/heatmap_FS_Drugs_Ranksum.pdf"), height = 2.8, width = 7)
+pdf(paste0("Figures/FS/All_Methods/heatmap_FS_Drugs_"), height = 2.8, width = 7)
 plt
 dev.off()
 
