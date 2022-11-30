@@ -38,11 +38,13 @@ pdf(paste0("Figures/FS/Number_of_genes_in_FR_Methods/BoxPlot_N_genes_FR_Methods.
     height = 4, width = 4)
 boxplot(ncol(GE_PRISM), length(l1000_genes), N_genes[c(-22,-23)],names=NA,
         ncol(GE_progeny),
-        ncol(dR_PRISM))
-        #medcol=c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8"),
+        ncol(dR_PRISM),
+        boxfill = "#FCC0C5")  # Box fill color)
         #col = c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8"),
-        #border = 4, boxcol = 2,   # Box border color
-        #boxfill = "#FCC0C5")  # Box fill color)
+        #medcol=c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8"),
+        #border = c("#F2E6D6","#A0E0E4","#FCC0C5","#A49393","#F582A8"))
+        # boxcol = 2   # Box border color
+
 dev.off()
 
 
