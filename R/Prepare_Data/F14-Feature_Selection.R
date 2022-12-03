@@ -41,7 +41,7 @@ Feature_Selection = function(selected_features,GE){
     Omics = list(omics,index)    
     
   }else if (prod(selected_features == "TF_decoupleR")){
-    omics = decoupleR(X = GE, method = "gsva")
+    omics = decoupleR(X = GE, method = "fgsea")
     index = rep(1,ncol(omics))
     Omics = list(omics,index)
   

@@ -13,12 +13,10 @@ task_id = as.numeric(task_id)
 i = task_id
 
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
-GE = readRDS("Data/expresion_matrix.rds")
+TF = read.table("Data/TF(gsea2)_PRISM.csv",
+                sep = ",",header = TRUE, row.names = 1)
 
-#boxplot(GE[,1:20], names=NA, cex=.1, outline = FALSE, main="background corrected data")
-
-l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-GE = GE[,colnames(GE)%in%l1000_genes]
+TF = scale(TF)
 
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
@@ -36,13 +34,12 @@ for (M in Models){             # model loop
   MSE = c()
   print(M)
   
-  for (j in 1:3){           # repeat loop
+  for (j in 1:50){           # repeat loop
     print(paste0("The repeat number is: ", as.character(j)))
-    X = GE[!is.na(sen[,i]),]
+    
+    X = TF[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
     
-    # normalization
-    X = scale(X)
     y = scale(y)
     y = y[,1]
     
@@ -52,6 +49,7 @@ for (M in Models){             # model loop
     Xtest  = subset(X, sample == FALSE)
     ytrain = subset(y, sample == TRUE)
     ytest  = subset(y, sample == FALSE)
+    
     
     # Models
     y_pred = model(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
@@ -75,7 +73,7 @@ for (M in Models){             # model loop
 Result = data.frame(Mean_Corr = Mean_Corr, STD_Corr = STD_Corr,
                     Mean_MSE = Mean_MSE, STD_MSE = STD_MSE)
 rownames(Result) = Models
-  
+
 saveRDS(Result, paste0("Results/temp/Result_",as.character(i),".rds"))
 
 

@@ -85,3 +85,8 @@ print(sum(Result$Ranksum<0.05))
 print(which(Result$Ranksum<0.05))
 print(which(Result$ttest<0.05))
 
+
+print(sum(Result$Ranksum<0.05))
+print(which(Result$Ranksum<0.05))
+print(which(Result$ttest<0.05))
+

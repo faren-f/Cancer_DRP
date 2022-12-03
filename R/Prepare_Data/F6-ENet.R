@@ -11,7 +11,6 @@ library(glmnet)
 library(caret)
 
 ElasticNet = function(ytrain,Xtrain,Xtest){
-  
   train_data = cbind(Xtrain,ytrain)
   control = trainControl(method = "repeatedcv",
                          number = 5,
@@ -25,7 +24,7 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
                      lambda = seq(.000001,0.0001,.000001))
 
 
-  model = caret::train(ytrain ~., data = train_data,
+  model = caret::train(Xtrain, ytrain,
                          method = "glmnet",
                          metric="RMSE",
                          allowParallel = TRUE,
@@ -38,5 +37,3 @@ ElasticNet = function(ytrain,Xtrain,Xtest){
   return(y_pred)
   
 }
-
-

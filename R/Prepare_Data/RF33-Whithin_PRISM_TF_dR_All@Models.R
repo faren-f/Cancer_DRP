@@ -1,26 +1,22 @@
 rm(list=ls())
 
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+
 library(caTools)
-source("F14-Feature_Selection.R")
 source("F10-Ridge.R")
 source("F6-ENet.R")
 source("F8-MLP.R")
 source("F13-Lasso.R")
-source("F25-LinearRegression.R")
 source("F7-RandomForest.R")
 
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
-GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
+TF = read.table("Result_from_Python/TF(gsea2)_PRISM/TF(gsea2)_PRISM_old.csv",
+                sep = ",",header = TRUE, row.names = 1)
 
-drugs_PRISM = data.frame(colnames(sen))
+TF = scale(TF)
 
-selected_features = c("Landmark_genes")
-Omics_List = Feature_Selection(selected_features,GE)
-GE = Omics_List[[1]]
-
-#Models = c("LinearcRegresion", "RandomForest","ElasticNet", "Lasso","Ridge","MLP")
-Models = c("Ridge")
+#Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
+Models = c("RandomForest", "Ridge")
 
 Mean_Corr_models = c()
 STD_Corr_models = c()
@@ -41,13 +37,11 @@ for (M in Models){            # model loop
     Corr = c()
     MSE = c()
     
-    for (j in 1:50){           # repeat loop
+    for (j in 1:2){           # repeat loop
       print(j)
-      X = GE[!is.na(sen[,i]),]
+      X = TF[!is.na(sen[,i]),]
       y = sen[!is.na(sen[,i]),i]
       
-      # normalization
-      X = scale(X)
       y = scale(y)
       y = y[,1]
       
@@ -61,7 +55,7 @@ for (M in Models){            # model loop
       
       # Models
       y_pred = model(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
-
+      
       # Evaluation
       corr = cor(ytest,y_pred)
       Corr = c(Corr, corr)
@@ -97,4 +91,5 @@ for (M in Models){            # model loop
 # colnames(STD_MSE_models) = Models
 
 print(Mean_Corr_models)
+system("say Faren Just finished the runing!")
 

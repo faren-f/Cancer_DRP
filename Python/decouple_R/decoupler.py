@@ -9,9 +9,13 @@ dorothea = dc.get_dorothea(organism='human', levels=['A','B','C'])
 dc.show_methods()
 
 path = 'Raw_data/Data_from_R/GE_TCGA.csv'
+path = 'Raw_data/Data_from_R/GE_PRISM.csv'
+
 #path = 'Raw_data/expresion_matrix.csv'
 
 GE = pd.read_csv(path, sep = ',', header = 0, index_col=0)
+GE_PRISM = pd.read_csv(path, sep = ',', header = 0, index_col=0)
+
 GE.head()
 
 #sns.heatmap(GE, cmap='viridis')
@@ -29,11 +33,13 @@ GE.head()
 
 # 2) get TFs using gsea method
 
-tf_acts_gsea = dc.run_gsea(mat=GE, net=dorothea, source='source', 
-                                    target='target', min_n=5)
+tf_acts_gsea = dc.run_gsea(mat=GE, net=dorothea, source='source', target='target', min_n=5)
 tf_acts_gsea_1 = tf_acts_gsea[0]
 tf_acts_gsea_2 = tf_acts_gsea[1]
 tf_acts_gsea_3 = tf_acts_gsea[2]
+
+
+os.system('say "your program has finished"')
 
 
 

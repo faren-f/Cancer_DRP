@@ -15,11 +15,6 @@ i = task_id
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
 GE = readRDS("Data/expresion_matrix.rds")
 
-#boxplot(GE[,1:20], names=NA, cex=.1, outline = FALSE, main="background corrected data")
-
-l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-GE = GE[,colnames(GE)%in%l1000_genes]
-
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
 #for (i in 1:ncol(sen)){            # drug loop
@@ -36,7 +31,7 @@ for (M in Models){             # model loop
   MSE = c()
   print(M)
   
-  for (j in 1:3){           # repeat loop
+  for (j in 1:50){           # repeat loop
     print(paste0("The repeat number is: ", as.character(j)))
     X = GE[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
@@ -75,7 +70,7 @@ for (M in Models){             # model loop
 Result = data.frame(Mean_Corr = Mean_Corr, STD_Corr = STD_Corr,
                     Mean_MSE = Mean_MSE, STD_MSE = STD_MSE)
 rownames(Result) = Models
-  
+
 saveRDS(Result, paste0("Results/temp/Result_",as.character(i),".rds"))
 
 
