@@ -22,7 +22,7 @@ Drug_FSMethods_ranksum_Ridge = Drug_FSMethods_ranksum_Ridge[-c(3,10,12,14),]
 
 Drug_FSMethods_ranksum_Ridge = ifelse(Drug_FSMethods_ranksum_Ridge<0.05,0,1)
 plt_Ridge = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_Ridge),cluster_rows = FALSE, 
-                         cluster_cols = FALSE,color = c("red","white"))
+                         cluster_cols = FALSE,color = c("#FB4570","white"))
 
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_Ridge.pdf"), height = 2.8, width = 7)
 plt_Ridge
@@ -46,7 +46,7 @@ Drug_FSMethods_ranksum_Lasso = Drug_FSMethods_ranksum_Lasso[-c(3,10,12,14),]
 
 Drug_FSMethods_ranksum_Lasso = ifelse(Drug_FSMethods_ranksum_Lasso<0.05,0,1)
 plt_Lasso = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_Lasso),cluster_rows = FALSE, 
-                               cluster_cols = FALSE,color = c("red","white"))
+                               cluster_cols = FALSE,color = c("#FB4570","white"))
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_Lasso.pdf"), height = 2.8, width = 7)
 plt_Lasso
 dev.off()
@@ -69,7 +69,7 @@ Drug_FSMethods_ranksum_ENet = Drug_FSMethods_ranksum_ENet[-c(3,10,12,14),]
 
 Drug_FSMethods_ranksum_ENet = ifelse(Drug_FSMethods_ranksum_ENet<0.05,0,1)
 plt_ENet = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_ENet),cluster_rows = FALSE, 
-                               cluster_cols = FALSE,color = c("red","white"))
+                               cluster_cols = FALSE,color = c("#FB4570","white"))
 
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_ENet.pdf"), height = 2.8, width = 7)
 plt_ENet
@@ -93,7 +93,7 @@ Drug_FSMethods_ranksum_RF = Drug_FSMethods_ranksum_RF[-c(3,10,12,14),]
 
 Drug_FSMethods_ranksum_RF = ifelse(Drug_FSMethods_ranksum_RF<0.05,0,1)
 plt_RF = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_RF),cluster_rows = FALSE, 
-                              cluster_cols = FALSE,color = c("red","white"))
+                              cluster_cols = FALSE,color = c("#FB4570","white"))
 
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_RF.pdf"), height = 2.8, width = 7)
 plt_RF
@@ -117,7 +117,7 @@ Drug_FSMethods_ranksum_MLP = Drug_FSMethods_ranksum_MLP[-c(3,10,12,14),]
 
 Drug_FSMethods_ranksum_MLP = ifelse(Drug_FSMethods_ranksum_MLP<0.05,0,1)
 plt_MLP = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_MLP),cluster_rows = FALSE, 
-                            cluster_cols = FALSE,color = c("red","white"))
+                            cluster_cols = FALSE,color = c("#FB4570","white"))
 
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_MLP.pdf"), height = 2.8, width = 7)
 plt_MLP

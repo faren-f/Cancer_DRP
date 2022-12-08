@@ -13,10 +13,7 @@ task_id = as.numeric(task_id)
 i = task_id
 
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
-TF = read.table("Data/TF(gsea2)_PRISM.csv",
-                sep = ",",header = TRUE, row.names = 1)
-
-TF = scale(TF)
+TF = read.table("Data/TF(gsea2)_PRISM.csv", sep = ",",header = TRUE, row.names = 1)
 
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
@@ -40,6 +37,8 @@ for (M in Models){             # model loop
     X = TF[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
     
+    # normalization
+    X = scale(X)
     y = scale(y)
     y = y[,1]
     
@@ -52,7 +51,7 @@ for (M in Models){             # model loop
     
     
     # Models
-    y_pred = model(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    y_pred = model(ytrain = ytrain, Xtrain = Xtrain, Xtest = Xtest)
     
     # Evaluation
     corr = cor(ytest,y_pred)

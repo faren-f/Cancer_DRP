@@ -33,6 +33,7 @@ for (M in Models){             # model loop
   
   for (j in 1:50){           # repeat loop
     print(paste0("The repeat number is: ", as.character(j)))
+    
     X = GE[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
     
@@ -49,7 +50,7 @@ for (M in Models){             # model loop
     ytest  = subset(y, sample == FALSE)
     
     # Models
-    y_pred = model(ytrain = ytrain ,Xtrain = Xtrain,Xtest = Xtest)
+    y_pred = model(ytrain = ytrain, Xtrain = Xtrain, Xtest = Xtest)
     
     # Evaluation
     corr = cor(ytest,y_pred)
