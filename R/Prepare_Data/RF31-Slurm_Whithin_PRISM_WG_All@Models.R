@@ -14,6 +14,8 @@ i = task_id
 
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
 GE = readRDS("Data/expresion_matrix.rds")
+#q3_genes = apply(GE,2,quantile,prob=0.7)
+#GE = GE[,-which(q3_genes==0)]
 
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 

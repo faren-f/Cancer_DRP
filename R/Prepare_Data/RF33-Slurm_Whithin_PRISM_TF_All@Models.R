@@ -13,7 +13,7 @@ task_id = as.numeric(task_id)
 i = task_id
 
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
-TF = read.table("Data/TF(gsea2)_PRISM.csv", sep = ",",header = TRUE, row.names = 1)
+TF = read.table("Data/TF_gsea2_PRISM.csv", sep = ",",header = TRUE, row.names = 1)
 
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 

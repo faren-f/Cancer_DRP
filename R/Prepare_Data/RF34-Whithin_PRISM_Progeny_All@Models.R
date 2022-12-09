@@ -1,5 +1,7 @@
 rm(list=ls())
 
+setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
+
 library(caTools)
 source("F14-Feature_Selection.R")
 source("F10-Ridge.R")
@@ -8,7 +10,6 @@ source("F8-MLP.R")
 source("F13-Lasso.R")
 source("F7-RandomForest.R")
 
-setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
 sen = readRDS("Processed_data/S1/sensitivity_matrix_AUC.rds")
 GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
 
@@ -44,22 +45,20 @@ for (M in Models){            # model loop
       y = scale(y)
       y = y[,1]
       
+      pw_act_X = progeny(t(X), scale = TRUE, organism = "Human",
+                             top = 100, perm = 1)
+
+
       sample = sample.split(y, SplitRatio = .8)
       
-      Xtrain = subset(X, sample == TRUE)
-      Xtest  = subset(X, sample == FALSE)
+      Xtrain = subset(pw_act_X, sample == TRUE)
+      Xtest  = subset(pw_act_X, sample == FALSE)
       ytrain = subset(y, sample == TRUE)
       ytest  = subset(y, sample == FALSE)
       
-      pw_act_Xtrain = progeny(t(Xtrain), scale = TRUE, organism = "Human", 
-                                top = 100, perm = 1)
-      
-      pw_act_Xtest = progeny(t(Xtest), scale = TRUE, organism = "Human", 
-                                          top = 100, perm = 1)
-      
       
       # Models
-      y_pred = model(ytrain = ytrain ,Xtrain = pw_act_Xtrain,Xtest = pw_act_Xtest)
+      y_pred = model(ytrain = ytrain, Xtrain = Xtrain, Xtest = Xtest)
       
       # Evaluation
       corr = cor(ytest,y_pred)

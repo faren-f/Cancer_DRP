@@ -36,8 +36,9 @@ for (M in Models){             # model loop
   MSE = c()
   print(M)
   
-  for (j in 1:3){           # repeat loop
+  for (j in 1:50){           # repeat loop
     print(paste0("The repeat number is: ", as.character(j)))
+    
     X = GE[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
     

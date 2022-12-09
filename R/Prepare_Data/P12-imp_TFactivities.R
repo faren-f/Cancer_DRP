@@ -32,7 +32,7 @@ result = c()
 Wilcox_Test_AllDrugs = c()
 T_Test_AllDrugs = c()
 
-for (i in SigDrugs){
+#for (i in SigDrugs){
   print(paste0("The drug number is: ", i))
   
   Xtrain = dR_PRISM[!is.na(sen_PRISM[,i]),]
@@ -95,6 +95,7 @@ for (i in SigDrugs){
     beta = as.matrix(coef(model$finalModel, model$bestTune$lambda))
     Beta_Null = cbind(Beta_Null, beta)
   }
+  #saveRDS(Beta_Null, "Processed_data/P12/Beta_Null_Cisplatin.rds")
   
   P_val_Rank = c()
   PNorm = c()
@@ -133,13 +134,6 @@ sum(p_adjust_Rank<0.01)
 which(p_adjust_Rank<0.01)
 p_adjust_Rank[p_adjust_Rank<0.01]
 
-
-
-
 hist(Beta_Null[1,],100)
-
-
-
-
 
 

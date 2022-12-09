@@ -25,7 +25,7 @@ Ridge = function(ytrain, Xtrain, Xtest, weight = NULL){
   #tune = expand.grid(alpha = 0, lambda = seq(.000001,0.0001,.000001))
   
 
-  model = caret::train(ytrain ~., data = train_data,
+  model = caret::train(x = Xtrain, y = ytrain,
                        method = "glmnet",
                        weights = weight,
                        metric="RMSE",

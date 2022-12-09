@@ -13,21 +13,50 @@ Lasso_Landmark = c()
 Ridge_Landmark = c()
 MLP_Landmark = c()
 
+#Read Landmark results
 for(i in 1:N_drugs){
+  print(i)
   R_Landmark = readRDS(paste0("Processed_from_SLURM/Results_Landmark_All_Models/Result_",as.character(i),".rds"))
-  
   Ridge_Landmark = rbind(Ridge_Landmark, R_Landmark[4,])
   MLP_Landmark = rbind(MLP_Landmark, R_Landmark[5,])
   Lasso_Landmark = rbind(Lasso_Landmark, R_Landmark[3,])
   ENet_Landmark = rbind(ENet_Landmark, R_Landmark[2,])
   RF_Landmark = rbind(RF_Landmark, R_Landmark[1,])
-  }
+}
 
 rownames(Ridge_Landmark) = colnames(sen)
 rownames(MLP_Landmark) = colnames(sen)
 rownames(Lasso_Landmark) = colnames(sen)
 rownames(ENet_Landmark) = colnames(sen)
 rownames(RF_Landmark) = colnames(sen)
+
+
+#Read Whole Genes results
+
+RF_WG = c()
+ENet_WG = c()
+Lasso_WG = c()
+Ridge_WG = c()
+MLP_WG = c()
+
+# Drug Number 398 has some genes that their expresion are mostly zero. 
+#so for now I do not have the results for this drug
+for(i in 1:N_drugs){
+  print(i)
+  R_WG = readRDS(paste0("Processed_from_SLURM/Results_WholeGenes_All_Models/Result_",as.character(i),".rds"))
+  Ridge_WG = rbind(Ridge_WG, R_WG[4,])
+  MLP_WG = rbind(MLP_WG, R_WG[5,])
+  Lasso_WG = rbind(Lasso_WG, R_WG[3,])
+  ENet_WG = rbind(ENet_WG, R_WG[2,])
+  RF_WG = rbind(RF_WG, R_WG[1,])
+}
+
+
+rownames(Ridge_WG) = colnames(sen)
+rownames(MLP_WG) = colnames(sen)
+rownames(Lasso_WG) = colnames(sen)
+rownames(ENet_WG) = colnames(sen)
+rownames(RF_WG) = colnames(sen)
 
 
 # hist(RF[,1],30)
