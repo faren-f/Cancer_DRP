@@ -1,5 +1,6 @@
 rm(list=ls())
 
+#library(progeny)
 library(caTools)
 source("Functions/F10-Ridge.R")
 source("Functions/F6-ENet.R")
@@ -13,12 +14,13 @@ task_id = as.numeric(task_id)
 i = task_id
 
 sen = readRDS("Data/sensitivity_matrix_AUC.rds")
-GE = readRDS("Data/expresion_matrix.rds")
+#GE = readRDS("Processed_Data/S1/expresion_matrix.rds")
+#GE = scale(GE)
+# pw_act_X = progeny(t(GE), scale = TRUE, organism = "Human",
+#                    top = 100, perm = 1)
+#saveRDS(pw_act_X, "Processed_data/Other/pw_act_GE.rds")
+pw_act_X = readRDS("Data/pw_act_GE.rds")
 
-#boxplot(GE[,1:20], names=NA, cex=.1, outline = FALSE, main="background corrected data")
-
-l1000_genes = readRDS("Processed_Data/S18/Landmark_genes.rds")
-GE = GE[,colnames(GE)%in%l1000_genes]
 
 Models = c("RandomForest","ElasticNet", "Lasso","Ridge","MLP")
 
@@ -36,16 +38,16 @@ for (M in Models){             # model loop
   MSE = c()
   print(M)
   
-  for (j in 1:50){           # repeat loop
+  for (j in 1:2){           # repeat loop
     print(paste0("The repeat number is: ", as.character(j)))
     
-    X = GE[!is.na(sen[,i]),]
+    X = pw_act_X[!is.na(sen[,i]),]
     y = sen[!is.na(sen[,i]),i]
     
     # normalization
-    X = scale(X)
     y = scale(y)
     y = y[,1]
+    
     
     sample = sample.split(y, SplitRatio = .8)
     
@@ -76,7 +78,7 @@ for (M in Models){             # model loop
 Result = data.frame(Mean_Corr = Mean_Corr, STD_Corr = STD_Corr,
                     Mean_MSE = Mean_MSE, STD_MSE = STD_MSE)
 rownames(Result) = Models
-  
+
 saveRDS(Result, paste0("Results/temp/Result_",as.character(i),".rds"))
 
 

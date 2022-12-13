@@ -10,7 +10,7 @@ library(reactome.db)
 Drug_Pathway_Level = function(drug){
 
   setwd("~/Desktop/Cancer_DRP/R/Prepare_Data/")
-  Drug_Pathways = readRDS("Processed_data/S26/Drug_Pathways.rds")
+  Drug_Pathways = readRDS("Processed_data/S26/All_Drug_Pathways.rds")
   path2gene = as.list(reactomePATHID2EXTID)
   
   Drug_Pathways_i = Drug_Pathways[[drug]]
