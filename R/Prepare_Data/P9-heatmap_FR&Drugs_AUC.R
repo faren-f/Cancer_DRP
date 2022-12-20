@@ -18,7 +18,7 @@ Drug_FSMethods_AUC_Ridge = cbind(WholeGenes_Ridge$AUC,
                                      TF_activity_Ridge$AUC)
 
 rownames(Drug_FSMethods_AUC_Ridge) = colnames(sen_PRISM)
-Drug_FSMethods_AUC_Ridge = Drug_FSMethods_AUC_Ridge[-c(3,10,12,14),]  
+Drug_FSMethods_AUC_Ridge = Drug_FSMethods_AUC_Ridge[-c(3,15,12,14),]  
 Drug_FSMethods_AUC_Ridge[Drug_FSMethods_AUC_Ridge<0.5] = 0.5
 
 plt_Ridge = pheatmap::pheatmap(t(Drug_FSMethods_AUC_Ridge),cluster_rows = FALSE, 
@@ -42,7 +42,7 @@ Drug_FSMethods_AUC_Lasso = cbind(WholeGenes_Lasso$AUC,
                                      Pathway_activity_Lasso$AUC,
                                      TF_activity_Lasso$AUC)
 rownames(Drug_FSMethods_AUC_Lasso) = colnames(sen_PRISM)
-Drug_FSMethods_AUC_Lasso = Drug_FSMethods_AUC_Lasso[-c(3,10,12,14),]  
+Drug_FSMethods_AUC_Lasso = Drug_FSMethods_AUC_Lasso[-c(3,15,12,14),]  
 
 Drug_FSMethods_AUC_Lasso[Drug_FSMethods_AUC_Lasso<0.5] = 0.5
 plt_Lasso = pheatmap::pheatmap(t(Drug_FSMethods_AUC_Lasso),cluster_rows = FALSE, 
@@ -65,7 +65,7 @@ Drug_FSMethods_AUC_ENet = cbind(WholeGenes_ENet$AUC,
                                     Pathway_activity_ENet$AUC,
                                     TF_activity_ENet$AUC)
 rownames(Drug_FSMethods_AUC_ENet) = colnames(sen_PRISM)
-Drug_FSMethods_AUC_ENet = Drug_FSMethods_AUC_ENet[-c(3,10,12,14),]  
+Drug_FSMethods_AUC_ENet = Drug_FSMethods_AUC_ENet[-c(3,15,12,14),]  
 
 Drug_FSMethods_AUC_ENet[Drug_FSMethods_AUC_ENet<0.5] = 0.5
 plt_ENet = pheatmap::pheatmap(t(Drug_FSMethods_AUC_ENet),cluster_rows = FALSE, 
@@ -89,7 +89,7 @@ Drug_FSMethods_AUC_RF = cbind(WholeGenes_RF$AUC,
                                   Pathway_activity_RF$AUC,
                                   TF_activity_RF$AUC)
 rownames(Drug_FSMethods_AUC_RF) = colnames(sen_PRISM)
-Drug_FSMethods_AUC_RF = Drug_FSMethods_AUC_RF[-c(3,10,12,14),]  
+Drug_FSMethods_AUC_RF = Drug_FSMethods_AUC_RF[-c(3,15,12,14),]  
 
 Drug_FSMethods_AUC_RF[Drug_FSMethods_AUC_RF<0.5] = 0.5
 plt_RF = pheatmap::pheatmap(t(Drug_FSMethods_AUC_RF),cluster_rows = FALSE, 
@@ -113,7 +113,7 @@ Drug_FSMethods_AUC_MLP = cbind(WholeGenes_MLP$AUC,
                                    Pathway_activity_MLP$AUC,
                                    TF_activity_MLP$AUC)
 rownames(Drug_FSMethods_AUC_MLP) = colnames(sen_PRISM)
-Drug_FSMethods_AUC_MLP = Drug_FSMethods_AUC_MLP[-c(3,10,12,14),]  
+Drug_FSMethods_AUC_MLP = Drug_FSMethods_AUC_MLP[-c(3,15,12,14),]  
 
 Drug_FSMethods_AUC_MLP[Drug_FSMethods_AUC_MLP<0.5] = 0.5
 plt_MLP = pheatmap::pheatmap(t(Drug_FSMethods_AUC_MLP),cluster_rows = FALSE, 

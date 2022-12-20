@@ -30,10 +30,11 @@ ggplot(df_Ridge_Landmark, aes(x = Ranksum, y = N)) + geom_point(size = 0.5) +
 
 TF = readRDS("Final_Result/TrainPRISM&TestTCGA_FS/Ridge/RF5-decoupleR_gsea2_ridge.rds")
 TF = TF$Ranksum
+TF = -log(TF)
 TF = TF[-c(3,10,12,14)]
 
-df_Ridge_TF = data.frame(wilkoxtest = TF, N = N_S[,1])
-ggplot(df_Ridge_TF, aes(x = wilkoxtest, y = N)) + geom_point(size = 0.5) +
+df_Ridge_TF = data.frame(N = N_S[,1], wilkoxtest = TF)
+ggplot(df_Ridge_TF, aes(x = N, y = wilkoxtest)) + geom_point(size = 0.5) +
   geom_smooth(formula = y ~ x, method = "lm", se = FALSE)+ theme_classic()
 
 

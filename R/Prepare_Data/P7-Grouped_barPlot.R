@@ -67,7 +67,7 @@ TF_activity_MLP_ranksum = sum(TF_activity_MLP$Ranksum<0.05)
 Pathway_activity_MLP_ranksum = sum(Pathway_activity_MLP$Ranksum<0.05)
 
 ML_methods = factor(rep(c("Ridge","Lasso","ENet","RF","MLP"),5),
-                       levels = c("Ridge","MLP","Lasso","ENet","RF"))
+                       levels = c("Ridge","MLP","RF","ENet","Lasso"))
 FR_methods = factor(rep(c("WG","LM","PW","PA","TF"),c(5,5,5,5,5)),
                         levels = c("WG","LM","PW","PA","TF"))
 N_sig_drugs = c(WholeGenes_Ridge_ranksum,WholeGenes_Lasso_ranksum,

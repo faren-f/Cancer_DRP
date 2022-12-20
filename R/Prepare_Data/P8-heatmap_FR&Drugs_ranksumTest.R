@@ -18,7 +18,7 @@ Drug_FSMethods_ranksum_Ridge = cbind(WholeGenes_Ridge$Ranksum,
                                Pathway_activity_Ridge$Ranksum,
                                TF_activity_Ridge$Ranksum)
 rownames(Drug_FSMethods_ranksum_Ridge) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum_Ridge = Drug_FSMethods_ranksum_Ridge[-c(3,10,12,14),]  
+Drug_FSMethods_ranksum_Ridge = Drug_FSMethods_ranksum_Ridge[-c(3,15,12,14),]  
 
 Drug_FSMethods_ranksum_Ridge = ifelse(Drug_FSMethods_ranksum_Ridge<0.05,0,1)
 plt_Ridge = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_Ridge),cluster_rows = FALSE, 
@@ -42,11 +42,13 @@ Drug_FSMethods_ranksum_Lasso = cbind(WholeGenes_Lasso$Ranksum,
                                      Pathway_activity_Lasso$Ranksum,
                                      TF_activity_Lasso$Ranksum)
 rownames(Drug_FSMethods_ranksum_Lasso) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum_Lasso = Drug_FSMethods_ranksum_Lasso[-c(3,10,12,14),]  
+Drug_FSMethods_ranksum_Lasso = Drug_FSMethods_ranksum_Lasso[-c(3,15,12,14),]  
 
 Drug_FSMethods_ranksum_Lasso = ifelse(Drug_FSMethods_ranksum_Lasso<0.05,0,1)
 plt_Lasso = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_Lasso),cluster_rows = FALSE, 
                                cluster_cols = FALSE,color = c("#FB4570","white"))
+
+
 pdf(paste0("Figures/FS/heatmap-FR&Drugs_all_ML/heatmap_FR&Drugs_Ranksum_Lasso.pdf"), height = 2.8, width = 7)
 plt_Lasso
 dev.off()
@@ -65,7 +67,7 @@ Drug_FSMethods_ranksum_ENet = cbind(WholeGenes_ENet$Ranksum,
                                      Pathway_activity_ENet$Ranksum,
                                      TF_activity_ENet$Ranksum)
 rownames(Drug_FSMethods_ranksum_ENet) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum_ENet = Drug_FSMethods_ranksum_ENet[-c(3,10,12,14),]  
+Drug_FSMethods_ranksum_ENet = Drug_FSMethods_ranksum_ENet[-c(3,15,12,14),]  
 
 Drug_FSMethods_ranksum_ENet = ifelse(Drug_FSMethods_ranksum_ENet<0.05,0,1)
 plt_ENet = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_ENet),cluster_rows = FALSE, 
@@ -89,7 +91,7 @@ Drug_FSMethods_ranksum_RF = cbind(WholeGenes_RF$Ranksum,
                                     Pathway_activity_RF$Ranksum,
                                     TF_activity_RF$Ranksum)
 rownames(Drug_FSMethods_ranksum_RF) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum_RF = Drug_FSMethods_ranksum_RF[-c(3,10,12,14),]  
+Drug_FSMethods_ranksum_RF = Drug_FSMethods_ranksum_RF[-c(3,15,12,14),]  
 
 Drug_FSMethods_ranksum_RF = ifelse(Drug_FSMethods_ranksum_RF<0.05,0,1)
 plt_RF = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_RF),cluster_rows = FALSE, 
@@ -113,7 +115,7 @@ Drug_FSMethods_ranksum_MLP = cbind(WholeGenes_MLP$Ranksum,
                                   Pathway_activity_MLP$Ranksum,
                                   TF_activity_MLP$Ranksum)
 rownames(Drug_FSMethods_ranksum_MLP) = colnames(sen_PRISM)
-Drug_FSMethods_ranksum_MLP = Drug_FSMethods_ranksum_MLP[-c(3,10,12,14),]  
+Drug_FSMethods_ranksum_MLP = Drug_FSMethods_ranksum_MLP[-c(3,15,12,14),]  
 
 Drug_FSMethods_ranksum_MLP = ifelse(Drug_FSMethods_ranksum_MLP<0.05,0,1)
 plt_MLP = pheatmap::pheatmap(t(Drug_FSMethods_ranksum_MLP),cluster_rows = FALSE, 

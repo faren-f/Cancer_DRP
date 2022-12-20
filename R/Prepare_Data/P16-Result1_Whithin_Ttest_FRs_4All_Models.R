@@ -189,59 +189,168 @@ rownames(RF_TF) = colnames(sen)
 
 
 # Statistical Test FRs
-
+## Ridge
 wilcox.test(Ridge_Landmark[,1], Ridge_WG[,1], paired = FALSE, alternative = "greater")
 wilcox.test(Ridge_Landmark[,1], Ridge_PW[,1], paired = FALSE, alternative = "greater")
 wilcox.test(Ridge_Landmark[,1], Ridge_PA[,1], paired = FALSE, alternative = "greater")
 wilcox.test(Ridge_Landmark[,1], Ridge_TF[,1], paired = FALSE, alternative = "greater")
 
-
 wilcox.test(Ridge_PW[,1], Ridge_WG[,1], paired = FALSE, alternative = "greater")
 wilcox.test(Ridge_PW[,1], Ridge_PA[,1], paired = FALSE, alternative = "greater")
 wilcox.test(Ridge_PW[,1], Ridge_TF[,1], paired = FALSE, alternative = "greater")
 
+wilcox.test(Ridge_WG[,1], Ridge_TF[,1], paired = FALSE, alternative = "greater")
+wilcox.test(Ridge_WG[,1], Ridge_PA[,1], paired = FALSE, alternative = "greater")
+
 wilcox.test(Ridge_TF[,1], Ridge_PA[,1], paired = FALSE, alternative = "greater")
 
 
-
-wilcox.test(MLP_Landmark[,1], MLP_WG[,1], paired = TRUE, alternative = "greater")
+## MLP
+wilcox.test(MLP_Landmark[,1], MLP_WG[,1], paired = FALSE, alternative = "greater")
 wilcox.test(MLP_Landmark[,1], MLP_PW[,1], paired = FALSE, alternative = "greater")
 wilcox.test(MLP_Landmark[,1], MLP_PA[,1], paired = FALSE, alternative = "greater")
-wilcox.test(MLP_Landmark[,1], MLP_TF[,1], paired = TRUE, alternative = "greater")
-
+wilcox.test(MLP_Landmark[,1], MLP_TF[,1], paired = FALSE, alternative = "greater")
 
 wilcox.test(MLP_PW[,1], MLP_WG[,1], paired = FALSE, alternative = "greater")
 wilcox.test(MLP_PW[,1], MLP_PA[,1], paired = FALSE, alternative = "greater")
 wilcox.test(MLP_PW[,1], MLP_TF[,1], paired = FALSE, alternative = "greater")
 
+wilcox.test(MLP_WG[,1], MLP_TF[,1], paired = FALSE, alternative = "greater")
+wilcox.test(MLP_WG[,1], MLP_PA[,1], paired = FALSE, alternative = "greater")
+
 wilcox.test(MLP_TF[,1], MLP_PA[,1], paired = FALSE, alternative = "greater")
 
+
+## RF
+wilcox.test(RF_Landmark[,1], RF_WG[,1], paired = FALSE, alternative = "less")
+wilcox.test(RF_Landmark[,1], RF_PW[,1], paired = FALSE, alternative = "greater")
+wilcox.test(RF_Landmark[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+wilcox.test(RF_Landmark[,1], RF_TF[,1], paired = TRUE, alternative = "greater")
+
+wilcox.test(RF_PW[,1], RF_WG[,1], paired = FALSE, alternative = "greater")
+wilcox.test(RF_PW[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+wilcox.test(RF_PW[,1], RF_TF[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(RF_WG[,1], RF_TF[,1], paired = FALSE, alternative = "greater")
+wilcox.test(RF_WG[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(RF_TF[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+
+
+## Lasso
+wilcox.test(Lasso_Landmark[,1], Lasso_WG[,1], paired = FALSE, alternative = "less")
+wilcox.test(Lasso_Landmark[,1], Lasso_PW[,1], paired = FALSE, alternative = "less")
+wilcox.test(Lasso_Landmark[,1], Lasso_PA[,1], paired = FALSE, alternative = "less")
+wilcox.test(Lasso_Landmark[,1], Lasso_TF[,1], paired = TRUE, alternative = "greater")
+
+wilcox.test(Lasso_PW[,1], Lasso_WG[,1], paired = FALSE, alternative = "less")
+wilcox.test(Lasso_PW[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+wilcox.test(Lasso_PW[,1], Lasso_TF[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(Lasso_WG[,1], Lasso_TF[,1], paired = FALSE, alternative = "greater")
+wilcox.test(Lasso_WG[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(Lasso_TF[,1], Lasso_PA[,1], paired = FALSE, alternative = "less")
+
+
+## ENet
+wilcox.test(ENet_Landmark[,1], ENet_WG[,1], paired = FALSE, alternative = "less")
+wilcox.test(ENet_Landmark[,1], ENet_PW[,1], paired = FALSE, alternative = "less")
+wilcox.test(ENet_Landmark[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+wilcox.test(ENet_Landmark[,1], ENet_TF[,1], paired = TRUE, alternative = "greater")
+
+wilcox.test(ENet_PW[,1], ENet_WG[,1], paired = FALSE, alternative = "less")
+wilcox.test(ENet_PW[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+wilcox.test(ENet_PW[,1], ENet_TF[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(ENet_WG[,1], ENet_TF[,1], paired = FALSE, alternative = "greater")
+wilcox.test(ENet_WG[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+
+wilcox.test(ENet_TF[,1], ENet_PA[,1], paired = FALSE, alternative = "less")
+
+
+
 # Statistical Test Models
-t.test(Ridge_Landmark[,1], MLP_Landmark[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_Landmark[,1], RF_Landmark[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_Landmark[,1], Lasso_Landmark[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_Landmark[,1], ENet_Landmark[,1], paired = FALSE, alternative = "two.sided")
+# Landmark
+t.test(Ridge_Landmark[,1], MLP_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_Landmark[,1], RF_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_Landmark[,1], Lasso_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_Landmark[,1], ENet_Landmark[,1], paired = FALSE, alternative = "greater")
 
-t.test(Ridge_WG[,1], MLP_WG[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_WG[,1], RF_WG[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_WG[,1], Lasso_WG[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_WG[,1], ENet_WG[,1], paired = FALSE, alternative = "two.sided")
+t.test(MLP_Landmark[,1], RF_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_Landmark[,1], Lasso_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_Landmark[,1], ENet_Landmark[,1], paired = FALSE, alternative = "greater")
 
-t.test(Ridge_PW[,1], MLP_PW[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PW[,1], RF_PW[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PW[,1], Lasso_PW[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PW[,1], ENet_PW[,1], paired = FALSE, alternative = "two.sided")
+t.test(RF_Landmark[,1], Lasso_Landmark[,1], paired = FALSE, alternative = "greater")
+t.test(RF_Landmark[,1], ENet_Landmark[,1], paired = FALSE, alternative = "greater")
 
-t.test(Ridge_PA[,1], MLP_PA[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PA[,1], RF_PA[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PA[,1], Lasso_PA[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_PA[,1], ENet_PA[,1], paired = FALSE, alternative = "two.sided")
+t.test(ENet_Landmark[,1], Lasso_Landmark[,1], paired = FALSE, alternative = "greater")
 
-t.test(Ridge_TF[,1], MLP_TF[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_TF[,1], RF_TF[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_TF[,1], Lasso_TF[,1], paired = FALSE, alternative = "two.sided")
-t.test(Ridge_TF[,1], ENet_TF[,1], paired = FALSE, alternative = "two.sided")
 
+
+
+# Whole genes
+t.test(Ridge_WG[,1], MLP_WG[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_WG[,1], RF_WG[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_WG[,1], Lasso_WG[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_WG[,1], ENet_WG[,1], paired = FALSE, alternative = "greater")
+
+
+t.test(MLP_WG[,1], RF_WG[,1], paired = FALSE, alternative = "less")
+t.test(MLP_WG[,1], Lasso_WG[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_WG[,1], ENet_WG[,1], paired = FALSE, alternative = "greater")
+
+t.test(RF_WG[,1], Lasso_WG[,1], paired = FALSE, alternative = "greater")
+t.test(RF_WG[,1], ENet_WG[,1], paired = FALSE, alternative = "greater")
+
+t.test(ENet_WG[,1], Lasso_WG[,1], paired = FALSE, alternative = "greater")
+
+
+# Drug Pathway
+t.test(Ridge_PW[,1], MLP_PW[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PW[,1], RF_PW[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PW[,1], Lasso_PW[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PW[,1], ENet_PW[,1], paired = FALSE, alternative = "greater")
+
+t.test(MLP_PW[,1], RF_PW[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_PW[,1], Lasso_PW[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_PW[,1], ENet_PW[,1], paired = FALSE, alternative = "greater")
+
+t.test(RF_PW[,1], Lasso_PW[,1], paired = FALSE, alternative = "greater")
+t.test(RF_PW[,1], ENet_PW[,1], paired = FALSE, alternative = "greater")
+
+t.test(ENet_PW[,1], Lasso_PW[,1], paired = FALSE, alternative = "greater")
+
+#Pathway activities
+t.test(Ridge_PA[,1], MLP_PA[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PA[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PA[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_PA[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+
+t.test(MLP_PA[,1], RF_PA[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_PA[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_PA[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+
+t.test(RF_PA[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+t.test(RF_PA[,1], ENet_PA[,1], paired = FALSE, alternative = "greater")
+
+t.test(ENet_PA[,1], Lasso_PA[,1], paired = FALSE, alternative = "greater")
+
+
+# Transcription Factors
+t.test(Ridge_TF[,1], MLP_TF[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_TF[,1], RF_TF[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_TF[,1], Lasso_TF[,1], paired = FALSE, alternative = "greater")
+t.test(Ridge_TF[,1], ENet_TF[,1], paired = FALSE, alternative = "greater")
+
+t.test(MLP_TF[,1], RF_TF[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_TF[,1], Lasso_TF[,1], paired = FALSE, alternative = "greater")
+t.test(MLP_TF[,1], ENet_TF[,1], paired = FALSE, alternative = "greater")
+
+t.test(RF_TF[,1], Lasso_TF[,1], paired = FALSE, alternative = "greater")
+t.test(RF_TF[,1], ENet_TF[,1], paired = FALSE, alternative = "greater")
+
+t.test(ENet_TF[,1], Lasso_TF[,1], paired = FALSE, alternative = "less")
 
 
 

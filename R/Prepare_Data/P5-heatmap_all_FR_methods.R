@@ -73,7 +73,7 @@ Pathway_activity = progeny
 Drug_FSMethods = cbind(WholeGenes, Landmark, Drug_Pathways, TF_activity, Pathway_activity)
 
 rownames(Drug_FSMethods) = colnames(sen_PRISM)
-Drug_FSMethods = Drug_FSMethods[-c(3,10,12,14),]  
+Drug_FSMethods = Drug_FSMethods[-c(3,15,12,14),]  
 
 Drug_FSMethods_binary = ifelse(Drug_FSMethods<0.05,0,1)
 plt = pheatmap::pheatmap(t(Drug_FSMethods_binary),cluster_rows = FALSE, 

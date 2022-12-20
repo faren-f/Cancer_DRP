@@ -85,6 +85,31 @@ rownames(RF_PW_new) = colnames(sen)
 
 
 
+#Read decoupleR Transcription factor activities results
+RF_TF = c()
+ENet_TF = c()
+Lasso_TF = c()
+Ridge_TF = c()
+MLP_TF = c()
+
+for(i in 1:N_drugs){
+  print(i)
+  R_TF = readRDS(paste0("Processed_from_SLURM/Results_decoupleR_TF_Activities_All_Models/Result_",as.character(i),".rds"))
+  Ridge_TF = rbind(Ridge_TF, R_TF[4,])
+  MLP_TF = rbind(MLP_TF, R_TF[5,])
+  Lasso_TF = rbind(Lasso_TF, R_TF[3,])
+  ENet_TF = rbind(ENet_TF, R_TF[2,])
+  RF_TF = rbind(RF_TF, R_TF[1,])
+}
+
+rownames(Ridge_TF) = colnames(sen)
+rownames(MLP_TF) = colnames(sen)
+rownames(Lasso_TF) = colnames(sen)
+rownames(ENet_TF) = colnames(sen)
+rownames(RF_TF) = colnames(sen)
+
+
+
 # Finding drugs with the same mechanism of actions
 Moa = unique(response$moa)
 Moa = strsplit(Moa,", ")
@@ -153,10 +178,22 @@ for(b in 1:length(D)){
 #   M = c(M, median(val_Non_Zeros))
 # }
 
-Order = order(M, decreasing = FALSE)
+## obtain data for TF
+data = list()
+M = c()
+for(b in 1:length(D)){
+  val = Ridge_TF[d[[D[b]]],1]
+  
+  data[b] = list(val)
+  M = c(M, median(val))
+}
+
+
+##
+Order = order(M, decreasing = TRUE)
 D[Order]
 
-pdf("Figures/FS/Results_whithin/Result5/Boxplot_Moa_Landmark_All_MLs.pdf", height = 10, width = 4)
+pdf("Figures/FS/Results_whithin/Result5/Boxplot_Moa_TF_All_MLs.pdf", height = 10, width = 4)
 boxplot(data[Order], horizontal = TRUE)
 
 dev.off()
